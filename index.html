@@ -2,129 +2,257 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <title>BV Tracker</title>
 <style>
+  /* ── GLOBAL RESET ── */
   *{margin:0;padding:0;box-sizing:border-box}
-  html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;user-select:none;-webkit-user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-  .screen{position:fixed;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column}.screen.active{display:flex}
-  .s-center{align-items:center;justify-content:center;gap:12px;background:#000}
-  .s-title{font-size:11px;font-weight:700;color:#555;letter-spacing:0.5px}
-  .s-q{font-size:15px;font-weight:900;color:#fff;letter-spacing:1px;text-align:center;line-height:1.3}
-  .s-btns{display:flex;gap:12px}
-  .s-btn{padding:14px 26px;border:none;border-radius:8px;font-size:13px;font-weight:900;letter-spacing:0.5px;cursor:pointer;font-family:inherit;color:#000}
+  html,body{
+    width:100%;height:100%;overflow:hidden;background:#000;
+    font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;
+    user-select:none;-webkit-user-select:none;
+    touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  }
+  /* CRITICAL: force all buttons to inherit color, no browser defaults */
+  button{
+    color:#fff;background:transparent;border:none;
+    font-family:inherit;-webkit-appearance:none;
+    -moz-appearance:none;appearance:none;
+  }
 
+  /* ── SCREENS ── */
+  .screen{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    display:none;flex-direction:column;
+  }
+  .screen.active{display:flex}
+
+  /* ── FLOAT LABEL (ONE style for ALL screens, NO background) ── */
+  .float-label{
+    position:absolute;top:5%;left:50%;transform:translateX(-50%);
+    font-size:clamp(12px,3.5vw,16px);font-weight:700;
+    color:rgba(255,255,255,0.55);z-index:15;
+    pointer-events:none;white-space:nowrap;
+    text-shadow:0 1px 6px rgba(0,0,0,0.9);
+  }
+
+  /* ── SPLIT SCREENS (Us/Them, P1/P2, Yes/No) ── */
+  .split{flex-direction:row!important}
+  .split-btn{
+    flex:1;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    cursor:pointer;color:#fff;
+    -webkit-tap-highlight-color:transparent;
+    transition:background 0.15s;gap:clamp(3px,1vw,6px);
+  }
+  .split-btn+.split-btn{border-left:1px solid rgba(0,0,0,0.5)}
+  .split-label{
+    font-size:clamp(22px,7vw,32px);font-weight:900;
+    pointer-events:none;text-shadow:0 2px 8px rgba(0,0,0,0.6);
+  }
+  .split-sub{
+    font-size:clamp(10px,2.5vw,14px);font-weight:600;
+    pointer-events:none;opacity:0.5;
+    text-shadow:0 1px 4px rgba(0,0,0,0.5);
+  }
+
+  /* ── GAME SCREEN ── */
   #game-screen{position:relative}
-  .game-frame{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:10;border:3px solid #448AFF;transition:border-color 0.3s}
+  #game-screen.active{display:flex!important;flex-direction:column!important}
 
-  /* Score display at top of game screen */
-  .game-score{position:absolute;top:6px;left:50%;transform:translateX(-50%);z-index:12;text-align:center;background:rgba(0,0,0,0.7);padding:4px 16px 5px;border-radius:8px;pointer-events:none}
-  .game-mode-title{font-size:16px;font-weight:900;letter-spacing:0.5px;line-height:1.1}
-  .game-score-label{font-size:8px;font-weight:700;color:#888;letter-spacing:0.5px;margin-top:1px}
-  .game-score-val{font-size:28px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;letter-spacing:-1px;line-height:1.1}
-  .game-score-sets{font-size:8px;font-weight:600;color:#666}
-  .game-score-serve{font-size:11px;font-weight:900;letter-spacing:0.5px;margin-top:3px;padding:2px 8px;border-radius:4px;display:inline-block}
+  .game-header{
+    position:absolute;top:2%;left:50%;transform:translateX(-50%);
+    font-size:clamp(14px,4.5vw,22px);font-weight:900;
+    z-index:12;pointer-events:none;
+    text-shadow:0 2px 8px rgba(0,0,0,0.8);
+  }
 
-  .zones{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:1px;padding:0;z-index:2}
-  .zone{border:none;cursor:pointer;outline:none;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:background 0.15s ease;-webkit-tap-highlight-color:transparent;border-radius:0}
-  .zone-label{font-size:clamp(26px,9vw,52px);font-weight:900;color:rgba(255,255,255,0.9);text-shadow:0 1px 4px rgba(0,0,0,0.5);pointer-events:none;line-height:1}
-  .zone-sub{font-size:clamp(8px,2vw,11px);font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:0.5px;pointer-events:none;margin-top:1px}
-  .controls{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);display:flex;gap:12px;z-index:15}
-  .ctrl-btn{background:rgba(255,255,255,0.06);border:none;color:rgba(255,255,255,0.4);font-size:12px;width:26px;height:26px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  /* ── ZONES (vertical columns on game screen) ── */
+  .zones{flex:1;display:flex;flex-direction:row;gap:1px;z-index:2;min-height:0}
+  .zone{
+    flex:1;cursor:pointer;outline:none;
+    display:flex;align-items:center;justify-content:center;
+    flex-direction:column;color:#fff;
+    transition:background 0.15s ease;
+  }
+  .zone-label{
+    font-size:clamp(28px,9vw,52px);font-weight:900;color:#fff;
+    text-shadow:0 2px 8px rgba(0,0,0,0.7);
+    pointer-events:none;line-height:1;
+  }
+  .zone-sub{
+    font-size:clamp(11px,3vw,16px);font-weight:700;
+    color:rgba(255,255,255,0.55);pointer-events:none;margin-top:clamp(2px,0.5vw,4px);
+    text-shadow:0 1px 4px rgba(0,0,0,0.6);
+  }
 
-  /* SUB-TYPE SCREENS */
-  .sub-screen{position:relative}
-  .sub-zones{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:1px;padding:0;z-index:2}
-  .sub-btn{flex:1;border:none;cursor:pointer;outline:none;display:flex;align-items:center;justify-content:center;flex-direction:column;border-radius:0;-webkit-tap-highlight-color:transparent;transition:background 0.15s}
-  .sub-label{font-size:clamp(14px,4vw,20px);font-weight:900;color:rgba(255,255,255,0.9);pointer-events:none;letter-spacing:0.5px}
-  .sub-detail{font-size:8px;font-weight:600;color:rgba(255,255,255,0.3);pointer-events:none;margin-top:1px;letter-spacing:1px}
+  /* ── SCOREBOARD (bottom of game screen) ── */
+  .game-footer{
+    position:absolute;bottom:3%;left:50%;transform:translateX(-50%);
+    z-index:12;text-align:center;pointer-events:none;
+    background:rgba(0,0,0,0.65);
+    padding:clamp(4px,1.2vw,8px) clamp(12px,4vw,20px);
+    border-radius:8px;
+    display:flex;flex-direction:column;align-items:center;gap:1px;
+  }
+  .game-footer-serve{
+    font-size:clamp(9px,2.5vw,13px);font-weight:700;
+    padding:1px 6px;border-radius:3px;display:inline-block;
+    line-height:1.3;
+  }
+  .game-footer-score{
+    font-size:clamp(20px,7vw,32px);font-weight:900;color:#fff;
+    font-variant-numeric:tabular-nums;line-height:1.2;
+  }
+  .game-footer-sets{
+    font-size:clamp(8px,2.2vw,12px);font-weight:600;
+    color:rgba(255,255,255,0.5);line-height:1.2;
+  }
 
-  /* SPLIT SCREENS (player select, resolve, etc) */
-  .ps-half{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border:none;-webkit-tap-highlight-color:transparent;transition:background 0.15s;gap:4px}
-  .ps-name{font-size:22px;font-weight:900;letter-spacing:0.5px;pointer-events:none}
-  .ps-action{font-size:11px;font-weight:700;letter-spacing:1px;pointer-events:none;opacity:0.5}
+  /* ── CONTROLS (undo + menu) ── */
+  .controls{
+    position:absolute;bottom:clamp(4px,1.5vw,10px);right:clamp(6px,2vw,14px);
+    display:flex;gap:clamp(4px,1.5vw,8px);z-index:15;
+  }
+  .ctrl-btn{
+    background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);
+    font-size:clamp(11px,3vw,16px);
+    width:clamp(24px,7vw,34px);height:clamp(24px,7vw,34px);
+    border-radius:50%;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+  }
 
-  /* SERVICE MISS */
-  .sm-label{font-size:20px;font-weight:900;pointer-events:none;letter-spacing:0.5px}
-  .sm-sub{font-size:9px;font-weight:600;pointer-events:none;letter-spacing:1px}
+  /* ── SUB-TYPE SCREENS (stacked rows) ── */
+  .sub-zones{
+    position:absolute;top:0;left:0;right:0;bottom:0;
+    display:flex;flex-direction:column;gap:1px;z-index:2;
+  }
+  .sub-btn{
+    flex:1;cursor:pointer;outline:none;
+    display:flex;align-items:center;justify-content:center;
+    flex-direction:column;color:#fff;
+    -webkit-tap-highlight-color:transparent;transition:background 0.15s;
+  }
+  .sub-label{
+    font-size:clamp(18px,5.5vw,26px);font-weight:900;color:#fff;
+    pointer-events:none;text-shadow:0 2px 6px rgba(0,0,0,0.6);
+  }
+  .sub-detail{
+    font-size:clamp(9px,2.2vw,12px);font-weight:600;
+    color:rgba(255,255,255,0.4);pointer-events:none;margin-top:2px;
+  }
 
-  /* RESOLVE */
-  #resolve-screen{background:#000;align-items:stretch;justify-content:stretch}
+  /* ── SERVICE MISS labels ── */
+  .sm-label{
+    font-size:clamp(22px,7vw,32px);font-weight:900;
+    pointer-events:none;text-shadow:0 2px 6px rgba(0,0,0,0.6);
+  }
+  .sm-sub{
+    font-size:clamp(10px,2.5vw,13px);font-weight:600;pointer-events:none;
+  }
 
-  .set-result-label{font-size:10px;font-weight:700;color:#555;letter-spacing:0.5px}
-  .set-result-score{font-size:36px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;letter-spacing:-2px}
-  .set-result-sets{font-size:13px;font-weight:700;color:#888;margin-top:2px}
-  .set-result-btn{padding:14px 28px;border:none;border-radius:8px;font-size:13px;font-weight:900;letter-spacing:0.5px;cursor:pointer;font-family:inherit;color:#fff;margin-top:8px}
-  .match-winner{font-size:14px;font-weight:900;letter-spacing:0.5px}
-  .match-sets{font-size:24px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums}
-  .match-scores{font-size:11px;color:#666;margin-top:4px}
+  /* ── SET/MATCH SCREENS ── */
+  .s-center{align-items:center;justify-content:center;gap:12px;background:#000}
+  .set-result-label{font-size:clamp(10px,3vw,14px);font-weight:700;color:#555}
+  .set-result-score{font-size:clamp(32px,10vw,48px);font-weight:900;color:#fff;font-variant-numeric:tabular-nums}
+  .set-result-sets{font-size:clamp(13px,3.5vw,17px);font-weight:700;color:#888;margin-top:2px}
+  .set-result-btn{padding:14px 28px;border-radius:8px;font-size:clamp(12px,3.5vw,15px);font-weight:900;cursor:pointer;color:#fff;margin-top:8px}
+  .match-winner{font-size:clamp(14px,4vw,20px);font-weight:900}
+  .match-sets{font-size:clamp(22px,7vw,32px);font-weight:900;color:#fff;font-variant-numeric:tabular-nums}
+  .match-scores{font-size:clamp(11px,3vw,14px);color:#666;margin-top:4px}
 
-  .overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;display:none;flex-direction:column;align-items:center;justify-content:flex-start;padding:10px;padding-top:12px;z-index:50;overflow-y:auto}.overlay.active{display:flex}
-  .stats-title{font-size:10px;font-weight:700;color:#555;letter-spacing:0.5px;margin-bottom:6px}
-  .score-block{width:100%;max-width:200px;padding:6px;margin-bottom:4px;background:#111;border-radius:5px;text-align:center}
+  /* ── OVERLAYS ── */
+  .overlay{
+    position:fixed;top:0;left:0;right:0;bottom:0;background:#000;
+    display:none;flex-direction:column;align-items:center;
+    justify-content:flex-start;padding:10px;padding-top:12px;
+    z-index:50;overflow-y:auto;
+  }
+  .overlay.active{display:flex}
+  .stats-title{font-size:10px;font-weight:700;color:#555;margin-bottom:6px}
+  .score-block{width:100%;max-width:220px;padding:6px;margin-bottom:4px;background:#111;border-radius:5px;text-align:center}
   .score-block-val{font-size:18px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums}
-  .score-block-label{font-size:8px;color:#555;font-weight:700;letter-spacing:1px}
-  .player-stat-block{width:100%;max-width:200px;padding:5px 8px;margin-bottom:3px;background:#111;border-radius:4px}
+  .score-block-label{font-size:8px;color:#555;font-weight:700}
+  .player-stat-block{width:100%;max-width:220px;padding:5px 8px;margin-bottom:3px;background:#111;border-radius:4px}
   .player-stat-row{display:flex;justify-content:space-between;align-items:center}
-  .player-stat-name{font-size:10px;font-weight:900;letter-spacing:1px}
+  .player-stat-name{font-size:10px;font-weight:900}
   .player-stat-eff{font-size:15px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums}
   .player-stat-counts{font-size:10px;font-weight:700;margin-top:1px;font-variant-numeric:tabular-nums}
-  .p-header{font-size:9px;font-weight:700;letter-spacing:1px;margin:5px 0 3px;width:100%;max-width:200px}
+  .p-header{font-size:9px;font-weight:700;margin:5px 0 3px;width:100%;max-width:220px}
   .tr-detail{font-size:8px;color:#666;margin-top:2px}
-  .set-history-row{width:100%;max-width:200px;padding:4px 8px;background:#111;border-radius:4px;margin-bottom:2px;display:flex;justify-content:space-between;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
-  .stats-btn-row{display:flex;gap:5px;margin-top:5px;width:100%;max-width:200px}
-  .stats-btn{flex:1;padding:8px 4px;background:#222;color:#aaa;border:none;border-radius:5px;font-size:9px;font-weight:700;letter-spacing:1px;cursor:pointer;font-family:inherit}
-  .export-btn{width:100%;max-width:200px;padding:12px;margin-bottom:6px;border:none;border-radius:8px;font-size:11px;font-weight:800;letter-spacing:1px;cursor:pointer;font-family:inherit;text-align:center}
+  .set-history-row{width:100%;max-width:220px;padding:4px 8px;background:#111;border-radius:4px;margin-bottom:2px;display:flex;justify-content:space-between;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+  .stats-btn-row{display:flex;gap:5px;margin-top:5px;width:100%;max-width:220px}
+  .stats-btn{flex:1;padding:8px 4px;background:#222;color:#aaa;border-radius:5px;font-size:9px;font-weight:700;cursor:pointer}
+  .export-btn{width:100%;max-width:220px;padding:12px;margin-bottom:6px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;text-align:center}
   .qr-container{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:8px}
   .qr-hint{font-size:9px;color:#555;text-align:center;max-width:180px;line-height:1.4}
-  .sheets-input{width:100%;max-width:200px;padding:10px;background:#111;border:1px solid #333;border-radius:6px;color:#fff;font-size:11px;font-family:inherit;margin-bottom:8px;text-align:center}
+  .sheets-input{width:100%;max-width:220px;padding:10px;background:#111;border:1px solid #333;border-radius:6px;color:#fff;font-size:11px;font-family:inherit;margin-bottom:8px;text-align:center}
   .sheets-input::placeholder{color:#444}
   .sheets-status{font-size:10px;margin-top:6px;font-weight:600;text-align:center}
-  .confirm-text{font-size:18px;font-weight:900;color:#fff;letter-spacing:0.5px;margin-top:20px}
+  .confirm-text{font-size:18px;font-weight:900;color:#fff;margin-top:20px}
   .confirm-sub{font-size:11px;color:#666;margin-top:6px}
   .confirm-btns{display:flex;gap:10px;margin-top:14px}
-  .confirm-btn{padding:12px 20px;border:none;border-radius:6px;color:#fff;font-size:12px;font-weight:800;letter-spacing:1px;cursor:pointer;font-family:inherit}
-  .setting-row{width:100%;max-width:200px;padding:10px;background:#111;border-radius:6px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
-  .setting-label{font-size:10px;font-weight:700;color:#888;letter-spacing:1px}
-  .setting-val{font-size:11px;font-weight:900;color:#fff;letter-spacing:1px}
+  .confirm-btn{padding:12px 20px;border-radius:6px;color:#fff;font-size:12px;font-weight:800;cursor:pointer}
+  .setting-row{width:100%;max-width:220px;padding:10px;background:#111;border-radius:6px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+  .setting-label{font-size:10px;font-weight:700;color:#888}
+  .setting-val{font-size:11px;font-weight:900;color:#fff}
 </style>
 </head>
 <body>
 
-<div class="screen active" id="start-screen" style="flex-direction:row!important;position:relative">
-  <div style="position:absolute;top:18%;left:50%;transform:translateX(-50%);font-size:18px;font-weight:900;color:#fff;z-index:5">Who serves first?</div>
-  <button class="ps-half" style="background:#0a1a3a;border-right:2px solid #000" onclick="setFirstTeam('us')"><div style="font-size:22px;font-weight:900;color:#448AFF;letter-spacing:0.5px">Us</div></button>
-  <button class="ps-half" style="background:#3a1a00" onclick="setFirstTeam('them')"><div style="font-size:22px;font-weight:900;color:#FF9100;letter-spacing:0.5px">Them</div></button>
+<!-- WHO SERVES FIRST -->
+<div class="screen split active" id="start-screen" style="position:relative">
+  <div class="float-label">Who serves first?</div>
+  <button class="split-btn" style="background:#0a1a3a" onclick="setFirstTeam('us')">
+    <div class="split-label" style="color:#448AFF">Us</div>
+  </button>
+  <button class="split-btn" style="background:#3a1a00" onclick="setFirstTeam('them')">
+    <div class="split-label" style="color:#FF9100">Them</div>
+  </button>
 </div>
-<div class="screen" id="server-screen" style="flex-direction:row!important;position:relative">
-  <div style="position:absolute;top:18%;left:50%;transform:translateX(-50%);font-size:16px;font-weight:900;color:#fff;z-index:5;text-align:center" id="server-q-label">Your first server?</div>
-  <button class="ps-half" style="background:#0a1a3a;border-right:2px solid #000" onclick="setFirstServer(0)"><div style="font-size:22px;font-weight:900;color:#448AFF;letter-spacing:0.5px">P1</div></button>
-  <button class="ps-half" style="background:#3a1a00" onclick="setFirstServer(1)"><div style="font-size:22px;font-weight:900;color:#FF9100;letter-spacing:0.5px">P2</div></button>
+
+<!-- YOUR FIRST SERVER -->
+<div class="screen split" id="server-screen" style="position:relative">
+  <div class="float-label" id="server-q-label">Your first server?</div>
+  <button class="split-btn" style="background:#0a1a3a" onclick="setFirstServer(0)">
+    <div class="split-label" style="color:#448AFF">P1</div>
+  </button>
+  <button class="split-btn" style="background:#3a1a00" onclick="setFirstServer(1)">
+    <div class="split-label" style="color:#FF9100">P2</div>
+  </button>
 </div>
 
 <!-- GAME -->
 <div class="screen" id="game-screen">
-  <div class="game-frame" id="game-frame"></div>
-  <div class="game-score" id="game-score-block">
-    <div class="game-mode-title" id="game-mode-title">Side-out</div>
-    <div class="game-score-label" id="game-score-label">Set 1 (to 21)</div>
-    <div class="game-score-val" id="game-score-val">0 : 0</div>
-    <div class="game-score-sets" id="game-score-sets">Sets: 0 - 0</div>
-    <div class="game-score-serve" id="game-score-serve">Their 1st server</div>
-  </div>
+  <div class="game-header" id="game-mode-title">Sideout</div>
   <div class="zones" id="zones-container">
-    <button class="zone" id="g-zone-top" onclick="logAction(1)"><span class="zone-label">+1</span><span class="zone-sub">Point</span></button>
-    <button class="zone" id="g-zone-mid" onclick="logAction(0)"><span class="zone-label">0</span><span class="zone-sub">Neutral</span></button>
-    <button class="zone" id="g-zone-bot" onclick="logAction(-1)"><span class="zone-label">-1</span><span class="zone-sub" id="g-bot-sub">Error</span></button>
+    <button class="zone" id="g-zone-plus" onclick="logAction(1)">
+      <span class="zone-label">+1</span><span class="zone-sub">Point</span>
+    </button>
+    <button class="zone" id="g-zone-zero" onclick="logAction(0)">
+      <span class="zone-label">0</span><span class="zone-sub">Neutral</span>
+    </button>
+    <button class="zone" id="g-zone-minus" onclick="logAction(-1)">
+      <span class="zone-label">-1</span><span class="zone-sub" id="g-bot-sub">Error</span>
+    </button>
   </div>
-  <div class="controls"><button class="ctrl-btn" id="g-undo" onclick="undoLast()">↩</button><button class="ctrl-btn" onclick="showStats()">☰</button></div>
+  <!-- SCOREBOARD: serve on top, score in middle, sets on bottom -->
+  <div class="game-footer" id="game-score-block">
+    <div class="game-footer-serve" id="game-score-serve">1st server</div>
+    <div class="game-footer-score" id="game-score-val">0 : 0</div>
+    <div class="game-footer-sets" id="game-score-sets">S 0-0</div>
+  </div>
+  <div class="controls">
+    <button class="ctrl-btn" id="g-undo" onclick="undoLast()">↩</button>
+    <button class="ctrl-btn" onclick="showStats()">☰</button>
+  </div>
 </div>
 
-<!-- SO SUB-TYPE (+1 or 0) -->
-<div class="screen sub-screen" id="so-type-screen" style="position:relative">
-  <div style="position:absolute;top:4px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;color:#448AFF;z-index:15;background:rgba(0,0,0,0.6);padding:2px 10px;border-radius:4px;pointer-events:none" id="so-type-tag">Side-out +1</div>
+<!-- SIDEOUT SUB-TYPE -->
+<div class="screen" id="so-type-screen" style="position:relative">
+  <div class="float-label" id="so-type-tag">Sideout +1</div>
   <div class="sub-zones">
     <button class="sub-btn" style="background:#0a3a1a" onclick="soType('spike')"><span class="sub-label">Spike</span></button>
     <button class="sub-btn" style="background:#1a2a0a" onclick="soType('shot')"><span class="sub-label">Shot</span></button>
@@ -133,9 +261,9 @@
   </div>
 </div>
 
-<!-- TR SUB-TYPE (+1) -->
-<div class="screen sub-screen" id="tr-type-screen" style="position:relative">
-  <div style="position:absolute;top:4px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;color:#FF9100;z-index:15;background:rgba(0,0,0,0.6);padding:2px 10px;border-radius:4px;pointer-events:none">Transition +1</div>
+<!-- TRANSITION SUB-TYPE -->
+<div class="screen" id="tr-type-screen" style="position:relative">
+  <div class="float-label">Transition +1</div>
   <div class="sub-zones">
     <button class="sub-btn" style="background:#0a3a2a" onclick="trType('block')"><span class="sub-label">Block</span><span class="sub-detail">select player</span></button>
     <button class="sub-btn" style="background:#1a2a3a" onclick="trType('defense')"><span class="sub-label">Defense</span><span class="sub-detail">select player</span></button>
@@ -143,169 +271,322 @@
   </div>
 </div>
 
-<!-- SERVICE MISS -->
-<div class="screen" id="svc-miss-screen" style="flex-direction:row!important;position:relative">
-  <div style="position:absolute;top:4px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;color:#FF9100;z-index:15;background:rgba(0,0,0,0.6);padding:2px 10px;border-radius:4px;pointer-events:none">Transition -1</div>
-  <div style="position:absolute;top:20%;left:50%;transform:translateX(-50%);font-size:16px;font-weight:900;color:#fff;z-index:5;pointer-events:none">Missed serve?</div>
-  <button class="ps-half" style="background:#3a0a0f;border-right:2px solid #000" onclick="trError(true)">
+<!-- MISSED SERVE -->
+<div class="screen split" id="svc-miss-screen" style="position:relative">
+  <div class="float-label">Missed serve?</div>
+  <button class="split-btn" style="background:#3a0a0f" onclick="trError(true)">
     <div class="sm-label" style="color:#FF5252">Yes</div>
     <div class="sm-sub" style="color:#cc4444" id="sm-yes-sub">service miss</div>
   </button>
-  <button class="ps-half" style="background:#0a2a15" onclick="trError(false)">
+  <button class="split-btn" style="background:#0a2a15" onclick="trError(false)">
     <div class="sm-label" style="color:#66BB6A">No</div>
     <div class="sm-sub" style="color:#448844">they did good</div>
   </button>
 </div>
 
 <!-- PLAYER SELECT -->
-<div class="screen" id="player-select" style="flex-direction:row!important;position:relative">
-  <div style="position:absolute;top:4px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;color:#448AFF;z-index:15;background:rgba(0,0,0,0.6);padding:2px 10px;border-radius:4px;pointer-events:none" id="ps-tag">Player</div>
-  <button class="ps-half" id="ps-left" onclick="selectPlayer('left')" style="border-right:2px solid #000"><div class="ps-name" id="ps-left-name">P2</div><div class="ps-action" id="ps-left-action">+1</div></button>
-  <button class="ps-half" id="ps-right" onclick="selectPlayer('right')"><div class="ps-name" id="ps-right-name">P1</div><div class="ps-action" id="ps-right-action">+1</div></button>
+<div class="screen split" id="player-select" style="position:relative">
+  <div class="float-label" id="ps-tag">Player</div>
+  <button class="split-btn" id="ps-left" onclick="selectPlayer('left')">
+    <div class="split-label" id="ps-left-name">P2</div>
+    <div class="split-sub" id="ps-left-action">+1</div>
+  </button>
+  <button class="split-btn" id="ps-right" onclick="selectPlayer('right')">
+    <div class="split-label" id="ps-right-name">P1</div>
+    <div class="split-sub" id="ps-right-action">+1</div>
+  </button>
 </div>
 
-<!-- RESOLVE -->
-<div class="screen" id="resolve-screen" style="flex-direction:row!important;position:relative">
-  <div style="position:absolute;top:20%;left:50%;transform:translateX(-50%);font-size:13px;font-weight:700;color:#aaa;letter-spacing:1px;z-index:5" id="resolve-hint">Who won the rally?</div>
-  <button class="ps-half" style="background:#0a3a1a;border-right:2px solid #000" onclick="resolvePoint('us')"><div style="font-size:22px;font-weight:900;color:#00C853;letter-spacing:0.5px">Us</div></button>
-  <button class="ps-half" style="background:#3a0a15" onclick="resolvePoint('them')"><div style="font-size:22px;font-weight:900;color:#FF5252;letter-spacing:0.5px">Them</div></button>
+<!-- WHO WON THE RALLY -->
+<div class="screen split" id="resolve-screen" style="position:relative">
+  <div class="float-label" id="resolve-hint">Who won the rally?</div>
+  <button class="split-btn" style="background:#0a3a1a" onclick="resolvePoint('us')">
+    <div class="split-label" style="color:#00C853">Us</div>
+  </button>
+  <button class="split-btn" style="background:#3a0a15" onclick="resolvePoint('them')">
+    <div class="split-label" style="color:#FF5252">Them</div>
+  </button>
 </div>
 
-<div class="screen s-center" id="set-screen"><div class="set-result-label" id="set-result-label"></div><div class="set-result-score" id="set-result-score"></div><div class="set-result-sets" id="set-result-sets"></div><button class="set-result-btn" style="background:#448AFF" id="set-next-btn" onclick="startNextSet()">Next set</button></div>
-<div class="screen s-center" id="match-screen"><div class="set-result-label">Match over</div><div class="match-winner" id="match-winner"></div><div class="match-sets" id="match-sets"></div><div class="match-scores" id="match-scores"></div><button class="set-result-btn" style="background:#222;margin-top:12px" onclick="showStats()">Stats</button><button class="set-result-btn" style="background:#333" onclick="resetAll()">New match</button></div>
+<!-- SET COMPLETE -->
+<div class="screen s-center" id="set-screen">
+  <div class="set-result-label" id="set-result-label"></div>
+  <div class="set-result-score" id="set-result-score"></div>
+  <div class="set-result-sets" id="set-result-sets"></div>
+  <button class="set-result-btn" style="background:#448AFF" id="set-next-btn" onclick="startNextSet()">Next set</button>
+</div>
+
+<!-- MATCH OVER -->
+<div class="screen s-center" id="match-screen">
+  <div class="set-result-label">Match over</div>
+  <div class="match-winner" id="match-winner"></div>
+  <div class="match-sets" id="match-sets"></div>
+  <div class="match-scores" id="match-scores"></div>
+  <button class="set-result-btn" style="background:#222;margin-top:12px" onclick="showStats()">Stats</button>
+  <button class="set-result-btn" style="background:#333" onclick="resetAll()">New match</button>
+</div>
 
 <!-- OVERLAYS -->
-<div class="overlay" id="stats-view"><div class="stats-title">Match stats</div><div id="stats-content"></div><div class="stats-btn-row"><button class="stats-btn" onclick="hideStats()">Back</button></div><div class="stats-btn-row"><button class="stats-btn" style="background:#0d2a4a;color:#64B5F6" onclick="showExport()">Export</button><button class="stats-btn" style="background:#222" onclick="showSettings()">Layout</button><button class="stats-btn" style="background:#3a1a1a;color:#FF1744" onclick="showConfirm()">Reset</button></div></div>
-<div class="overlay" id="settings-view"><div class="stats-title">Settings</div><div class="setting-row" onclick="toggleLayout()"><span class="setting-label">Player sides</span><span class="setting-val" id="layout-val"></span></div><div style="font-size:8px;color:#444;text-align:center;margin-top:4px;max-width:200px;line-height:1.4">Tap to swap left/right</div><div class="stats-btn-row" style="margin-top:12px"><button class="stats-btn" onclick="hideSettings()">Back</button></div></div>
-<div class="overlay" id="export-view"><div class="stats-title" style="margin-top:4px">Export</div><button class="export-btn" style="background:#1a1a3a;color:#7C8EFF" onclick="showQR()">QR code</button><button class="export-btn" style="background:#0a3a1a;color:#66BB6A" onclick="showSheetsSetup()">Google Sheets</button><button class="export-btn" style="background:#1a1a1a;color:#888" onclick="downloadCSV()">CSV</button><div class="stats-btn-row"><button class="stats-btn" onclick="hideExport()">Back</button></div></div>
-<div class="overlay" id="qr-view"><div class="qr-container"><div class="stats-title">Scan with phone</div><div id="qr-display"></div><div class="qr-hint" id="qr-hint"></div></div><div class="stats-btn-row" style="flex-shrink:0;padding-bottom:8px"><button class="stats-btn" onclick="hideQR()">Back</button></div></div>
-<div class="overlay" id="sheets-view"><div class="stats-title" style="margin-top:10px">Google Sheets</div><div id="sheets-content"></div><div class="stats-btn-row" style="margin-top:8px"><button class="stats-btn" onclick="hideSheets()">Back</button></div></div>
-<div class="overlay" id="confirm-view"><div class="confirm-text">Reset?</div><div class="confirm-sub" id="confirm-sub"></div><div class="confirm-btns"><button class="confirm-btn" style="background:#FF1744" onclick="resetAll()">Yes</button><button class="confirm-btn" style="background:#444" onclick="hideConfirm()">No</button></div></div>
+<div class="overlay" id="stats-view">
+  <div class="stats-title">Match stats</div>
+  <div id="stats-content"></div>
+  <div class="stats-btn-row"><button class="stats-btn" onclick="hideStats()">Back</button></div>
+  <div class="stats-btn-row">
+    <button class="stats-btn" style="background:#0d2a4a;color:#64B5F6" onclick="showExport()">Export</button>
+    <button class="stats-btn" style="background:#222" onclick="showSettings()">Layout</button>
+    <button class="stats-btn" style="background:#3a1a1a;color:#FF1744" onclick="showConfirm()">Reset</button>
+  </div>
+</div>
+<div class="overlay" id="settings-view">
+  <div class="stats-title">Settings</div>
+  <div class="setting-row" onclick="toggleLayout()">
+    <span class="setting-label">Player sides</span>
+    <span class="setting-val" id="layout-val"></span>
+  </div>
+  <div style="font-size:8px;color:#444;text-align:center;margin-top:4px;max-width:200px;line-height:1.4">Tap to swap left/right</div>
+  <div class="stats-btn-row" style="margin-top:12px"><button class="stats-btn" onclick="hideSettings()">Back</button></div>
+</div>
+<div class="overlay" id="export-view">
+  <div class="stats-title" style="margin-top:4px">Export</div>
+  <button class="export-btn" style="background:#1a1a3a;color:#7C8EFF" onclick="showQR()">QR code</button>
+  <button class="export-btn" style="background:#0a3a1a;color:#66BB6A" onclick="showSheetsSetup()">Google Sheets</button>
+  <button class="export-btn" style="background:#1a1a1a;color:#888" onclick="downloadCSV()">CSV</button>
+  <div class="stats-btn-row"><button class="stats-btn" onclick="hideExport()">Back</button></div>
+</div>
+<div class="overlay" id="qr-view">
+  <div class="qr-container"><div class="stats-title">Scan with phone</div><div id="qr-display"></div><div class="qr-hint" id="qr-hint"></div></div>
+  <div class="stats-btn-row" style="flex-shrink:0;padding-bottom:8px"><button class="stats-btn" onclick="hideQR()">Back</button></div>
+</div>
+<div class="overlay" id="sheets-view">
+  <div class="stats-title" style="margin-top:10px">Google Sheets</div>
+  <div id="sheets-content"></div>
+  <div class="stats-btn-row" style="margin-top:8px"><button class="stats-btn" onclick="hideSheets()">Back</button></div>
+</div>
+<div class="overlay" id="confirm-view">
+  <div class="confirm-text">Reset?</div>
+  <div class="confirm-sub" id="confirm-sub"></div>
+  <div class="confirm-btns">
+    <button class="confirm-btn" style="background:#FF1744" onclick="resetAll()">Yes</button>
+    <button class="confirm-btn" style="background:#444" onclick="hideConfirm()">No</button>
+  </div>
+</div>
 
 <script>
+/* ═══════════════════════════════════
+   CONFIG
+   ═══════════════════════════════════ */
 var PL=[{name:"P1",color:"#448AFF"},{name:"P2",color:"#FF9100"}];
-var SO={frame:"#448AFF",tag:"#448AFF",top:{n:"#014d1e",f:"#00C853"},mid:{n:"#4d3800",f:"#FFB300"},bot:{n:"#4d0a15",f:"#FF1744"}};
-var TR={frame:"#FF9100",tag:"#FF9100",top:{n:"#014d1e",f:"#00C853"},bot:{n:"#4d0a15",f:"#FF1744"}};
+var SO={frame:"#448AFF",plus:{n:"#014d1e",f:"#00C853"},zero:{n:"#4d3800",f:"#FFB300"},minus:{n:"#4d0a15",f:"#FF1744"}};
+var TR={frame:"#FF9100",plus:{n:"#014d1e",f:"#00C853"},minus:{n:"#4d0a15",f:"#FF1744"}};
 var ACT_COL={1:"#00C853",0:"#FFB300","-1":"#FF1744"};
 var ACT_LBL={1:"+1",0:"0","-1":"-1"};
-var sheetsUrl="";try{sheetsUrl=localStorage.getItem("bv_sheets_url")||""}catch(e){}
-var layout="p2left";try{layout=localStorage.getItem("bv_layout")||"p2left"}catch(e){}
-var G;function freshState(){return{phase:"start",sU:0,sT:0,setNum:1,setsU:0,setsT:0,target:21,matchOver:false,act:[{so:[],tr:[]},{so:[],tr:[]}],sets:[],t0:Date.now(),hist:[],firstTeam:null,ourServer:0,ourNextServer:0,theirServer:0,theirNextServer:0,pending:null}}
-G=freshState();var fT=null;
+var sheetsUrl="";
+var layout="p2left";
 
-function $(id){return document.getElementById(id)}
+/* ═══════════════════════════════════
+   STATE
+   ═══════════════════════════════════ */
+var G;
+function freshState(){
+  return{
+    phase:"start",sU:0,sT:0,setNum:1,setsU:0,setsT:0,
+    target:21,matchOver:false,
+    act:[{so:[],tr:[]},{so:[],tr:[]}],
+    sets:[],t0:Date.now(),hist:[],
+    firstTeam:null,ourServer:0,ourNextServer:0,
+    theirServer:0,theirNextServer:0,pending:null
+  };
+}
+G=freshState();
+var fT=null;
+
+/* ═══════════════════════════════════
+   HELPERS
+   ═══════════════════════════════════ */
+function $(id){return document.getElementById(id)||document.createElement("div")}
 function vib(ms){try{if(navigator.vibrate)navigator.vibrate(ms)}catch(e){}}
-function show(id){var s=document.querySelectorAll(".screen");for(var i=0;i<s.length;i++)s[i].classList.remove("active");$(id).classList.add("active")}
-function hexDk(h,f){var r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return"#"+((1<<24)+(Math.round(r*f)<<16)+(Math.round(g*f)<<8)+Math.round(b*f)).toString(16).slice(1)}
-function gs(acts,ph){var a=acts[ph],t=a.length;if(!t)return{total:0,plus:0,zero:0,minus:0,eff:0,blocks:0,defense:0,aces:0,svcMiss:0,spikes:0,shots:0,blockOuts:0,secondBalls:0};var p=0,z=0,m=0,sm=0,bl=0,df=0,ac=0,sv=0,sp=0,sh=0,bo=0,sb=0;for(var i=0;i<t;i++){var x=a[i];if(x.v===1){p++;if(x.tp==="block")bl++;if(x.tp==="defense")df++;if(x.tp==="ace")ac++;if(x.tp==="spike")sp++;if(x.tp==="shot")sh++;if(x.tp==="block_out")bo++;if(x.tp==="second_ball")sb++}else if(x.v===0){z++;if(x.tp==="spike")sp++;if(x.tp==="shot")sh++;if(x.tp==="block_out")bo++;if(x.tp==="second_ball")sb++}else{m++;if(x.tp==="svc_miss")sv++}sm+=x.v}return{total:t,plus:p,zero:z,minus:m,eff:(sm/t)*100,blocks:bl,defense:df,aces:ac,svcMiss:sv,spikes:sp,shots:sh,blockOuts:bo,secondBalls:sb}}
-function ga(pi){var all=[{so:[],tr:[]},{so:[],tr:[]}];G.sets.forEach(function(s){for(var p=0;p<2;p++){all[p].so=all[p].so.concat(s.act[p].so);all[p].tr=all[p].tr.concat(s.act[p].tr)}});for(var p=0;p<2;p++){all[p].so=all[p].so.concat(G.act[p].so);all[p].tr=all[p].tr.concat(G.act[p].tr)};var so=gs(all[pi],"so"),tr=gs(all[pi],"tr"),t=so.total+tr.total,sm=0;all[pi].so.forEach(function(a){sm+=a.v});all[pi].tr.forEach(function(a){sm+=a.v});return{total:t,eff:t?((sm/t)*100):0,so:so,tr:tr}}
+function show(id){
+  var s=document.querySelectorAll(".screen");
+  for(var i=0;i<s.length;i++)s[i].classList.remove("active");
+  $(id).classList.add("active");
+}
+function hexDk(h,f){
+  var r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);
+  return"#"+((1<<24)+(Math.round(r*f)<<16)+(Math.round(g*f)<<8)+Math.round(b*f)).toString(16).slice(1);
+}
+
+/* ═══════════════════════════════════
+   STATS CALCULATIONS
+   ═══════════════════════════════════ */
+function gs(acts,ph){
+  var a=acts[ph],t=a.length;
+  if(!t)return{total:0,plus:0,zero:0,minus:0,eff:0,blocks:0,defense:0,aces:0,svcMiss:0,spikes:0,shots:0,blockOuts:0,secondBalls:0};
+  var p=0,z=0,m=0,sm=0,bl=0,df=0,ac=0,sv=0,sp=0,sh=0,bo=0,sb=0;
+  for(var i=0;i<t;i++){
+    var x=a[i];
+    if(x.v===1){p++;if(x.tp==="block")bl++;if(x.tp==="defense")df++;if(x.tp==="ace")ac++;if(x.tp==="spike")sp++;if(x.tp==="shot")sh++;if(x.tp==="block_out")bo++;if(x.tp==="second_ball")sb++}
+    else if(x.v===0){z++;if(x.tp==="spike")sp++;if(x.tp==="shot")sh++;if(x.tp==="block_out")bo++;if(x.tp==="second_ball")sb++}
+    else{m++;if(x.tp==="svc_miss")sv++}
+    sm+=x.v;
+  }
+  return{total:t,plus:p,zero:z,minus:m,eff:(sm/t)*100,blocks:bl,defense:df,aces:ac,svcMiss:sv,spikes:sp,shots:sh,blockOuts:bo,secondBalls:sb};
+}
+function ga(pi){
+  var all=[{so:[],tr:[]},{so:[],tr:[]}];
+  G.sets.forEach(function(s){for(var p=0;p<2;p++){all[p].so=all[p].so.concat(s.act[p].so);all[p].tr=all[p].tr.concat(s.act[p].tr)}});
+  for(var p=0;p<2;p++){all[p].so=all[p].so.concat(G.act[p].so);all[p].tr=all[p].tr.concat(G.act[p].tr)}
+  var so=gs(all[pi],"so"),tr=gs(all[pi],"tr"),t=so.total+tr.total,sm=0;
+  all[pi].so.forEach(function(a){sm+=a.v});all[pi].tr.forEach(function(a){sm+=a.v});
+  return{total:t,eff:t?((sm/t)*100):0,so:so,tr:tr};
+}
 function ef(s){return s.total?((s.eff>=0?"+":"")+Math.round(s.eff)+"%"):"--"}
 
+/* ═══════════════════════════════════
+   SERVE ROTATION
+   ═══════════════════════════════════ */
 function serveChange(np){
   if(G.phase==="tr"&&np==="so"){G.ourNextServer=G.ourServer===0?1:0;G.theirServer=G.theirNextServer}
   if(G.phase==="so"&&np==="tr"){G.theirNextServer=G.theirServer===0?1:0;G.ourServer=G.ourNextServer}
   G.phase=np;
 }
-function getLP(){return layout==="p2left"?1:0}function getRP(){return layout==="p2left"?0:1}
-function toggleLayout(){layout=layout==="p2left"?"p1left":"p2left";try{localStorage.setItem("bv_layout",layout)}catch(e){}updLayoutLabel()}
+
+/* ═══════════════════════════════════
+   LAYOUT
+   ═══════════════════════════════════ */
+function getLP(){return layout==="p2left"?1:0}
+function getRP(){return layout==="p2left"?0:1}
+function toggleLayout(){layout=layout==="p2left"?"p1left":"p2left";updLayoutLabel()}
 function updLayoutLabel(){$("layout-val").textContent="< "+PL[getLP()].name+" | "+PL[getRP()].name+" >"}
 
-function setFirstTeam(t){G.firstTeam=t;$("server-q-label").textContent="Set "+G.setNum+" - Your first server?";show("server-screen");vib(30)}
-function setFirstServer(pi){G.ourNextServer=pi;G.theirServer=0;G.theirNextServer=0;if(G.firstTeam==="us"){G.ourServer=pi;G.phase="tr"}else{G.ourServer=pi;G.phase="so"}show("game-screen");upd();vib(50)}
+/* ═══════════════════════════════════
+   START FLOW
+   ═══════════════════════════════════ */
+function setFirstTeam(t){
+  G.firstTeam=t;
+  $("server-q-label").textContent="Set "+G.setNum+" - Your first server?";
+  show("server-screen");vib(30);
+}
+function setFirstServer(pi){
+  G.ourNextServer=pi;G.theirServer=0;G.theirNextServer=0;
+  if(G.firstTeam==="us"){G.ourServer=pi;G.phase="tr"}
+  else{G.ourServer=pi;G.phase="so"}
+  show("game-screen");upd();vib(50);
+}
 
+/* ═══════════════════════════════════
+   UPDATE GAME UI
+   ═══════════════════════════════════ */
 function upd(){
-  var iso=G.phase==="so",c=iso?SO:TR;
-  // Frame color
-  $("game-frame").style.borderColor=c.frame;
-  // Mode title
-  $("game-mode-title").textContent=iso?"Side-out":"Transition";
-  $("game-mode-title").style.color=c.frame;
-  // Score block
-  $("game-score-label").textContent="Set "+G.setNum+" (to "+G.target+")";
-  $("game-score-val").textContent=G.sU+" : "+G.sT;
-  $("game-score-sets").textContent="Sets: "+G.setsU+" - "+G.setsT;
-  // Serve info
+  var iso=G.phase==="so";
+
+  // Header
+  $("game-mode-title").textContent=iso?"Sideout":"Transition";
+  $("game-mode-title").style.color=iso?SO.frame:TR.frame;
+
+  // Footer: serve (top) > score (middle) > sets (bottom)
   var sv=$("game-score-serve");
-  if(iso){sv.textContent="Their "+(G.theirServer===0?"1st":"2nd")+" server";sv.style.color="#5a9bd5";sv.style.background="rgba(68,138,255,0.2)"}
-  else{sv.textContent=PL[G.ourServer].name+" serving";sv.style.color=PL[G.ourServer].color;sv.style.background=G.ourServer===0?"rgba(68,138,255,0.2)":"rgba(255,145,0,0.2)"}
+  if(iso){
+    sv.textContent=(G.theirServer===0?"1st":"2nd")+" server";
+    sv.style.color="#5a9bd5";sv.style.background="rgba(68,138,255,0.2)";
+  }else{
+    sv.textContent=PL[G.ourServer].name+" serving";
+    sv.style.color=PL[G.ourServer].color;
+    sv.style.background=G.ourServer===0?"rgba(68,138,255,0.2)":"rgba(255,145,0,0.2)";
+  }
+  $("game-score-val").textContent=G.sU+" : "+G.sT;
+  $("game-score-sets").textContent="S "+G.setsU+"-"+G.setsT;
+
   // Zones
-  var zt=$("g-zone-top"),zm=$("g-zone-mid"),zb=$("g-zone-bot");
-  if(iso){zm.style.display="flex";zt.style.flex="1";zm.style.flex="1";zb.style.flex="1";zt.style.background=SO.top.n;zm.style.background=SO.mid.n;zb.style.background=SO.bot.n}
-  else{zm.style.display="none";zt.style.flex="1";zb.style.flex="1";zt.style.background=TR.top.n;zb.style.background=TR.bot.n}
+  var zp=$("g-zone-plus"),zz=$("g-zone-zero"),zm=$("g-zone-minus");
+  if(iso){
+    zz.style.display="flex";zp.style.flex="1";zz.style.flex="1";zm.style.flex="1";
+    zp.style.background=SO.plus.n;zz.style.background=SO.zero.n;zm.style.background=SO.minus.n;
+  }else{
+    zz.style.display="none";zp.style.flex="1";zm.style.flex="1";
+    zp.style.background=TR.plus.n;zm.style.background=TR.minus.n;
+  }
+
   $("g-undo").style.opacity=G.hist.length?"0.7":"0.2";
   $("g-bot-sub").textContent=iso?"Error":"Lost point";
 }
 
-// ═══ GAME FLOW ═══
+/* ═══════════════════════════════════
+   GAME FLOW
+   ═══════════════════════════════════ */
 function logAction(v){
   if(G.phase==="tr"&&v===0)return;
-  var iso=G.phase==="so",c=iso?SO:TR;
-  var zid=v===1?"g-zone-top":v===0?"g-zone-mid":"g-zone-bot",ck=v===1?"top":v===0?"mid":"bot";
-  $(zid).style.background=c[ck].f;clearTimeout(fT);fT=setTimeout(function(){if($(zid))$(zid).style.background=c[ck].n},250);
+  var iso=G.phase==="so";
+  // Flash
+  var zid=v===1?"g-zone-plus":v===0?"g-zone-zero":"g-zone-minus";
+  var ck=v===1?"plus":v===0?"zero":"minus";
+  var c=iso?SO:TR;
+  $(zid).style.background=c[ck].f;
+  clearTimeout(fT);
+  fT=setTimeout(function(){$(zid).style.background=c[ck].n},250);
   vib(v===1?50:v===-1?[50,30,50]:30);
   G.pending={v:v,phase:G.phase,tp:null,pi:null};
 
-  if(G.phase==="so"&&(v===1||v===0)){
-    // SO +1 or 0: player select FIRST
+  if(G.phase==="so"){
     showPlayerSelect(v);
-  } else if(G.phase==="so"&&v===-1){
-    // SO -1: player select (no sub-type)
-    showPlayerSelect(v);
-  } else if(G.phase==="tr"&&v===1){
+  }else if(G.phase==="tr"&&v===1){
     $("ace-sub").textContent="auto > "+PL[G.ourServer].name;
     show("tr-type-screen");
-  } else if(G.phase==="tr"&&v===-1){
+  }else if(G.phase==="tr"&&v===-1){
     $("sm-yes-sub").textContent=PL[G.ourServer].name+" missed";
     show("svc-miss-screen");
   }
 }
-
-// SO sub-types (player already selected)
 function soType(type){
-  if(!G.pending)return;G.pending.tp=type;vib(40);
+  if(!G.pending)return;
+  G.pending.tp=type;vib(40);
   commitAction(G.pending.pi);
 }
-
-// TR sub-types
 function trType(type){
-  if(!G.pending)return;G.pending.tp=type;vib(40);
+  if(!G.pending)return;
+  G.pending.tp=type;vib(40);
   if(type==="ace")commitAction(G.ourServer);
   else showPlayerSelect(1,type);
 }
 function trError(isMiss){
-  if(!G.pending)return;G.pending.tp=isMiss?"svc_miss":"error";vib(40);
+  if(!G.pending)return;
+  G.pending.tp=isMiss?"svc_miss":"error";vib(40);
   commitAction(G.ourServer);
 }
-
 function showPlayerSelect(v,type){
-  var lp=getLP(),rp=getRP(),label=ACT_LBL[v]||"+1",color=ACT_COL[v]||"#00C853";
+  var lp=getLP(),rp=getRP();
+  var label=ACT_LBL[v]||"+1";
+  var color=ACT_COL[v]||"#00C853";
   var iso=G.pending&&G.pending.phase==="so";
+
   $("ps-tag").style.color=iso?SO.frame:TR.frame;
   $("ps-tag").textContent=type?type.replace("_"," "):"Player";
-  $("ps-left").style.background=hexDk(PL[lp].color,0.25);$("ps-right").style.background=hexDk(PL[rp].color,0.25);
-  $("ps-left-name").textContent=PL[lp].name;$("ps-left-name").style.color=PL[lp].color;
-  $("ps-right-name").textContent=PL[rp].name;$("ps-right-name").style.color=PL[rp].color;
-  $("ps-left-action").textContent=label;$("ps-left-action").style.color=color;
-  $("ps-right-action").textContent=label;$("ps-right-action").style.color=color;
+  $("ps-left").style.background=hexDk(PL[lp].color,0.25);
+  $("ps-right").style.background=hexDk(PL[rp].color,0.25);
+  $("ps-left-name").textContent=PL[lp].name;
+  $("ps-left-name").style.color=PL[lp].color;
+  $("ps-right-name").textContent=PL[rp].name;
+  $("ps-right-name").style.color=PL[rp].color;
+  $("ps-left-action").textContent=label;
+  $("ps-left-action").style.color=color;
+  $("ps-right-action").textContent=label;
+  $("ps-right-action").style.color=color;
   show("player-select");
 }
 function selectPlayer(side){
   var pi=side==="left"?getLP():getRP();
   if(!G.pending)return;
-  // For SO +1 or 0: save player, then show sub-type
   if(G.pending.phase==="so"&&(G.pending.v===1||G.pending.v===0)){
     G.pending.pi=pi;vib(40);
-    $("so-type-tag").textContent="Side-out "+ACT_LBL[G.pending.v];
-    // Hide block out for 0 (not relevant), show for +1
+    $("so-type-tag").textContent="Sideout "+ACT_LBL[G.pending.v];
     $("so-blockout-btn").style.display=G.pending.v===0?"none":"flex";
     show("so-type-screen");
-  } else {
+  }else{
     commitAction(pi);
   }
 }
-
 function commitAction(pi){
-  var p=G.pending;if(!p)return;var ph=p.phase==="so"?"so":"tr";
+  var p=G.pending;if(!p)return;
+  var ph=p.phase==="so"?"so":"tr";
   G.act[pi][ph].push({v:p.v,t:Date.now(),e:Date.now()-G.t0,server:G.phase==="tr"?G.ourServer:-1,tp:p.tp||null});
   G.hist.push({ph:p.phase,pi:pi,v:p.v,sc:null,srv:G.ourServer,nxt:G.ourNextServer,tsrv:G.theirServer,tnxt:G.theirNextServer,tp:p.tp||null});
   G.pending=null;vib(40);
@@ -313,26 +594,79 @@ function commitAction(pi){
   else if(p.v===-1){G.hist[G.hist.length-1].sc="them";show("game-screen");awardPoint("them")}
   else{show("resolve-screen")}
 }
-function resolvePoint(w){var l=G.hist[G.hist.length-1];if(l)l.sc=w;vib(50);show("game-screen");awardPoint(w)}
-function awardPoint(to){if(to==="us")G.sU++;else G.sT++;if(!checkSetEnd()){serveChange(to==="us"?"tr":"so");upd()}}
-function checkSetEnd(){var t=G.target,uW=G.sU>=t&&(G.sU-G.sT)>=2,tW=G.sT>=t&&(G.sT-G.sU)>=2;if(!uW&&!tW)return false;var w=uW?"us":"them";G.sets.push({setNum:G.setNum,sU:G.sU,sT:G.sT,winner:w,act:[{so:G.act[0].so.slice(),tr:G.act[0].tr.slice()},{so:G.act[1].so.slice(),tr:G.act[1].tr.slice()}]});if(w==="us")G.setsU++;else G.setsT++;if(G.setsU>=2||G.setsT>=2){G.matchOver=true;showMatchOver()}else showSetComplete();return true}
-function undoLast(){if(!G.hist.length)return;var l=G.hist.pop();var pa=G.act[l.pi][l.ph==="so"?"so":"tr"];if(pa.length)pa.pop();if(l.sc==="us"&&G.sU>0)G.sU--;if(l.sc==="them"&&G.sT>0)G.sT--;G.phase=l.ph;G.ourServer=l.srv;G.ourNextServer=l.nxt;G.theirServer=l.tsrv;G.theirNextServer=l.tnxt;vib(20);show("game-screen");upd()}
-function showSetComplete(){$("set-result-label").textContent="Set "+G.setNum+" complete";$("set-result-score").textContent=G.sU+" : "+G.sT;$("set-result-sets").textContent="Sets: "+G.setsU+" - "+G.setsT;var d=(G.setsU===1&&G.setsT===1);$("set-next-btn").textContent=d?"Deciding set":"Next set";$("set-next-btn").style.background=d?"#FF9100":"#448AFF";show("set-screen");vib([50,30,50,30,50])}
-function showMatchOver(){var w=G.setsU>=2;$("match-winner").textContent=w?"We win!":"They win";$("match-winner").style.color=w?"#00C853":"#FF1744";$("match-sets").textContent=G.setsU+" - "+G.setsT;$("match-scores").textContent=G.sets.map(function(s){return s.sU+"-"+s.sT}).join(" | ");show("match-screen");vib(w?[50,30,50,30,100]:[100,50,100])}
-function startNextSet(){G.setNum++;G.sU=0;G.sT=0;G.target=(G.setNum===3)?15:21;G.act=[{so:[],tr:[]},{so:[],tr:[]}];G.hist=[];show("start-screen")}
+function resolvePoint(w){
+  var l=G.hist[G.hist.length-1];if(l)l.sc=w;
+  vib(50);show("game-screen");awardPoint(w);
+}
+function awardPoint(to){
+  if(to==="us")G.sU++;else G.sT++;
+  if(!checkSetEnd()){serveChange(to==="us"?"tr":"so");upd()}
+}
+function checkSetEnd(){
+  var t=G.target;
+  var uW=G.sU>=t&&(G.sU-G.sT)>=2;
+  var tW=G.sT>=t&&(G.sT-G.sU)>=2;
+  if(!uW&&!tW)return false;
+  var w=uW?"us":"them";
+  G.sets.push({setNum:G.setNum,sU:G.sU,sT:G.sT,winner:w,act:[{so:G.act[0].so.slice(),tr:G.act[0].tr.slice()},{so:G.act[1].so.slice(),tr:G.act[1].tr.slice()}]});
+  if(w==="us")G.setsU++;else G.setsT++;
+  if(G.setsU>=2||G.setsT>=2){G.matchOver=true;showMatchOver()}
+  else showSetComplete();
+  return true;
+}
+function undoLast(){
+  if(!G.hist.length)return;
+  var l=G.hist.pop();
+  var pa=G.act[l.pi][l.ph==="so"?"so":"tr"];
+  if(pa.length)pa.pop();
+  if(l.sc==="us"&&G.sU>0)G.sU--;
+  if(l.sc==="them"&&G.sT>0)G.sT--;
+  G.phase=l.ph;G.ourServer=l.srv;G.ourNextServer=l.nxt;
+  G.theirServer=l.tsrv;G.theirNextServer=l.tnxt;
+  vib(20);show("game-screen");upd();
+}
+function showSetComplete(){
+  $("set-result-label").textContent="Set "+G.setNum+" complete";
+  $("set-result-score").textContent=G.sU+" : "+G.sT;
+  $("set-result-sets").textContent="Sets: "+G.setsU+" - "+G.setsT;
+  var d=(G.setsU===1&&G.setsT===1);
+  $("set-next-btn").textContent=d?"Deciding set":"Next set";
+  $("set-next-btn").style.background=d?"#FF9100":"#448AFF";
+  show("set-screen");vib([50,30,50,30,50]);
+}
+function showMatchOver(){
+  var w=G.setsU>=2;
+  $("match-winner").textContent=w?"We win!":"They win";
+  $("match-winner").style.color=w?"#00C853":"#FF1744";
+  $("match-sets").textContent=G.setsU+" - "+G.setsT;
+  $("match-scores").textContent=G.sets.map(function(s){return s.sU+"-"+s.sT}).join(" | ");
+  show("match-screen");vib(w?[50,30,50,30,100]:[100,50,100]);
+}
+function startNextSet(){
+  G.setNum++;G.sU=0;G.sT=0;
+  G.target=(G.setNum===3)?15:21;
+  G.act=[{so:[],tr:[]},{so:[],tr:[]}];
+  G.hist=[];
+  show("start-screen");
+}
 
-// ═══ STATS ═══
+/* ═══════════════════════════════════
+   STATS VIEW
+   ═══════════════════════════════════ */
 function showStats(){
-  $("confirm-view").classList.remove("active");var c=$("stats-content");c.innerHTML="";
+  $("confirm-view").classList.remove("active");
+  var c=$("stats-content");c.innerHTML="";
   var lbl=G.matchOver?"Final":"Set "+G.setNum+" (to "+G.target+")";
   c.innerHTML+='<div class="score-block"><div class="score-block-label">'+lbl+'</div><div class="score-block-val">'+G.sU+' : '+G.sT+'</div><div class="score-block-label">Sets: '+G.setsU+' - '+G.setsT+'</div></div>';
-  for(var si=0;si<G.sets.length;si++){var st=G.sets[si];c.innerHTML+='<div class="set-history-row"><span style="color:#666">Set '+st.setNum+'</span><span style="color:'+(st.winner==="us"?"#448AFF":"#FF9100")+'">'+st.sU+' : '+st.sT+'</span></div>'}
-  for(var i=0;i<2;i++){var p=PL[i],a=ga(i);
+  for(var si=0;si<G.sets.length;si++){
+    var st=G.sets[si];
+    c.innerHTML+='<div class="set-history-row"><span style="color:#666">Set '+st.setNum+'</span><span style="color:'+(st.winner==="us"?"#448AFF":"#FF9100")+'">'+st.sU+' : '+st.sT+'</span></div>';
+  }
+  for(var i=0;i<2;i++){
+    var p=PL[i],a=ga(i);
     c.innerHTML+='<div class="p-header" style="color:'+p.color+'">'+p.name+' '+ef(a)+' <span style="color:#555">('+a.total+')</span></div>';
-    // SO
     var sod=[];if(a.so.spikes)sod.push("spk:"+a.so.spikes);if(a.so.shots)sod.push("sht:"+a.so.shots);if(a.so.blockOuts)sod.push("bko:"+a.so.blockOuts);if(a.so.secondBalls)sod.push("2nd:"+a.so.secondBalls);
     c.innerHTML+='<div class="player-stat-block" style="border-left:3px solid '+SO.frame+'"><div class="player-stat-row"><span class="player-stat-name" style="color:'+SO.frame+'">SO</span><span class="player-stat-eff">'+ef(a.so)+'</span></div><div class="player-stat-counts"><span style="color:#00C853">'+a.so.plus+'</span><span style="color:#555"> / </span><span style="color:#FFB300">'+a.so.zero+'</span><span style="color:#555"> / </span><span style="color:#FF1744">'+a.so.minus+'</span></div>'+(sod.length?'<div class="tr-detail">'+sod.join(' ')+'</div>':'')+'</div>';
-    // TR
     var trd=[];if(a.tr.blocks)trd.push("blk:"+a.tr.blocks);if(a.tr.defense)trd.push("def:"+a.tr.defense);if(a.tr.aces)trd.push("ace:"+a.tr.aces);
     var trd2=[];if(a.tr.svcMiss)trd2.push("svc miss:"+a.tr.svcMiss);
     c.innerHTML+='<div class="player-stat-block" style="border-left:3px solid '+TR.frame+'"><div class="player-stat-row"><span class="player-stat-name" style="color:'+TR.frame+'">TR</span><span class="player-stat-eff">'+ef(a.tr)+'</span></div><div class="player-stat-counts"><span style="color:#00C853">'+a.tr.plus+'</span><span style="color:#555"> / </span><span style="color:#FF1744">'+a.tr.minus+'</span></div>'+(trd.length?'<div class="tr-detail">'+trd.join(' ')+'</div>':'')+(trd2.length?'<div class="tr-detail" style="color:#FF5252">'+trd2.join(' ')+'</div>':'')+'</div>';
@@ -342,22 +676,41 @@ function showStats(){
 function hideStats(){$("stats-view").classList.remove("active")}
 function showSettings(){$("stats-view").classList.remove("active");updLayoutLabel();$("settings-view").classList.add("active")}
 function hideSettings(){$("settings-view").classList.remove("active");showStats()}
+
+/* ═══════════════════════════════════
+   EXPORT
+   ═══════════════════════════════════ */
 function showExport(){$("stats-view").classList.remove("active");$("export-view").classList.add("active")}
 function hideExport(){$("export-view").classList.remove("active");showStats()}
-function buildDataStr(){var d=new Date().toISOString().slice(0,10),l=["BV "+d,"Sets:"+G.setsU+"-"+G.setsT];G.sets.forEach(function(s){l.push("S"+s.setNum+":"+s.sU+"-"+s.sT)});if(!G.matchOver&&(G.sU||G.sT))l.push("S"+G.setNum+":"+G.sU+"-"+G.sT);l.push("");for(var i=0;i<2;i++){var a=ga(i);l.push(PL[i].name+" "+ef(a));l.push(" SO:"+ef(a.so)+" TR:"+ef(a.tr))}return l.join("\n")}
-function buildCSV(){var r=["Set,Player,Phase,Value,Type,Server,Timestamp,Elapsed_ms"];function add(sn,acts){for(var pi=0;pi<2;pi++){["so","tr"].forEach(function(ph){acts[pi][ph].forEach(function(a){r.push(sn+","+PL[pi].name+","+(ph==="so"?"sideout":"transition")+","+a.v+","+(a.tp||"")+","+(a.server>=0?PL[a.server].name:"")+","+a.t+","+a.e)})})}}G.sets.forEach(function(s){add(s.setNum,s.act)});add(G.setNum,G.act);r.push("");G.sets.forEach(function(s){r.push("Set"+s.setNum+","+s.sU+","+s.sT+","+s.winner)});if(!G.matchOver)r.push("Set"+G.setNum+","+G.sU+","+G.sT+",live");r.push("Sets_Us,"+G.setsU);r.push("Sets_Them,"+G.setsT);return r.join("\n")}
+function buildDataStr(){
+  var d=new Date().toISOString().slice(0,10),l=["BV "+d,"Sets:"+G.setsU+"-"+G.setsT];
+  G.sets.forEach(function(s){l.push("S"+s.setNum+":"+s.sU+"-"+s.sT)});
+  if(!G.matchOver&&(G.sU||G.sT))l.push("S"+G.setNum+":"+G.sU+"-"+G.sT);
+  l.push("");
+  for(var i=0;i<2;i++){var a=ga(i);l.push(PL[i].name+" "+ef(a));l.push(" SO:"+ef(a.so)+" TR:"+ef(a.tr))}
+  return l.join("\n");
+}
+function buildCSV(){
+  var r=["Set,Player,Phase,Value,Type,Server,Timestamp,Elapsed_ms"];
+  function add(sn,acts){for(var pi=0;pi<2;pi++){["so","tr"].forEach(function(ph){acts[pi][ph].forEach(function(a){r.push(sn+","+PL[pi].name+","+(ph==="so"?"sideout":"transition")+","+a.v+","+(a.tp||"")+","+(a.server>=0?PL[a.server].name:"")+","+a.t+","+a.e)})})}}
+  G.sets.forEach(function(s){add(s.setNum,s.act)});add(G.setNum,G.act);
+  r.push("");G.sets.forEach(function(s){r.push("Set"+s.setNum+","+s.sU+","+s.sT+","+s.winner)});
+  if(!G.matchOver)r.push("Set"+G.setNum+","+G.sU+","+G.sT+",live");
+  r.push("Sets_Us,"+G.setsU);r.push("Sets_Them,"+G.setsT);
+  return r.join("\n");
+}
 function showQR(){$("export-view").classList.remove("active");var d=buildDataStr(),u="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data="+encodeURIComponent(d);$("qr-display").innerHTML='<img style="border-radius:6px;background:#fff;padding:6px" src="'+u+'" width="160" height="160" onerror="qrFail()">';$("qr-hint").textContent="Scan with phone camera";$("qr-view").classList.add("active")}
 function qrFail(){$("qr-display").innerHTML='<div style="color:#888;font-size:9px;background:#111;padding:6px;border-radius:4px;white-space:pre-wrap;max-height:120px;overflow-y:auto">'+buildDataStr()+'</div>'}
 function hideQR(){$("qr-view").classList.remove("active");showExport()}
 function showSheetsSetup(){$("export-view").classList.remove("active");var sc=$("sheets-content");if(sheetsUrl){sc.innerHTML='<div style="font-size:10px;color:#66BB6A;margin-bottom:8px;text-align:center">Connected</div><button class="export-btn" style="background:#0a3a1a;color:#66BB6A;padding:12px" onclick="sendToSheets()">Send</button><div class="sheets-status" id="sheets-status"></div><div style="margin-top:8px"><button class="stats-btn" style="font-size:8px" onclick="editSheetsUrl()">Change URL</button></div>'}else{sc.innerHTML='<div style="font-size:9px;color:#888;text-align:center;margin-bottom:8px;line-height:1.4">Paste Apps Script URL</div><input class="sheets-input" id="sheets-url-input" type="url" placeholder="https://script.google.com/..."><button class="export-btn" style="background:#0a3a1a;color:#66BB6A;padding:10px;font-size:10px" onclick="saveSheetsUrl()">Save & send</button><div class="sheets-status" id="sheets-status"></div>'};$("sheets-view").classList.add("active")}
-function editSheetsUrl(){sheetsUrl="";try{localStorage.removeItem("bv_sheets_url")}catch(e){}showSheetsSetup()}
-function saveSheetsUrl(){var u=($("sheets-url-input")||{}).value||"";if(!u)return;sheetsUrl=u;try{localStorage.setItem("bv_sheets_url",u)}catch(e){}sendToSheets()}
+function editSheetsUrl(){sheetsUrl="";showSheetsSetup()}
+function saveSheetsUrl(){var u=($("sheets-url-input")||{}).value||"";if(!u)return;sheetsUrl=u;sendToSheets()}
 function sendToSheets(){var st=$("sheets-status");st.innerHTML='<span style="color:#FFB300">Sending...</span>';var p={date:new Date().toISOString(),setsUs:G.setsU,setsThem:G.setsT,matchOver:G.matchOver,setScores:[],players:[]};G.sets.forEach(function(s){p.setScores.push({set:s.setNum,us:s.sU,them:s.sT,winner:s.winner})});if(!G.matchOver)p.setScores.push({set:G.setNum,us:G.sU,them:G.sT,winner:"live"});for(var i=0;i<2;i++){var a=ga(i);p.players.push({name:PL[i].name,eff:Math.round(a.eff*10)/10,so_eff:Math.round(a.so.eff*10)/10,so_p:a.so.plus,so_z:a.so.zero,so_m:a.so.minus,so_spikes:a.so.spikes,so_shots:a.so.shots,so_blockOuts:a.so.blockOuts,so_secondBalls:a.so.secondBalls,tr_eff:Math.round(a.tr.eff*10)/10,tr_p:a.tr.plus,tr_m:a.tr.minus,tr_blocks:a.tr.blocks,tr_defense:a.tr.defense,tr_aces:a.tr.aces,tr_svcMiss:a.tr.svcMiss})}fetch(sheetsUrl,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(p)}).then(function(){st.innerHTML='<span style="color:#66BB6A">Sent!</span>';vib(50)}).catch(function(){st.innerHTML='<span style="color:#FF1744">Failed</span>'})}
 function hideSheets(){$("sheets-view").classList.remove("active");showExport()}
 function downloadCSV(){var c=buildCSV(),b=new Blob([c],{type:"text/csv"}),u=URL.createObjectURL(b),l=document.createElement("a");l.href=u;l.download="bv_"+new Date().toISOString().slice(0,10)+".csv";l.click();URL.revokeObjectURL(u)}
 function showConfirm(){$("stats-view").classList.remove("active");$("confirm-sub").textContent="All data will be cleared";$("confirm-view").classList.add("active")}
 function hideConfirm(){$("confirm-view").classList.remove("active");showStats()}
-function resetAll(){G=freshState();$("confirm-view").classList.remove("active");$("stats-view").classList.remove("active");$("export-view").classList.remove("active");$("settings-view").classList.remove("active");show("start-screen")}
+function resetAll(){G=freshState();document.querySelectorAll(".overlay").forEach(function(o){o.classList.remove("active")});show("start-screen")}
 </script>
 </body>
 </html>
