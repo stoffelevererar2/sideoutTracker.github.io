@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>BV Tracker</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;user-select:none;-webkit-user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  .screen{position:fixed;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column}.screen.active{display:flex}
+  /* START */
+  #start-screen{background:#000;align-items:center;justify-content:center;gap:14px}
+  .start-title{font-size:11px;font-weight:700;color:#555;letter-spacing:2px}
+  .start-q{font-size:15px;font-weight:900;color:#fff;letter-spacing:1px;text-align:center;line-height:1.3}
+  .start-btns{display:flex;gap:12px}
+  .start-btn{padding:14px 26px;border:none;border-radius:8px;font-size:13px;font-weight:900;letter-spacing:2px;cursor:pointer;font-family:inherit;color:#000}
+  .start-btn-us{background:#448AFF}.start-btn-them{background:#FF9100}
+  /* MODE BAR */
+  .mode-bar{height:28px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;letter-spacing:2px;flex-shrink:0;position:relative}
+  .mode-bar .score-display{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:900;color:rgba(255,255,255,0.9);font-variant-numeric:tabular-nums}
+  .mode-bar .score-sep{color:rgba(255,255,255,0.3);margin:0 2px;font-size:10px}
+  /* ZONES */
+  .zones{flex:1;display:flex;flex-direction:column;gap:1px;padding:0 0 34px 0}
+  .zone{flex:1;border:none;cursor:pointer;outline:none;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:background 0.15s ease;-webkit-tap-highlight-color:transparent}
+  .zone-label{font-size:clamp(24px,8vw,48px);font-weight:900;color:rgba(255,255,255,0.9);text-shadow:0 1px 4px rgba(0,0,0,0.5);pointer-events:none;line-height:1}
+  .zone-sub{font-size:clamp(8px,2vw,11px);font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;pointer-events:none;margin-top:1px}
+  /* CENTER */
+  .center-info{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);z-index:20;text-align:center;cursor:pointer;padding:3px 10px;border-radius:8px;background:rgba(0,0,0,0.7)}
+  .player-tag{display:inline-block;padding:1px 8px;border-radius:6px;font-size:10px;font-weight:900;color:#000;letter-spacing:1px}
+  .eff-text{font-size:16px;font-weight:900;color:#fff;line-height:1.1;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+  .count-text{font-size:8px;font-weight:600;color:rgba(255,255,255,0.3)}
+  /* CONTROLS */
+  .controls{position:absolute;bottom:5px;left:50%;transform:translateX(-50%);display:flex;gap:12px;z-index:30}
+  .ctrl-btn{background:rgba(255,255,255,0.08);border:none;color:#888;font-size:12px;width:26px;height:26px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  /* RESOLVE */
+  #resolve-screen{background:#000;align-items:center;justify-content:center}
+  .resolve-label{font-size:9px;font-weight:700;color:#555;letter-spacing:2px;margin-bottom:4px}
+  .resolve-q{font-size:15px;font-weight:900;color:#fff;margin-bottom:16px}
+  .resolve-btns{display:flex;gap:10px;width:82%}
+  .resolve-btn{flex:1;padding:20px 0;border:none;border-radius:8px;font-size:15px;font-weight:900;letter-spacing:2px;cursor:pointer;font-family:inherit;color:#fff}
+  .resolve-us{background:#0a4a2a}.resolve-them{background:#4a0a15}
+  /* OVERLAYS */
+  .overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;display:none;flex-direction:column;align-items:center;justify-content:flex-start;padding:10px;padding-top:12px;z-index:50;overflow-y:auto}
+  .overlay.active{display:flex}
+  .stats-title{font-size:10px;font-weight:700;color:#555;letter-spacing:2px;margin-bottom:6px}
+  .score-block{width:100%;max-width:200px;padding:6px;margin-bottom:6px;background:#111;border-radius:5px;text-align:center}
+  .score-block-val{font-size:20px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums}
+  .score-block-label{font-size:8px;color:#555;font-weight:700;letter-spacing:1px}
+  .player-stat-block{width:100%;max-width:200px;padding:5px 8px;margin-bottom:3px;background:#111;border-radius:4px}
+  .player-stat-row{display:flex;justify-content:space-between;align-items:center}
+  .player-stat-name{font-size:10px;font-weight:900;letter-spacing:1px}
+  .player-stat-eff{font-size:15px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums}
+  .player-stat-counts{font-size:10px;font-weight:700;margin-top:1px;font-variant-numeric:tabular-nums}
+  .p-header{font-size:9px;font-weight:700;letter-spacing:1px;margin:5px 0 3px;width:100%;max-width:200px}
+  .stats-btn-row{display:flex;gap:5px;margin-top:5px;width:100%;max-width:200px}
+  .stats-btn{flex:1;padding:8px 4px;background:#222;color:#aaa;border:none;border-radius:5px;font-size:9px;font-weight:700;letter-spacing:1px;cursor:pointer;font-family:inherit}
+  /* EXPORT */
+  .export-title{font-size:10px;font-weight:700;color:#555;letter-spacing:2px;margin-bottom:10px}
+  .export-btn{width:100%;max-width:200px;padding:14px;margin-bottom:8px;border:none;border-radius:8px;font-size:12px;font-weight:800;letter-spacing:1.5px;cursor:pointer;font-family:inherit;text-align:center}
+  /* QR */
+  .qr-container{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:8px}
+  .qr-img{border-radius:6px;background:#fff;padding:6px}
+  .qr-hint{font-size:9px;color:#555;text-align:center;max-width:180px;line-height:1.4}
+  /* SHEETS SETUP */
+  .sheets-input{width:100%;max-width:200px;padding:10px;background:#111;border:1px solid #333;border-radius:6px;color:#fff;font-size:11px;font-family:inherit;margin-bottom:8px;text-align:center}
+  .sheets-input::placeholder{color:#444}
+  .sheets-status{font-size:10px;margin-top:6px;font-weight:600;text-align:center}
+  /* CONFIRM */
+  .confirm-text{font-size:18px;font-weight:900;color:#fff;letter-spacing:2px;margin-top:20px}
+  .confirm-sub{font-size:11px;color:#666;margin-top:6px}
+  .confirm-btns{display:flex;gap:10px;margin-top:14px}
+  .confirm-btn{padding:12px 20px;border:none;border-radius:6px;color:#fff;font-size:12px;font-weight:800;letter-spacing:1px;cursor:pointer;font-family:inherit}
+</style>
+</head>
+<body>
+
+<!-- START -->
+<div class="screen active" id="start-screen">
+  <div class="start-title">BV TRACKER</div>
+  <div class="start-q">WHO SERVES<br>FIRST?</div>
+  <div class="start-btns">
+    <button class="start-btn start-btn-us" onclick="startGame('us')">US</button>
+    <button class="start-btn start-btn-them" onclick="startGame('them')">THEM</button>
+  </div>
+</div>
+
+<!-- GAME -->
+<div class="screen" id="game-screen">
+  <div class="mode-bar" id="mode-bar">
+    <span id="mode-label">SIDE-OUT</span>
+    <div class="score-display"><span id="g-score-us">0</span><span class="score-sep">:</span><span id="g-score-them">0</span></div>
+  </div>
+  <div class="zones">
+    <button class="zone" id="g-zone-top" onclick="logAction(1)"><span class="zone-label">+1</span><span class="zone-sub">POINT</span></button>
+    <button class="zone" id="g-zone-mid" onclick="logAction(0)"><span class="zone-label">0</span><span class="zone-sub">NEUTRAL</span></button>
+    <button class="zone" id="g-zone-bot" onclick="logAction(-1)"><span class="zone-label">−1</span><span class="zone-sub">ERROR</span></button>
+  </div>
+  <div class="center-info" onclick="switchPlayer()">
+    <div class="player-tag" id="g-player-tag">P1</div>
+    <div class="eff-text" id="g-eff">—</div>
+    <div class="count-text" id="g-count">0</div>
+  </div>
+  <div class="controls">
+    <button class="ctrl-btn" id="g-undo" onclick="undoLast()">↩</button>
+    <button class="ctrl-btn" onclick="showStats()">☰</button>
+  </div>
+</div>
+
+<!-- RESOLVE -->
+<div class="screen" id="resolve-screen">
+  <div class="resolve-label" id="resolve-mode-label">SIDE-OUT</div>
+  <div class="resolve-q">WHO WON?</div>
+  <div class="resolve-btns">
+    <button class="resolve-btn resolve-us" onclick="resolvePoint('us')">US</button>
+    <button class="resolve-btn resolve-them" onclick="resolvePoint('them')">THEM</button>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="overlay" id="stats-view">
+  <div class="stats-title">MATCH STATS</div>
+  <div id="stats-content"></div>
+  <div class="stats-btn-row"><button class="stats-btn" onclick="hideStats()">▶ BACK</button></div>
+  <div class="stats-btn-row">
+    <button class="stats-btn" style="background:#0d2a4a;color:#64B5F6" onclick="showExport()">EXPORT</button>
+    <button class="stats-btn" style="background:#3a1a1a;color:#FF1744" onclick="showConfirm()">RESET</button>
+  </div>
+</div>
+
+<!-- EXPORT OPTIONS -->
+<div class="overlay" id="export-view">
+  <div class="export-title">EXPORT DATA</div>
+  <button class="export-btn" style="background:#1a1a3a;color:#7C8EFF" onclick="showQR()">📱 QR CODE<br><span style="font-size:8px;color:#555;letter-spacing:0.5px">Scan with phone</span></button>
+  <button class="export-btn" style="background:#0a3a1a;color:#66BB6A" onclick="showSheetsSetup()">📊 GOOGLE SHEETS<br><span style="font-size:8px;color:#555;letter-spacing:0.5px">Send to spreadsheet</span></button>
+  <button class="export-btn" style="background:#1a1a1a;color:#888" onclick="downloadCSV()">💾 DOWNLOAD CSV<br><span style="font-size:8px;color:#444;letter-spacing:0.5px">If on phone/computer</span></button>
+  <div class="stats-btn-row" style="margin-top:4px">
+    <button class="stats-btn" onclick="hideExport()">▶ BACK</button>
+  </div>
+</div>
+
+<!-- QR CODE -->
+<div class="overlay" id="qr-view">
+  <div class="qr-container">
+    <div class="stats-title">SCAN WITH PHONE</div>
+    <div id="qr-display"></div>
+    <div class="qr-hint" id="qr-hint">Open your phone camera and point at the code</div>
+  </div>
+  <div class="stats-btn-row" style="flex-shrink:0;padding-bottom:8px">
+    <button class="stats-btn" onclick="hideQR()">▶ BACK</button>
+  </div>
+</div>
+
+<!-- GOOGLE SHEETS SETUP -->
+<div class="overlay" id="sheets-view">
+  <div class="stats-title" style="margin-top:10px">GOOGLE SHEETS</div>
+  <div id="sheets-content"></div>
+  <div class="stats-btn-row" style="margin-top:8px">
+    <button class="stats-btn" onclick="hideSheets()">▶ BACK</button>
+  </div>
+</div>
+
+<!-- CONFIRM RESET -->
+<div class="overlay" id="confirm-view">
+  <div class="confirm-text">RESET?</div>
+  <div class="confirm-sub" id="confirm-sub"></div>
+  <div class="confirm-btns">
+    <button class="confirm-btn" style="background:#FF1744" onclick="resetAll()">YES</button>
+    <button class="confirm-btn" style="background:#444" onclick="hideConfirm()">NO</button>
+  </div>
+</div>
+
+<script>
+// ═══ STATE ═══
+var PL=[{name:"P1",color:"#448AFF"},{name:"P2",color:"#FF9100"}];
+var S={phase:"start",cp:0,sU:0,sT:0,set:1,act:[{so:[],tr:[]},{so:[],tr:[]}],resFrom:null,t0:Date.now(),hist:[]};
+var fT=null;
+var SO={bar:"#0d3b6e",bt:"#64B5F6",top:{n:"#014d1e",f:"#00C853"},mid:{n:"#4d3800",f:"#FFB300"},bot:{n:"#4d0a15",f:"#FF1744"}};
+var TR={bar:"#5c2a00",bt:"#FFB74D",top:{n:"#014d1e",f:"#00C853"},mid:{n:"#4d3800",f:"#FFB300"},bot:{n:"#4d0a15",f:"#FF1744"}};
+var sheetsUrl="";
+try{sheetsUrl=localStorage.getItem("bv_sheets_url")||""}catch(e){}
+
+function $(id){return document.getElementById(id)}
+function vib(ms){try{if(navigator.vibrate)navigator.vibrate(ms)}catch(e){}}
+function show(id){var s=document.querySelectorAll(".screen");for(var i=0;i<s.length;i++)s[i].classList.remove("active");$(id).classList.add("active")}
+
+function gs(pi,ph){var a=S.act[pi][ph],t=a.length;if(!t)return{total:0,plus:0,zero:0,minus:0,eff:0};var p=0,z=0,m=0,sm=0;for(var i=0;i<t;i++){if(a[i].v===1)p++;else if(a[i].v===0)z++;else m++;sm+=a[i].v}return{total:t,plus:p,zero:z,minus:m,eff:(sm/t)*100}}
+function ga(pi){var so=gs(pi,"so"),tr=gs(pi,"tr"),t=so.total+tr.total,sm=0;S.act[pi].so.forEach(function(a){sm+=a.v});S.act[pi].tr.forEach(function(a){sm+=a.v});return{total:t,eff:t?((sm/t)*100):0,so:so,tr:tr}}
+
+// ═══ GAME ═══
+function startGame(w){S.phase=(w==="them")?"so":"tr";show("game-screen");upd();vib(50)}
+function upd(){
+  var iso=S.phase==="so",c=iso?SO:TR,p=PL[S.cp];
+  $("mode-bar").style.background=c.bar;$("mode-label").textContent=iso?"SIDE-OUT":"TRANSITION";$("mode-label").style.color=c.bt;
+  $("g-score-us").textContent=S.sU;$("g-score-them").textContent=S.sT;
+  $("g-zone-top").style.background=c.top.n;$("g-zone-mid").style.background=c.mid.n;$("g-zone-bot").style.background=c.bot.n;
+  $("g-player-tag").textContent=p.name;$("g-player-tag").style.background=p.color;
+  var s=gs(S.cp,S.phase);$("g-eff").textContent=s.total?((s.eff>=0?"+":"")+Math.round(s.eff)+"%"):"—";
+  $("g-count").textContent=s.total+" "+(iso?"SO":"TR");$("g-undo").style.opacity=S.hist.length?"0.7":"0.2";
+}
+function logAction(v){
+  var ph=S.phase,pi=S.cp;S.act[pi][ph].push({v:v,t:Date.now(),e:Date.now()-S.t0});
+  var zid=v===1?"g-zone-top":v===0?"g-zone-mid":"g-zone-bot",ck=v===1?"top":v===0?"mid":"bot",c=ph==="so"?SO:TR;
+  $(zid).style.background=c[ck].f;clearTimeout(fT);fT=setTimeout(function(){$(zid).style.background=c[ck].n},250);
+  vib(v===1?50:v===-1?[50,30,50]:30);
+  if(v===1){S.sU++;S.hist.push({ph:ph,pi:pi,v:v,sc:"us"});S.phase="tr";upd()}
+  else if(v===-1){S.sT++;S.hist.push({ph:ph,pi:pi,v:v,sc:"them"});S.phase="so";upd()}
+  else{S.hist.push({ph:ph,pi:pi,v:v,sc:null});S.resFrom=ph;$("resolve-mode-label").textContent=ph==="so"?"SIDE-OUT":"TRANSITION";$("resolve-mode-label").style.color=ph==="so"?SO.bt:TR.bt;show("resolve-screen")}
+}
+function resolvePoint(w){
+  if(w==="us"){S.sU++;S.phase="tr"}else{S.sT++;S.phase="so"}
+  var l=S.hist[S.hist.length-1];if(l)l.sc=w;vib(50);show("game-screen");upd();
+}
+function switchPlayer(){S.cp=S.cp?0:1;vib([30,20,30]);upd()}
+function undoLast(){
+  if(!S.hist.length)return;var l=S.hist.pop();var pa=S.act[l.pi][l.ph];if(pa.length)pa.pop();
+  if(l.sc==="us"&&S.sU>0)S.sU--;if(l.sc==="them"&&S.sT>0)S.sT--;
+  S.phase=l.ph;S.cp=l.pi;vib(20);show("game-screen");upd();
+}
+
+// ═══ STATS ═══
+function eff(s){return s.total?((s.eff>=0?"+":"")+Math.round(s.eff)+"%"):"—"}
+function showStats(){
+  $("confirm-view").classList.remove("active");
+  var c=$("stats-content");c.innerHTML='<div class="score-block"><div class="score-block-label">SET '+S.set+'</div><div class="score-block-val">'+S.sU+' : '+S.sT+'</div></div>';
+  for(var i=0;i<2;i++){var p=PL[i],a=ga(i);
+    c.innerHTML+='<div class="p-header" style="color:'+p.color+'">'+p.name+' '+eff(a)+' <span style="color:#555">('+a.total+')</span></div>';
+    c.innerHTML+='<div class="player-stat-block" style="border-left:3px solid '+SO.bt+'"><div class="player-stat-row"><span class="player-stat-name" style="color:'+SO.bt+'">SO</span><span class="player-stat-eff">'+eff(a.so)+'</span></div><div class="player-stat-counts"><span style="color:#00C853">'+a.so.plus+'</span><span style="color:#555"> / </span><span style="color:#FFB300">'+a.so.zero+'</span><span style="color:#555"> / </span><span style="color:#FF1744">'+a.so.minus+'</span><span style="color:#555;margin-left:4px;font-size:9px">('+a.so.total+')</span></div></div>';
+    c.innerHTML+='<div class="player-stat-block" style="border-left:3px solid '+TR.bt+'"><div class="player-stat-row"><span class="player-stat-name" style="color:'+TR.bt+'">TR</span><span class="player-stat-eff">'+eff(a.tr)+'</span></div><div class="player-stat-counts"><span style="color:#00C853">'+a.tr.plus+'</span><span style="color:#555"> / </span><span style="color:#FFB300">'+a.tr.zero+'</span><span style="color:#555"> / </span><span style="color:#FF1744">'+a.tr.minus+'</span><span style="color:#555;margin-left:4px;font-size:9px">('+a.tr.total+')</span></div></div>';
+  }
+  $("stats-view").classList.add("active");
+}
+function hideStats(){$("stats-view").classList.remove("active")}
+
+// ═══ EXPORT ═══
+function showExport(){$("stats-view").classList.remove("active");$("export-view").classList.add("active")}
+function hideExport(){$("export-view").classList.remove("active");showStats()}
+
+function buildDataStr(){
+  var d=new Date().toISOString().slice(0,10);
+  var lines=["BV Match "+d,"Score: "+S.sU+" - "+S.sT+" (Set "+S.set+")",""];
+  for(var i=0;i<2;i++){var a=ga(i);
+    lines.push(PL[i].name+": Overall "+eff(a)+" ("+a.total+")");
+    lines.push("  SO: "+eff(a.so)+" [+"+a.so.plus+"/0:"+a.so.zero+"/-"+a.so.minus+"]");
+    lines.push("  TR: "+eff(a.tr)+" [+"+a.tr.plus+"/0:"+a.tr.zero+"/-"+a.tr.minus+"]");
+  }
+  return lines.join("\n");
+}
+
+function buildCSV(){
+  var r=["Player,Phase,Value,Timestamp,Elapsed_ms"];
+  for(var pi=0;pi<2;pi++){["so","tr"].forEach(function(ph){S.act[pi][ph].forEach(function(a){r.push(PL[pi].name+","+(ph==="so"?"sideout":"transition")+","+a.v+","+a.t+","+a.e)})})}
+  r.push("");r.push("Score_Us,"+S.sU);r.push("Score_Them,"+S.sT);r.push("Set,"+S.set);
+  return r.join("\n");
+}
+
+// QR CODE
+function showQR(){
+  $("export-view").classList.remove("active");
+  var data=buildDataStr();
+  var qd=$("qr-display");
+  // Use QR Server API (free, no auth)
+  var encoded=encodeURIComponent(data);
+  var url="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data="+encoded;
+  qd.innerHTML='<img class="qr-img" src="'+url+'" width="160" height="160" alt="QR Code" onerror="qrFail()">';
+  $("qr-hint").textContent="Scan with your phone camera";
+  $("qr-view").classList.add("active");
+}
+function qrFail(){
+  $("qr-display").innerHTML='<div style="color:#FF1744;font-size:11px;padding:20px;text-align:center">No internet — QR unavailable.<br><br><div style="color:#888;font-size:9px;text-align:left;background:#111;padding:8px;border-radius:6px;white-space:pre-wrap;max-height:120px;overflow-y:auto">'+buildDataStr()+'</div></div>';
+  $("qr-hint").textContent="Copy these stats manually";
+}
+function hideQR(){$("qr-view").classList.remove("active");showExport()}
+
+// GOOGLE SHEETS
+function showSheetsSetup(){
+  $("export-view").classList.remove("active");
+  var sc=$("sheets-content");
+  if(sheetsUrl){
+    sc.innerHTML='<div style="font-size:10px;color:#66BB6A;margin-bottom:8px;text-align:center">✓ Sheets connected</div>'+
+      '<button class="export-btn" style="background:#0a3a1a;color:#66BB6A;padding:12px" onclick="sendToSheets()">SEND NOW</button>'+
+      '<div class="sheets-status" id="sheets-status"></div>'+
+      '<div style="margin-top:12px"><button class="stats-btn" style="font-size:8px" onclick="editSheetsUrl()">Change URL</button></div>';
+  } else {
+    sc.innerHTML='<div style="font-size:9px;color:#888;text-align:center;margin-bottom:8px;line-height:1.5">'+
+      'Paste your Google Apps Script<br>web app URL below</div>'+
+      '<input class="sheets-input" id="sheets-url-input" type="url" placeholder="https://script.google.com/...">'+
+      '<button class="export-btn" style="background:#0a3a1a;color:#66BB6A;padding:10px;font-size:10px" onclick="saveSheetsUrl()">SAVE & SEND</button>'+
+      '<div class="sheets-status" id="sheets-status"></div>';
+  }
+  $("sheets-view").classList.add("active");
+}
+function editSheetsUrl(){
+  sheetsUrl="";
+  try{localStorage.removeItem("bv_sheets_url")}catch(e){}
+  showSheetsSetup();
+}
+function saveSheetsUrl(){
+  var url=($("sheets-url-input")||{}).value||"";
+  if(!url){$("sheets-status").innerHTML='<span style="color:#FF1744">Enter a URL</span>';return}
+  sheetsUrl=url;
+  try{localStorage.setItem("bv_sheets_url",url)}catch(e){}
+  sendToSheets();
+}
+function sendToSheets(){
+  var st=$("sheets-status");st.innerHTML='<span style="color:#FFB300">Sending...</span>';
+  var payload={
+    date:new Date().toISOString(),
+    scoreUs:S.sU,scoreThem:S.sT,set:S.set,
+    players:[]
+  };
+  for(var i=0;i<2;i++){var a=ga(i);
+    payload.players.push({
+      name:PL[i].name,
+      overall_eff:Math.round(a.eff*10)/10,overall_total:a.total,
+      so_eff:Math.round(a.so.eff*10)/10,so_plus:a.so.plus,so_zero:a.so.zero,so_minus:a.so.minus,so_total:a.so.total,
+      tr_eff:Math.round(a.tr.eff*10)/10,tr_plus:a.tr.plus,tr_zero:a.tr.zero,tr_minus:a.tr.minus,tr_total:a.tr.total
+    });
+  }
+  fetch(sheetsUrl,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(payload)})
+    .then(function(){st.innerHTML='<span style="color:#66BB6A">✓ Sent!</span>';vib(50)})
+    .catch(function(e){st.innerHTML='<span style="color:#FF1744">Failed: '+e.message+'</span>'});
+}
+function hideSheets(){$("sheets-view").classList.remove("active");showExport()}
+
+// CSV DOWNLOAD
+function downloadCSV(){
+  var csv=buildCSV();
+  var blob=new Blob([csv],{type:"text/csv"});var url=URL.createObjectURL(blob);
+  var l=document.createElement("a");l.href=url;l.download="bv_stats_"+new Date().toISOString().slice(0,10)+".csv";l.click();URL.revokeObjectURL(url);
+}
+
+// RESET
+function showConfirm(){
+  $("stats-view").classList.remove("active");
+  var t=S.act[0].so.length+S.act[0].tr.length+S.act[1].so.length+S.act[1].tr.length;
+  $("confirm-sub").textContent=t+" actions will be cleared";$("confirm-view").classList.add("active");
+}
+function hideConfirm(){$("confirm-view").classList.remove("active");showStats()}
+function resetAll(){
+  S={phase:"start",cp:0,sU:0,sT:0,set:1,act:[{so:[],tr:[]},{so:[],tr:[]}],resFrom:null,t0:Date.now(),hist:[]};
+  $("confirm-view").classList.remove("active");$("stats-view").classList.remove("active");show("start-screen");
+}
+</script>
+</body>
+</html>
