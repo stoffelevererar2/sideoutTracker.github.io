@@ -167,37 +167,113 @@
   .overlay{
     position:fixed;top:0;left:0;right:0;bottom:0;background:#000;
     display:none;flex-direction:column;align-items:center;
-    justify-content:flex-start;padding:10px;padding-top:12px;
-    z-index:50;overflow-y:auto;
+    justify-content:flex-start;padding:0;
+    z-index:50;overflow-y:auto;-webkit-overflow-scrolling:touch;
   }
   .overlay.active{display:flex}
-  .stats-title{font-size:10px;font-weight:700;color:#555;margin-bottom:6px}
-  .score-block{width:100%;max-width:220px;padding:6px;margin-bottom:4px;background:#111;border-radius:5px;text-align:center}
-  .score-block-val{font-size:18px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums}
-  .score-block-label{font-size:8px;color:#555;font-weight:700}
-  .player-stat-block{width:100%;max-width:220px;padding:5px 8px;margin-bottom:3px;background:#111;border-radius:4px}
+
+  /* Stats top bar */
+  .stats-top-bar{
+    position:sticky;top:0;z-index:5;width:100%;
+    display:flex;gap:2px;padding:clamp(4px,1.5vw,8px);
+    background:#000;flex-shrink:0;
+  }
+  .stats-bar-btn{
+    flex:1;padding:clamp(6px,2vw,10px) 0;
+    background:#1a1a1a;color:#aaa;border-radius:clamp(4px,1vw,6px);
+    font-size:clamp(9px,2.5vw,12px);font-weight:700;
+    cursor:pointer;text-align:center;
+  }
+
+  /* Stats content area */
+  #stats-content{
+    width:100%;max-width:400px;
+    padding:0 clamp(8px,3vw,16px) clamp(12px,4vw,20px);
+  }
+
+  /* Stats section headers */
+  .st-hdr{
+    font-size:clamp(8px,2vw,10px);font-weight:700;color:#555;
+    letter-spacing:0.5px;text-transform:uppercase;
+    margin:clamp(10px,3vw,16px) 0 clamp(4px,1vw,6px);
+  }
+  .st-hdr:first-child{margin-top:clamp(4px,1vw,6px)}
+
+  /* Score block */
+  .score-block{
+    width:100%;padding:clamp(6px,2vw,10px);margin-bottom:clamp(3px,1vw,6px);
+    background:#111;border-radius:clamp(4px,1vw,6px);text-align:center;
+  }
+  .score-block-val{
+    font-size:clamp(18px,5.5vw,26px);font-weight:900;color:#fff;
+    font-variant-numeric:tabular-nums;
+  }
+  .score-block-label{
+    font-size:clamp(8px,2vw,10px);color:#555;font-weight:700;
+  }
+
+  /* Stat rows */
+  .st-row{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:clamp(4px,1.2vw,7px) clamp(6px,2vw,10px);
+    background:#111;border-radius:clamp(3px,0.8vw,5px);
+    margin-bottom:2px;
+  }
+  .st-row-label{
+    font-size:clamp(9px,2.5vw,12px);font-weight:600;color:#888;
+  }
+  .st-row-val{
+    font-size:clamp(11px,3vw,14px);font-weight:900;color:#fff;
+    font-variant-numeric:tabular-nums;
+  }
+
+  /* Player stat blocks */
+  .player-stat-block{
+    width:100%;padding:clamp(5px,1.5vw,8px) clamp(6px,2vw,10px);
+    margin-bottom:clamp(2px,0.5vw,4px);background:#111;
+    border-radius:clamp(3px,0.8vw,5px);
+  }
   .player-stat-row{display:flex;justify-content:space-between;align-items:center}
-  .player-stat-name{font-size:10px;font-weight:900}
-  .player-stat-eff{font-size:15px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums}
-  .player-stat-counts{font-size:10px;font-weight:700;margin-top:1px;font-variant-numeric:tabular-nums}
-  .p-header{font-size:9px;font-weight:700;margin:5px 0 3px;width:100%;max-width:220px}
-  .tr-detail{font-size:8px;color:#666;margin-top:2px}
-  .set-history-row{width:100%;max-width:220px;padding:4px 8px;background:#111;border-radius:4px;margin-bottom:2px;display:flex;justify-content:space-between;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
-  .stats-btn-row{display:flex;gap:5px;margin-top:5px;width:100%;max-width:220px}
-  .stats-btn{flex:1;padding:8px 4px;background:#222;color:#aaa;border-radius:5px;font-size:9px;font-weight:700;cursor:pointer}
-  .export-btn{width:100%;max-width:220px;padding:12px;margin-bottom:6px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;text-align:center}
+  .player-stat-name{font-size:clamp(9px,2.5vw,12px);font-weight:900}
+  .player-stat-eff{
+    font-size:clamp(13px,4vw,18px);font-weight:900;color:#fff;
+    font-variant-numeric:tabular-nums;
+  }
+  .player-stat-counts{
+    font-size:clamp(9px,2.5vw,12px);font-weight:700;margin-top:1px;
+    font-variant-numeric:tabular-nums;
+  }
+  .p-header{
+    font-size:clamp(10px,2.8vw,13px);font-weight:700;
+    margin:clamp(6px,2vw,10px) 0 clamp(3px,0.8vw,5px);
+  }
+  .tr-detail{font-size:clamp(8px,2vw,10px);color:#666;margin-top:2px}
+
+  /* Set history rows */
+  .set-history-row{
+    width:100%;padding:clamp(4px,1.2vw,7px) clamp(6px,2vw,10px);
+    background:#111;border-radius:clamp(3px,0.8vw,5px);
+    margin-bottom:2px;display:flex;justify-content:space-between;
+    font-size:clamp(10px,3vw,13px);font-weight:700;
+    font-variant-numeric:tabular-nums;
+  }
+
+  .stats-btn-row{display:flex;gap:5px;margin-top:5px;width:100%;max-width:400px;padding:0 clamp(8px,3vw,16px)}
+  .stats-btn{flex:1;padding:clamp(6px,2vw,10px) 4px;background:#222;color:#aaa;border-radius:clamp(4px,1vw,6px);font-size:clamp(9px,2.5vw,12px);font-weight:700;cursor:pointer}
+  .stats-title{font-size:clamp(10px,2.8vw,13px);font-weight:700;color:#555;margin-bottom:8px;margin-top:clamp(10px,3vw,16px)}
+  .export-btn{width:100%;max-width:400px;padding:clamp(10px,3vw,14px);margin-bottom:clamp(4px,1.5vw,8px);border-radius:clamp(6px,2vw,10px);font-size:clamp(11px,3vw,14px);font-weight:800;cursor:pointer;text-align:center}
   .qr-container{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:8px}
-  .qr-hint{font-size:9px;color:#555;text-align:center;max-width:180px;line-height:1.4}
-  .sheets-input{width:100%;max-width:220px;padding:10px;background:#111;border:1px solid #333;border-radius:6px;color:#fff;font-size:11px;font-family:inherit;margin-bottom:8px;text-align:center}
+  .qr-hint{font-size:clamp(9px,2.5vw,11px);color:#555;text-align:center;max-width:240px;line-height:1.4}
+  .sheets-input{width:100%;max-width:300px;padding:clamp(8px,2.5vw,12px);background:#111;border:1px solid #333;border-radius:6px;color:#fff;font-size:clamp(10px,3vw,13px);font-family:inherit;margin-bottom:8px;text-align:center}
   .sheets-input::placeholder{color:#444}
-  .sheets-status{font-size:10px;margin-top:6px;font-weight:600;text-align:center}
-  .confirm-text{font-size:18px;font-weight:900;color:#fff;margin-top:20px}
-  .confirm-sub{font-size:11px;color:#666;margin-top:6px}
-  .confirm-btns{display:flex;gap:10px;margin-top:14px}
-  .confirm-btn{padding:12px 20px;border-radius:6px;color:#fff;font-size:12px;font-weight:800;cursor:pointer}
-  .setting-row{width:100%;max-width:220px;padding:10px;background:#111;border-radius:6px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
-  .setting-label{font-size:10px;font-weight:700;color:#888}
-  .setting-val{font-size:11px;font-weight:900;color:#fff}
+  .sheets-status{font-size:clamp(9px,2.5vw,12px);margin-top:6px;font-weight:600;text-align:center}
+  .confirm-text{font-size:clamp(18px,5vw,24px);font-weight:900;color:#fff;margin-top:clamp(16px,5vw,30px)}
+  .confirm-sub{font-size:clamp(10px,3vw,13px);color:#666;margin-top:6px}
+  .confirm-btns{display:flex;gap:clamp(8px,3vw,14px);margin-top:clamp(12px,4vw,18px)}
+  .confirm-btn{padding:clamp(10px,3vw,14px) clamp(16px,5vw,24px);border-radius:clamp(5px,1.5vw,8px);color:#fff;font-size:clamp(12px,3.5vw,15px);font-weight:800;cursor:pointer}
+  .setting-row{width:100%;max-width:300px;padding:clamp(8px,2.5vw,12px);background:#111;border-radius:clamp(5px,1.5vw,8px);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+  .setting-label{font-size:clamp(10px,2.8vw,13px);font-weight:700;color:#888}
+  .setting-val{font-size:clamp(11px,3vw,14px);font-weight:900;color:#fff}
 </style>
 </head>
 <body>
@@ -328,41 +404,40 @@
 
 <!-- OVERLAYS -->
 <div class="overlay" id="stats-view">
-  <div class="stats-title">Match stats</div>
-  <div id="stats-content"></div>
-  <div class="stats-btn-row"><button class="stats-btn" onclick="hideStats()">Back</button></div>
-  <div class="stats-btn-row">
-    <button class="stats-btn" style="background:#0d2a4a;color:#64B5F6" onclick="showExport()">Export</button>
-    <button class="stats-btn" style="background:#222" onclick="showSettings()">Layout</button>
-    <button class="stats-btn" style="background:#3a1a1a;color:#FF1744" onclick="showConfirm()">Reset</button>
+  <div class="stats-top-bar">
+    <button class="stats-bar-btn" onclick="hideStats()">← Back</button>
+    <button class="stats-bar-btn" style="color:#64B5F6" onclick="showExport()">Export</button>
+    <button class="stats-bar-btn" onclick="showSettings()">Layout</button>
+    <button class="stats-bar-btn" style="color:#FF5252" onclick="showConfirm()">Reset</button>
   </div>
+  <div id="stats-content"></div>
 </div>
-<div class="overlay" id="settings-view">
+<div class="overlay" id="settings-view" style="padding:clamp(8px,3vw,16px)">
   <div class="stats-title">Settings</div>
   <div class="setting-row" onclick="toggleLayout()">
     <span class="setting-label">Player sides</span>
     <span class="setting-val" id="layout-val"></span>
   </div>
-  <div style="font-size:8px;color:#444;text-align:center;margin-top:4px;max-width:200px;line-height:1.4">Tap to swap left/right</div>
+  <div style="font-size:clamp(7px,2vw,9px);color:#444;text-align:center;margin-top:4px;max-width:300px;line-height:1.4">Tap to swap left/right</div>
   <div class="stats-btn-row" style="margin-top:12px"><button class="stats-btn" onclick="hideSettings()">Back</button></div>
 </div>
-<div class="overlay" id="export-view">
-  <div class="stats-title" style="margin-top:4px">Export</div>
+<div class="overlay" id="export-view" style="padding:clamp(8px,3vw,16px)">
+  <div class="stats-title">Export</div>
   <button class="export-btn" style="background:#1a1a3a;color:#7C8EFF" onclick="showQR()">QR code</button>
   <button class="export-btn" style="background:#0a3a1a;color:#66BB6A" onclick="showSheetsSetup()">Google Sheets</button>
   <button class="export-btn" style="background:#1a1a1a;color:#888" onclick="downloadCSV()">CSV</button>
   <div class="stats-btn-row"><button class="stats-btn" onclick="hideExport()">Back</button></div>
 </div>
-<div class="overlay" id="qr-view">
+<div class="overlay" id="qr-view" style="padding:clamp(8px,3vw,16px)">
   <div class="qr-container"><div class="stats-title">Scan with phone</div><div id="qr-display"></div><div class="qr-hint" id="qr-hint"></div></div>
   <div class="stats-btn-row" style="flex-shrink:0;padding-bottom:8px"><button class="stats-btn" onclick="hideQR()">Back</button></div>
 </div>
-<div class="overlay" id="sheets-view">
-  <div class="stats-title" style="margin-top:10px">Google Sheets</div>
+<div class="overlay" id="sheets-view" style="padding:clamp(8px,3vw,16px)">
+  <div class="stats-title">Google Sheets</div>
   <div id="sheets-content"></div>
   <div class="stats-btn-row" style="margin-top:8px"><button class="stats-btn" onclick="hideSheets()">Back</button></div>
 </div>
-<div class="overlay" id="confirm-view">
+<div class="overlay" id="confirm-view" style="padding:clamp(8px,3vw,16px)">
   <div class="confirm-text">Reset?</div>
   <div class="confirm-sub" id="confirm-sub"></div>
   <div class="confirm-btns">
@@ -420,16 +495,16 @@ function hexDk(h,f){
    ═══════════════════════════════════ */
 function gs(acts,ph){
   var a=acts[ph],t=a.length;
-  if(!t)return{total:0,plus:0,zero:0,minus:0,eff:0,blocks:0,defense:0,aces:0,svcMiss:0,spikes:0,shots:0,blockOuts:0,secondBalls:0};
-  var p=0,z=0,m=0,sm=0,bl=0,df=0,ac=0,sv=0,sp=0,sh=0,bo=0,sb=0;
+  if(!t)return{total:0,plus:0,zero:0,minus:0,eff:0,blocks:0,defense:0,aces:0,svcErr:0,lostPt:0,spikes:0,shots:0,blockOuts:0,secondBalls:0};
+  var p=0,z=0,m=0,sm=0,bl=0,df=0,ac=0,sv=0,lp=0,sp=0,sh=0,bo=0,sb=0;
   for(var i=0;i<t;i++){
     var x=a[i];
     if(x.v===1){p++;if(x.tp==="block")bl++;if(x.tp==="defense")df++;if(x.tp==="ace")ac++;if(x.tp==="spike")sp++;if(x.tp==="shot")sh++;if(x.tp==="block_out")bo++;if(x.tp==="second_ball")sb++}
-    else if(x.v===0){z++;if(x.tp==="spike")sp++;if(x.tp==="shot")sh++;if(x.tp==="block_out")bo++;if(x.tp==="second_ball")sb++}
-    else{m++;if(x.tp==="svc_miss")sv++}
+    else if(x.v===0){z++;if(x.tp==="spike")sp++;if(x.tp==="shot")sh++;if(x.tp==="second_ball")sb++}
+    else{m++;if(x.tp==="service_error")sv++;if(x.tp==="lost_point")lp++}
     sm+=x.v;
   }
-  return{total:t,plus:p,zero:z,minus:m,eff:(sm/t)*100,blocks:bl,defense:df,aces:ac,svcMiss:sv,spikes:sp,shots:sh,blockOuts:bo,secondBalls:sb};
+  return{total:t,plus:p,zero:z,minus:m,eff:(sm/t)*100,blocks:bl,defense:df,aces:ac,svcErr:sv,lostPt:lp,spikes:sp,shots:sh,blockOuts:bo,secondBalls:sb};
 }
 function ga(pi){
   var all=[{so:[],tr:[]},{so:[],tr:[]}];
@@ -549,7 +624,7 @@ function trType(type){
 }
 function trError(isMiss){
   if(!G.pending)return;
-  G.pending.tp=isMiss?"svc_miss":"error";vib(40);
+  G.pending.tp=isMiss?"service_error":"lost_point";vib(40);
   commitAction(G.ourServer);
 }
 function showPlayerSelect(v,type){
@@ -587,7 +662,7 @@ function selectPlayer(side){
 function commitAction(pi){
   var p=G.pending;if(!p)return;
   var ph=p.phase==="so"?"so":"tr";
-  G.act[pi][ph].push({v:p.v,t:Date.now(),e:Date.now()-G.t0,server:G.phase==="tr"?G.ourServer:-1,tp:p.tp||null});
+  G.act[pi][ph].push({v:p.v,t:Date.now(),e:Date.now()-G.t0,server:G.phase==="tr"?G.ourServer:-1,oSrv:G.phase==="so"?G.theirServer:-1,tp:p.tp||null});
   G.hist.push({ph:p.phase,pi:pi,v:p.v,sc:null,srv:G.ourServer,nxt:G.ourNextServer,tsrv:G.theirServer,tnxt:G.theirNextServer,tp:p.tp||null});
   G.pending=null;vib(40);
   if(p.v===1){G.hist[G.hist.length-1].sc="us";show("game-screen");awardPoint("us")}
@@ -651,26 +726,259 @@ function startNextSet(){
 }
 
 /* ═══════════════════════════════════
+   ANALYTICS HELPERS
+   ═══════════════════════════════════ */
+// Get combined actions for a specific set (0-indexed from G.sets, or current)
+function getSetData(si){
+  if(si<G.sets.length) return G.sets[si].act;
+  return G.act; // current set
+}
+function getAllSetsData(){
+  var list=[];
+  for(var i=0;i<G.sets.length;i++) list.push(G.sets[i].act);
+  if(!G.matchOver||(G.sU||G.sT)) list.push(G.act);
+  return list;
+}
+// SO% by opponent server (1st=0, 2nd=1) across all sets for a player
+function soByOppServer(pi,oSrvIdx){
+  var all=getAllSetsData(),sum=0,cnt=0;
+  all.forEach(function(acts){
+    acts[pi].so.forEach(function(a){
+      if(a.oSrv===oSrvIdx){sum+=a.v;cnt++}
+    });
+  });
+  return cnt?{eff:Math.round((sum/cnt)*100),total:cnt}:{eff:0,total:0};
+}
+// Transition conversion: when we serve, % of points we win
+function trConversion(){
+  var all=getAllSetsData(),wins=0,total=0;
+  all.forEach(function(acts){
+    for(var pi=0;pi<2;pi++){
+      acts[pi].tr.forEach(function(a){
+        total++;if(a.v===1)wins++;
+      });
+    }
+  });
+  return total?{pct:Math.round((wins/total)*100),wins:wins,total:total}:{pct:0,wins:0,total:0};
+}
+// Total serve stats across both players
+function serveStats(){
+  var aces=0,errs=0,total=0;
+  var all=getAllSetsData();
+  all.forEach(function(acts){
+    for(var pi=0;pi<2;pi++){
+      acts[pi].tr.forEach(function(a){
+        if(a.v===1&&a.tp==="ace")aces++;
+        if(a.v===-1&&a.tp==="service_error")errs++;
+        if(a.server>=0)total++;
+      });
+    }
+  });
+  return{aces:aces,errors:errs,total:total};
+}
+// Kill type distribution for a player
+function killDist(pi){
+  var a=ga(pi),so=a.so,tr=a.tr;
+  return{spikes:so.spikes,shots:so.shots,blockOuts:so.blockOuts,secondBalls:so.secondBalls,blocks:tr.blocks,defense:tr.defense,aces:tr.aces};
+}
+// Scoring runs from history
+function scoringRuns(){
+  var allHist=[];
+  G.sets.forEach(function(s,si){
+    // Reconstruct from actions - we use the main hist for current set
+  });
+  // Use current + set data: we'll compute from all committed actions in order
+  var seq=[];
+  function addActs(acts){
+    for(var pi=0;pi<2;pi++){
+      ["so","tr"].forEach(function(ph){
+        acts[pi][ph].forEach(function(a){
+          if(a.v===1)seq.push({t:a.t,w:"us"});
+          else if(a.v===-1)seq.push({t:a.t,w:"them"});
+          // v===0 resolved later - we need hist for that
+        });
+      });
+    }
+  }
+  // For scoring runs we use the hist array which has score winner
+  // But hist only exists for current set. For completed sets we derive from actions.
+  // Simplification: compute per-set from actions (v=1 → us, v=-1 → them, v=0 needs resolve)
+  // Since we can't recover resolve data from completed sets, approximate using score changes
+  var bestUs=0,bestThem=0,curUs=0,curThem=0;
+  // Current set history is available
+  G.hist.forEach(function(h){
+    if(h.sc==="us"){curUs++;curThem=0;if(curUs>bestUs)bestUs=curUs}
+    else if(h.sc==="them"){curThem++;curUs=0;if(curThem>bestThem)bestThem=curThem}
+  });
+  return{us:bestUs,them:bestThem};
+}
+// Point pace from current set
+function pointPace(){
+  if(G.hist.length<2)return{avg:0,total:G.hist.length};
+  var times=[];
+  G.hist.forEach(function(h,i){
+    // Get timestamp from the actual action
+    var ph=h.ph==="so"?"so":"tr";
+    var acts=G.act[h.pi][ph];
+    // Find approximate timestamp
+  });
+  // Use action timestamps across all current set data
+  var allTimes=[];
+  for(var pi=0;pi<2;pi++){
+    ["so","tr"].forEach(function(ph){
+      G.act[pi][ph].forEach(function(a){allTimes.push(a.t)});
+    });
+  }
+  allTimes.sort(function(a,b){return a-b});
+  if(allTimes.length<2)return{avg:0,total:allTimes.length};
+  var gaps=[];
+  for(var i=1;i<allTimes.length;i++)gaps.push(allTimes[i]-allTimes[i-1]);
+  var sum=0;gaps.forEach(function(g){sum+=g});
+  return{avg:Math.round(sum/gaps.length/1000),total:allTimes.length};
+}
+// Set arc: first half vs second half efficiency
+function setArc(acts){
+  var allActs=[];
+  for(var pi=0;pi<2;pi++){
+    ["so","tr"].forEach(function(ph){
+      acts[pi][ph].forEach(function(a){allActs.push(a)});
+    });
+  }
+  allActs.sort(function(a,b){return a.t-b.t});
+  var mid=Math.floor(allActs.length/2);
+  if(mid<1)return null;
+  var s1=0,s2=0;
+  for(var i=0;i<mid;i++)s1+=allActs[i].v;
+  for(var i=mid;i<allActs.length;i++)s2+=allActs[i].v;
+  var c1=mid,c2=allActs.length-mid;
+  return{
+    firstEff:c1?Math.round((s1/c1)*100):0,firstN:c1,
+    secondEff:c2?Math.round((s2/c2)*100):0,secondN:c2
+  };
+}
+// Per-set SO% for a player
+function playerSetSO(pi,setActs){
+  var so=gs(setActs[pi],"so");
+  return so;
+}
+
+/* ═══════════════════════════════════
    STATS VIEW
    ═══════════════════════════════════ */
 function showStats(){
   $("confirm-view").classList.remove("active");
   var c=$("stats-content");c.innerHTML="";
+  var h="";
+
+  // ── SCORE ──
   var lbl=G.matchOver?"Final":"Set "+G.setNum+" (to "+G.target+")";
-  c.innerHTML+='<div class="score-block"><div class="score-block-label">'+lbl+'</div><div class="score-block-val">'+G.sU+' : '+G.sT+'</div><div class="score-block-label">Sets: '+G.setsU+' - '+G.setsT+'</div></div>';
+  h+='<div class="score-block"><div class="score-block-label">'+lbl+'</div><div class="score-block-val">'+G.sU+' : '+G.sT+'</div><div class="score-block-label">Sets: '+G.setsU+' - '+G.setsT+'</div></div>';
+
   for(var si=0;si<G.sets.length;si++){
     var st=G.sets[si];
-    c.innerHTML+='<div class="set-history-row"><span style="color:#666">Set '+st.setNum+'</span><span style="color:'+(st.winner==="us"?"#448AFF":"#FF9100")+'">'+st.sU+' : '+st.sT+'</span></div>';
+    h+='<div class="set-history-row"><span style="color:#666">Set '+st.setNum+'</span><span style="color:'+(st.winner==="us"?"#448AFF":"#FF9100")+'">'+st.sU+' : '+st.sT+'</span></div>';
   }
+
+  // ── TEAM SIDEOUT % ──
+  h+='<div class="st-hdr">Team sideout %</div>';
+  var allSets=getAllSetsData();
+  var teamSOsum=0,teamSOcnt=0;
+  allSets.forEach(function(acts,si){
+    var s=0,n=0;
+    for(var pi=0;pi<2;pi++){acts[pi].so.forEach(function(a){s+=a.v;n++})}
+    teamSOcnt+=n;teamSOsum+=s;
+    if(allSets.length>1){
+      var sn=si<G.sets.length?"Set "+(si+1):"Current";
+      var pct=n?Math.round((s/n)*100):0;
+      h+='<div class="st-row"><span class="st-row-label">'+sn+' <span style="color:#555">('+n+')</span></span><span class="st-row-val" style="color:'+(pct>=0?"#448AFF":"#FF5252")+'">'+(pct>=0?"+":"")+pct+'%</span></div>';
+    }
+  });
+  var teamSOpct=teamSOcnt?Math.round((teamSOsum/teamSOcnt)*100):0;
+  h+='<div class="st-row" style="background:#0a1a2a;border-left:3px solid #448AFF"><span class="st-row-label" style="color:#fff">Total <span style="color:#555">('+teamSOcnt+')</span></span><span class="st-row-val" style="color:#448AFF">'+(teamSOpct>=0?"+":"")+teamSOpct+'%</span></div>';
+
+  // ── TEAM TRANSITION % ──
+  h+='<div class="st-hdr">Transition conversion</div>';
+  var tc=trConversion();
+  h+='<div class="st-row"><span class="st-row-label">Points won on our serve</span><span class="st-row-val" style="color:#FF9100">'+tc.pct+'% <span style="color:#555">('+tc.wins+'/'+tc.total+')</span></span></div>';
+
+  // ── SERVE STATS ──
+  h+='<div class="st-hdr">Serve stats</div>';
+  var sv=serveStats();
+  h+='<div class="st-row"><span class="st-row-label">Aces</span><span class="st-row-val" style="color:#00C853">'+sv.aces+'</span></div>';
+  h+='<div class="st-row"><span class="st-row-label">Service errors</span><span class="st-row-val" style="color:#FF5252">'+sv.errors+'</span></div>';
+  var svRatio=sv.aces+sv.errors?Math.round((sv.aces/(sv.aces+sv.errors))*100):0;
+  h+='<div class="st-row"><span class="st-row-label">Ace/error ratio</span><span class="st-row-val">'+svRatio+'%</span></div>';
+
+  // ── SO BY OPPONENT SERVER ──
+  h+='<div class="st-hdr">Sideout vs opponent server</div>';
+  for(var pi=0;pi<2;pi++){
+    var s1=soByOppServer(pi,0),s2=soByOppServer(pi,1);
+    h+='<div class="st-row"><span class="st-row-label" style="color:'+PL[pi].color+'">'+PL[pi].name+' vs 1st</span><span class="st-row-val">'+(s1.total?(s1.eff>=0?"+":"")+s1.eff+'%':"--")+' <span style="color:#555">('+s1.total+')</span></span></div>';
+    h+='<div class="st-row"><span class="st-row-label" style="color:'+PL[pi].color+'">'+PL[pi].name+' vs 2nd</span><span class="st-row-val">'+(s2.total?(s2.eff>=0?"+":"")+s2.eff+'%':"--")+' <span style="color:#555">('+s2.total+')</span></span></div>';
+  }
+
+  // ── PLAYER BREAKDOWNS ──
   for(var i=0;i<2;i++){
     var p=PL[i],a=ga(i);
-    c.innerHTML+='<div class="p-header" style="color:'+p.color+'">'+p.name+' '+ef(a)+' <span style="color:#555">('+a.total+')</span></div>';
+    h+='<div class="st-hdr" style="color:'+p.color+'">'+p.name+' overview</div>';
+
+    // Overall
+    h+='<div class="player-stat-block" style="border-left:3px solid '+p.color+'"><div class="player-stat-row"><span class="player-stat-name" style="color:'+p.color+'">Overall</span><span class="player-stat-eff">'+ef(a)+' <span style="color:#555;font-size:0.7em">('+a.total+')</span></span></div></div>';
+
+    // SO
+    h+='<div class="player-stat-block" style="border-left:3px solid '+SO.frame+'"><div class="player-stat-row"><span class="player-stat-name" style="color:'+SO.frame+'">Sideout</span><span class="player-stat-eff">'+ef(a.so)+'</span></div><div class="player-stat-counts"><span style="color:#00C853">'+a.so.plus+'</span><span style="color:#555"> / </span><span style="color:#FFB300">'+a.so.zero+'</span><span style="color:#555"> / </span><span style="color:#FF1744">'+a.so.minus+'</span></div>';
     var sod=[];if(a.so.spikes)sod.push("spk:"+a.so.spikes);if(a.so.shots)sod.push("sht:"+a.so.shots);if(a.so.blockOuts)sod.push("bko:"+a.so.blockOuts);if(a.so.secondBalls)sod.push("2nd:"+a.so.secondBalls);
-    c.innerHTML+='<div class="player-stat-block" style="border-left:3px solid '+SO.frame+'"><div class="player-stat-row"><span class="player-stat-name" style="color:'+SO.frame+'">SO</span><span class="player-stat-eff">'+ef(a.so)+'</span></div><div class="player-stat-counts"><span style="color:#00C853">'+a.so.plus+'</span><span style="color:#555"> / </span><span style="color:#FFB300">'+a.so.zero+'</span><span style="color:#555"> / </span><span style="color:#FF1744">'+a.so.minus+'</span></div>'+(sod.length?'<div class="tr-detail">'+sod.join(' ')+'</div>':'')+'</div>';
+    if(sod.length)h+='<div class="tr-detail">'+sod.join(' · ')+'</div>';
+    h+='</div>';
+
+    // TR
+    h+='<div class="player-stat-block" style="border-left:3px solid '+TR.frame+'"><div class="player-stat-row"><span class="player-stat-name" style="color:'+TR.frame+'">Transition</span><span class="player-stat-eff">'+ef(a.tr)+'</span></div><div class="player-stat-counts"><span style="color:#00C853">'+a.tr.plus+'</span><span style="color:#555"> / </span><span style="color:#FF1744">'+a.tr.minus+'</span></div>';
     var trd=[];if(a.tr.blocks)trd.push("blk:"+a.tr.blocks);if(a.tr.defense)trd.push("def:"+a.tr.defense);if(a.tr.aces)trd.push("ace:"+a.tr.aces);
-    var trd2=[];if(a.tr.svcMiss)trd2.push("svc miss:"+a.tr.svcMiss);
-    c.innerHTML+='<div class="player-stat-block" style="border-left:3px solid '+TR.frame+'"><div class="player-stat-row"><span class="player-stat-name" style="color:'+TR.frame+'">TR</span><span class="player-stat-eff">'+ef(a.tr)+'</span></div><div class="player-stat-counts"><span style="color:#00C853">'+a.tr.plus+'</span><span style="color:#555"> / </span><span style="color:#FF1744">'+a.tr.minus+'</span></div>'+(trd.length?'<div class="tr-detail">'+trd.join(' ')+'</div>':'')+(trd2.length?'<div class="tr-detail" style="color:#FF5252">'+trd2.join(' ')+'</div>':'')+'</div>';
+    if(trd.length)h+='<div class="tr-detail">'+trd.join(' · ')+'</div>';
+    if(a.tr.svcErr)h+='<div class="tr-detail" style="color:#FF5252">svc err: '+a.tr.svcErr+'</div>';
+    if(a.tr.lostPt)h+='<div class="tr-detail" style="color:#FF8A65">lost pt: '+a.tr.lostPt+'</div>';
+    h+='</div>';
+
+    // Per-set SO for this player
+    if(allSets.length>1){
+      h+='<div style="margin-top:2px">';
+      allSets.forEach(function(acts,si){
+        var pso=playerSetSO(i,acts);
+        var sn=si<G.sets.length?"S"+(si+1):"Cur";
+        h+='<div class="st-row"><span class="st-row-label">'+sn+' SO</span><span class="st-row-val">'+ef(pso)+' <span style="color:#555">('+pso.total+')</span></span></div>';
+      });
+      h+='</div>';
+    }
+
+    // Kill distribution
+    var kd=killDist(i);
+    var kills=[];if(kd.spikes)kills.push("Spike:"+kd.spikes);if(kd.shots)kills.push("Shot:"+kd.shots);if(kd.blockOuts)kills.push("Block out:"+kd.blockOuts);if(kd.secondBalls)kills.push("2nd ball:"+kd.secondBalls);if(kd.blocks)kills.push("Block:"+kd.blocks);if(kd.defense)kills.push("Def:"+kd.defense);if(kd.aces)kills.push("Ace:"+kd.aces);
+    if(kills.length) h+='<div class="st-row"><span class="st-row-label">Kill types</span><span class="st-row-val" style="font-size:0.75em;color:#aaa">'+kills.join(' · ')+'</span></div>';
   }
+
+  // ── MOMENTUM ──
+  h+='<div class="st-hdr">Momentum</div>';
+  var runs=scoringRuns();
+  h+='<div class="st-row"><span class="st-row-label">Best run (us)</span><span class="st-row-val" style="color:#00C853">'+runs.us+'</span></div>';
+  h+='<div class="st-row"><span class="st-row-label">Best run (them)</span><span class="st-row-val" style="color:#FF5252">'+runs.them+'</span></div>';
+
+  // Point pace
+  var pace=pointPace();
+  if(pace.avg)h+='<div class="st-row"><span class="st-row-label">Avg point pace</span><span class="st-row-val">'+pace.avg+'s</span></div>';
+
+  // Set arc (current set)
+  var arc=setArc(G.act);
+  if(arc&&arc.firstN>1){
+    h+='<div class="st-hdr">Set arc (current)</div>';
+    h+='<div class="st-row"><span class="st-row-label">1st half <span style="color:#555">('+arc.firstN+')</span></span><span class="st-row-val">'+(arc.firstEff>=0?"+":"")+arc.firstEff+'%</span></div>';
+    h+='<div class="st-row"><span class="st-row-label">2nd half <span style="color:#555">('+arc.secondN+')</span></span><span class="st-row-val">'+(arc.secondEff>=0?"+":"")+arc.secondEff+'%</span></div>';
+  }
+
+  // Match elapsed
+  var elapsed=Math.round((Date.now()-G.t0)/60000);
+  if(elapsed>0) h+='<div style="text-align:center;color:#333;font-size:clamp(8px,2vw,10px);margin-top:clamp(8px,2vw,12px)">'+elapsed+' min elapsed</div>';
+
+  c.innerHTML=h;
   $("stats-view").classList.add("active");
 }
 function hideStats(){$("stats-view").classList.remove("active")}
@@ -691,12 +999,85 @@ function buildDataStr(){
   return l.join("\n");
 }
 function buildCSV(){
-  var r=["Set,Player,Phase,Value,Type,Server,Timestamp,Elapsed_ms"];
-  function add(sn,acts){for(var pi=0;pi<2;pi++){["so","tr"].forEach(function(ph){acts[pi][ph].forEach(function(a){r.push(sn+","+PL[pi].name+","+(ph==="so"?"sideout":"transition")+","+a.v+","+(a.tp||"")+","+(a.server>=0?PL[a.server].name:"")+","+a.t+","+a.e)})})}}
-  G.sets.forEach(function(s){add(s.setNum,s.act)});add(G.setNum,G.act);
-  r.push("");G.sets.forEach(function(s){r.push("Set"+s.setNum+","+s.sU+","+s.sT+","+s.winner)});
-  if(!G.matchOver)r.push("Set"+G.setNum+","+G.sU+","+G.sT+",live");
-  r.push("Sets_Us,"+G.setsU);r.push("Sets_Them,"+G.setsT);
+  var r=[];
+
+  // Section 1: Raw actions
+  r.push("--- RAW ACTIONS ---");
+  r.push("Set,Player,Phase,Value,Type,Our_Server,Opp_Server,Timestamp,Elapsed_ms");
+  function add(sn,acts){
+    for(var pi=0;pi<2;pi++){
+      ["so","tr"].forEach(function(ph){
+        acts[pi][ph].forEach(function(a){
+          var ts=new Date(a.t).toISOString();
+          r.push(sn+","+PL[pi].name+","+(ph==="so"?"sideout":"transition")+","+a.v+","+(a.tp||"")+","+(a.server>=0?PL[a.server].name:"")+","+(a.oSrv>=0?(a.oSrv===0?"1st":"2nd"):"")+","+ts+","+a.e);
+        });
+      });
+    }
+  }
+  G.sets.forEach(function(s){add(s.setNum,s.act)});
+  add(G.setNum,G.act);
+
+  // Section 2: Set scores
+  r.push("");r.push("--- SET SCORES ---");
+  r.push("Set,Us,Them,Winner");
+  G.sets.forEach(function(s){r.push(s.setNum+","+s.sU+","+s.sT+","+s.winner)});
+  if(!G.matchOver)r.push(G.setNum+","+G.sU+","+G.sT+",live");
+  r.push("Match,"+G.setsU+","+G.setsT+","+(G.matchOver?(G.setsU>G.setsT?"us":"them"):"live"));
+
+  // Section 3: Player totals
+  r.push("");r.push("--- PLAYER TOTALS ---");
+  r.push("Player,Overall_Eff,Total_Actions,SO_Eff,SO_Plus,SO_Zero,SO_Minus,SO_Spikes,SO_Shots,SO_BlockOuts,SO_2ndBall,TR_Eff,TR_Plus,TR_Minus,TR_Blocks,TR_Defense,TR_Aces,TR_SvcErrors,TR_LostPoints");
+  for(var i=0;i<2;i++){
+    var a=ga(i);
+    r.push(PL[i].name+","+Math.round(a.eff*10)/10+","+a.total+","+Math.round(a.so.eff*10)/10+","+a.so.plus+","+a.so.zero+","+a.so.minus+","+a.so.spikes+","+a.so.shots+","+a.so.blockOuts+","+a.so.secondBalls+","+Math.round(a.tr.eff*10)/10+","+a.tr.plus+","+a.tr.minus+","+a.tr.blocks+","+a.tr.defense+","+a.tr.aces+","+a.tr.svcErr+","+a.tr.lostPt);
+  }
+
+  // Section 4: Per-set per-player sideout
+  r.push("");r.push("--- PER SET SIDEOUT ---");
+  r.push("Set,Player,SO_Eff,SO_Plus,SO_Zero,SO_Minus,SO_Total");
+  var allSets=getAllSetsData();
+  allSets.forEach(function(acts,si){
+    var sn=si<G.sets.length?"Set"+(si+1):"Current";
+    for(var pi=0;pi<2;pi++){
+      var so=gs(acts[pi],"so");
+      r.push(sn+","+PL[pi].name+","+Math.round(so.eff*10)/10+","+so.plus+","+so.zero+","+so.minus+","+so.total);
+    }
+  });
+
+  // Section 5: Team sideout per set
+  r.push("");r.push("--- TEAM SIDEOUT PER SET ---");
+  r.push("Set,SO_Eff,Total_Actions");
+  allSets.forEach(function(acts,si){
+    var sn=si<G.sets.length?"Set"+(si+1):"Current";
+    var s=0,n=0;
+    for(var pi=0;pi<2;pi++){acts[pi].so.forEach(function(a){s+=a.v;n++})}
+    r.push(sn+","+Math.round(n?(s/n)*100:0)+","+n);
+  });
+
+  // Section 6: Serve stats
+  r.push("");r.push("--- SERVE STATS ---");
+  r.push("Metric,Value");
+  var sv=serveStats();
+  r.push("Total_Serves,"+sv.total);
+  r.push("Aces,"+sv.aces);
+  r.push("Service_Errors,"+sv.errors);
+  r.push("Ace_Error_Ratio,"+(sv.aces+sv.errors?Math.round((sv.aces/(sv.aces+sv.errors))*100):0)+"%");
+
+  // Section 7: SO by opponent server
+  r.push("");r.push("--- SIDEOUT VS OPPONENT SERVER ---");
+  r.push("Player,Vs_1st_Eff,Vs_1st_N,Vs_2nd_Eff,Vs_2nd_N");
+  for(var i=0;i<2;i++){
+    var s1=soByOppServer(i,0),s2=soByOppServer(i,1);
+    r.push(PL[i].name+","+s1.eff+"%,"+s1.total+","+s2.eff+"%,"+s2.total);
+  }
+
+  // Section 8: Transition conversion
+  r.push("");r.push("--- TRANSITION CONVERSION ---");
+  var tc=trConversion();
+  r.push("Points_Won_On_Our_Serve,"+tc.wins);
+  r.push("Total_Our_Serve_Rallies,"+tc.total);
+  r.push("Conversion_Pct,"+tc.pct+"%");
+
   return r.join("\n");
 }
 function showQR(){$("export-view").classList.remove("active");var d=buildDataStr(),u="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data="+encodeURIComponent(d);$("qr-display").innerHTML='<img style="border-radius:6px;background:#fff;padding:6px" src="'+u+'" width="160" height="160" onerror="qrFail()">';$("qr-hint").textContent="Scan with phone camera";$("qr-view").classList.add("active")}
@@ -705,7 +1086,7 @@ function hideQR(){$("qr-view").classList.remove("active");showExport()}
 function showSheetsSetup(){$("export-view").classList.remove("active");var sc=$("sheets-content");if(sheetsUrl){sc.innerHTML='<div style="font-size:10px;color:#66BB6A;margin-bottom:8px;text-align:center">Connected</div><button class="export-btn" style="background:#0a3a1a;color:#66BB6A;padding:12px" onclick="sendToSheets()">Send</button><div class="sheets-status" id="sheets-status"></div><div style="margin-top:8px"><button class="stats-btn" style="font-size:8px" onclick="editSheetsUrl()">Change URL</button></div>'}else{sc.innerHTML='<div style="font-size:9px;color:#888;text-align:center;margin-bottom:8px;line-height:1.4">Paste Apps Script URL</div><input class="sheets-input" id="sheets-url-input" type="url" placeholder="https://script.google.com/..."><button class="export-btn" style="background:#0a3a1a;color:#66BB6A;padding:10px;font-size:10px" onclick="saveSheetsUrl()">Save & send</button><div class="sheets-status" id="sheets-status"></div>'};$("sheets-view").classList.add("active")}
 function editSheetsUrl(){sheetsUrl="";showSheetsSetup()}
 function saveSheetsUrl(){var u=($("sheets-url-input")||{}).value||"";if(!u)return;sheetsUrl=u;sendToSheets()}
-function sendToSheets(){var st=$("sheets-status");st.innerHTML='<span style="color:#FFB300">Sending...</span>';var p={date:new Date().toISOString(),setsUs:G.setsU,setsThem:G.setsT,matchOver:G.matchOver,setScores:[],players:[]};G.sets.forEach(function(s){p.setScores.push({set:s.setNum,us:s.sU,them:s.sT,winner:s.winner})});if(!G.matchOver)p.setScores.push({set:G.setNum,us:G.sU,them:G.sT,winner:"live"});for(var i=0;i<2;i++){var a=ga(i);p.players.push({name:PL[i].name,eff:Math.round(a.eff*10)/10,so_eff:Math.round(a.so.eff*10)/10,so_p:a.so.plus,so_z:a.so.zero,so_m:a.so.minus,so_spikes:a.so.spikes,so_shots:a.so.shots,so_blockOuts:a.so.blockOuts,so_secondBalls:a.so.secondBalls,tr_eff:Math.round(a.tr.eff*10)/10,tr_p:a.tr.plus,tr_m:a.tr.minus,tr_blocks:a.tr.blocks,tr_defense:a.tr.defense,tr_aces:a.tr.aces,tr_svcMiss:a.tr.svcMiss})}fetch(sheetsUrl,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(p)}).then(function(){st.innerHTML='<span style="color:#66BB6A">Sent!</span>';vib(50)}).catch(function(){st.innerHTML='<span style="color:#FF1744">Failed</span>'})}
+function sendToSheets(){var st=$("sheets-status");st.innerHTML='<span style="color:#FFB300">Sending...</span>';var p={date:new Date().toISOString(),setsUs:G.setsU,setsThem:G.setsT,matchOver:G.matchOver,setScores:[],players:[]};G.sets.forEach(function(s){p.setScores.push({set:s.setNum,us:s.sU,them:s.sT,winner:s.winner})});if(!G.matchOver)p.setScores.push({set:G.setNum,us:G.sU,them:G.sT,winner:"live"});for(var i=0;i<2;i++){var a=ga(i);p.players.push({name:PL[i].name,eff:Math.round(a.eff*10)/10,so_eff:Math.round(a.so.eff*10)/10,so_p:a.so.plus,so_z:a.so.zero,so_m:a.so.minus,so_spikes:a.so.spikes,so_shots:a.so.shots,so_blockOuts:a.so.blockOuts,so_secondBalls:a.so.secondBalls,tr_eff:Math.round(a.tr.eff*10)/10,tr_p:a.tr.plus,tr_m:a.tr.minus,tr_blocks:a.tr.blocks,tr_defense:a.tr.defense,tr_aces:a.tr.aces,tr_svcErr:a.tr.svcErr,tr_lostPt:a.tr.lostPt})}fetch(sheetsUrl,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(p)}).then(function(){st.innerHTML='<span style="color:#66BB6A">Sent!</span>';vib(50)}).catch(function(){st.innerHTML='<span style="color:#FF1744">Failed</span>'})}
 function hideSheets(){$("sheets-view").classList.remove("active");showExport()}
 function downloadCSV(){var c=buildCSV(),b=new Blob([c],{type:"text/csv"}),u=URL.createObjectURL(b),l=document.createElement("a");l.href=u;l.download="bv_"+new Date().toISOString().slice(0,10)+".csv";l.click();URL.revokeObjectURL(u)}
 function showConfirm(){$("stats-view").classList.remove("active");$("confirm-sub").textContent="All data will be cleared";$("confirm-view").classList.add("active")}
