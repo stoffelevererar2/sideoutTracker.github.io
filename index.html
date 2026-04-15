@@ -88,40 +88,47 @@
     text-shadow:0 1px 4px rgba(0,0,0,0.6);
   }
 
-  /* ── SCOREBOARD (bottom of game screen) ── */
+  /* ── GAME BOTTOM BAR (centered row for round watch) ── */
+  .game-bottom{
+    position:absolute;bottom:clamp(6px,3%,14px);left:50%;transform:translateX(-50%);
+    z-index:12;display:flex;align-items:center;
+    gap:clamp(4px,1.5vw,8px);
+    pointer-events:auto;
+  }
+  .game-bottom-side{
+    display:flex;align-items:center;gap:clamp(2px,0.8vw,4px);
+  }
   .game-footer{
-    position:absolute;bottom:3%;left:50%;transform:translateX(-50%);
-    z-index:12;text-align:center;pointer-events:none;
+    text-align:center;pointer-events:none;
     background:rgba(0,0,0,0.65);
-    padding:clamp(4px,1.2vw,8px) clamp(12px,4vw,20px);
+    padding:clamp(3px,1vw,6px) clamp(8px,3vw,14px);
     border-radius:8px;
     display:flex;flex-direction:column;align-items:center;gap:1px;
   }
   .game-footer-serve{
-    font-size:clamp(9px,2.5vw,13px);font-weight:700;
-    padding:1px 6px;border-radius:3px;display:inline-block;
-    line-height:1.3;
+    font-size:clamp(8px,2.2vw,12px);font-weight:700;
+    padding:1px 5px;border-radius:3px;display:inline-block;line-height:1.3;
   }
   .game-footer-score{
-    font-size:clamp(20px,7vw,32px);font-weight:900;color:#fff;
-    font-variant-numeric:tabular-nums;line-height:1.2;
+    font-size:clamp(16px,5.5vw,28px);font-weight:900;color:#fff;
+    font-variant-numeric:tabular-nums;line-height:1.15;
   }
   .game-footer-sets{
-    font-size:clamp(8px,2.2vw,12px);font-weight:600;
+    font-size:clamp(7px,2vw,11px);font-weight:600;
     color:rgba(255,255,255,0.5);line-height:1.2;
-  }
-
-  /* ── CONTROLS (undo + menu) ── */
-  .controls{
-    position:absolute;bottom:clamp(4px,1.5vw,10px);right:clamp(6px,2vw,14px);
-    display:flex;gap:clamp(4px,1.5vw,8px);z-index:15;
   }
   .ctrl-btn{
     background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);
-    font-size:clamp(11px,3vw,16px);
-    width:clamp(24px,7vw,34px);height:clamp(24px,7vw,34px);
+    font-size:clamp(10px,2.8vw,14px);
+    width:clamp(22px,6.5vw,32px);height:clamp(22px,6.5vw,32px);
     border-radius:50%;cursor:pointer;
     display:flex;align-items:center;justify-content:center;
+    pointer-events:auto;flex-shrink:0;
+  }
+  .sync-label{
+    font-size:clamp(6px,1.8vw,8px);font-weight:600;
+    color:rgba(255,255,255,0.3);pointer-events:none;
+    white-space:nowrap;
   }
 
   /* ── SUB-TYPE SCREENS (stacked rows) ── */
@@ -267,6 +274,7 @@
   .sheets-input{width:100%;max-width:300px;padding:clamp(8px,2.5vw,12px);background:#111;border:1px solid #333;border-radius:6px;color:#fff;font-size:clamp(10px,3vw,13px);font-family:inherit;margin-bottom:8px;text-align:center}
   .sheets-input::placeholder{color:#444}
   .sheets-status{font-size:clamp(9px,2.5vw,12px);margin-top:6px;font-weight:600;text-align:center}
+  .vlc-hint{font-size:clamp(8px,2vw,10px);font-weight:600;text-align:center;margin:-2px 0 8px;max-width:280px;line-height:1.4}
   .confirm-text{font-size:clamp(18px,5vw,24px);font-weight:900;color:#fff;margin-top:clamp(16px,5vw,30px)}
   .confirm-sub{font-size:clamp(10px,3vw,13px);color:#666;margin-top:6px}
   .confirm-btns{display:flex;gap:clamp(8px,3vw,14px);margin-top:clamp(12px,4vw,18px)}
@@ -314,15 +322,21 @@
       <span class="zone-label">-1</span><span class="zone-sub" id="g-bot-sub">Error</span>
     </button>
   </div>
-  <!-- SCOREBOARD: serve on top, score in middle, sets on bottom -->
-  <div class="game-footer" id="game-score-block">
-    <div class="game-footer-serve" id="game-score-serve">1st server</div>
-    <div class="game-footer-score" id="game-score-val">0 : 0</div>
-    <div class="game-footer-sets" id="game-score-sets">S 0-0</div>
-  </div>
-  <div class="controls">
-    <button class="ctrl-btn" id="g-undo" onclick="undoLast()">↩</button>
-    <button class="ctrl-btn" onclick="showStats()">☰</button>
+  <!-- BOTTOM BAR: sync | scoreboard | controls — all centered for round watch -->
+  <div class="game-bottom">
+    <div class="game-bottom-side">
+      <button class="ctrl-btn" id="sync-btn" onclick="doVideoSync()" style="font-size:clamp(9px,2.5vw,12px)">●</button>
+      <div class="sync-label" id="sync-label"></div>
+    </div>
+    <div class="game-footer" id="game-score-block">
+      <div class="game-footer-serve" id="game-score-serve">1st server</div>
+      <div class="game-footer-score" id="game-score-val">0 : 0</div>
+      <div class="game-footer-sets" id="game-score-sets">S 0-0</div>
+    </div>
+    <div class="game-bottom-side">
+      <button class="ctrl-btn" id="g-undo" onclick="undoLast()">↩</button>
+      <button class="ctrl-btn" onclick="showStats()">☰</button>
+    </div>
   </div>
 </div>
 
@@ -426,6 +440,8 @@
   <button class="export-btn" style="background:#1a1a3a;color:#7C8EFF" onclick="showQR()">QR code</button>
   <button class="export-btn" style="background:#0a3a1a;color:#66BB6A" onclick="showSheetsSetup()">Google Sheets</button>
   <button class="export-btn" style="background:#1a1a1a;color:#888" onclick="downloadCSV()">CSV</button>
+  <button class="export-btn" id="vlc-btn" style="background:#2a1a0a;color:#FF9100" onclick="downloadVLCChapters()">VLC Chapters</button>
+  <div class="vlc-hint" id="vlc-hint"></div>
   <div class="stats-btn-row"><button class="stats-btn" onclick="hideExport()">Back</button></div>
 </div>
 <div class="overlay" id="qr-view" style="padding:clamp(8px,3vw,16px)">
@@ -469,7 +485,8 @@ function freshState(){
     act:[{so:[],tr:[]},{so:[],tr:[]}],
     sets:[],t0:Date.now(),hist:[],
     firstTeam:null,ourServer:0,ourNextServer:0,
-    theirServer:0,theirNextServer:0,pending:null
+    theirServer:0,theirNextServer:0,pending:null,
+    videoSync:null
   };
 }
 G=freshState();
@@ -523,6 +540,74 @@ function serveChange(np){
   if(G.phase==="tr"&&np==="so"){G.ourNextServer=G.ourServer===0?1:0;G.theirServer=G.theirNextServer}
   if(G.phase==="so"&&np==="tr"){G.theirNextServer=G.theirServer===0?1:0;G.ourServer=G.ourNextServer}
   G.phase=np;
+}
+
+/* ═══════════════════════════════════
+   VIDEO SYNC
+   ═══════════════════════════════════ */
+function doVideoSync(){
+  G.videoSync=Date.now();
+  vib([100,50,100]);
+  // Flash the button
+  var sb=$("sync-btn");
+  sb.style.color="#fff";sb.style.background="rgba(255,23,68,0.5)";
+  setTimeout(function(){upd()},400);
+  // Start a timer to update the label every second
+  if(window._syncTimer)clearInterval(window._syncTimer);
+  window._syncTimer=setInterval(function(){
+    if(!G.videoSync){clearInterval(window._syncTimer);return}
+    var sec=Math.round((Date.now()-G.videoSync)/1000);
+    var m=Math.floor(sec/60),s=sec%60;
+    $("sync-label").textContent="REC "+m+":"+(s<10?"0":"")+s;
+  },1000);
+}
+function msToTC(ms){
+  if(ms<0)ms=0;
+  var h=Math.floor(ms/3600000);ms%=3600000;
+  var m=Math.floor(ms/60000);ms%=60000;
+  var s=Math.floor(ms/1000);var fr=ms%1000;
+  return(h<10?"0":"")+h+":"+(m<10?"0":"")+m+":"+(s<10?"0":"")+s+"."+(fr<100?"0":"")+(fr<10?"0":"")+fr;
+}
+function buildVLCChapters(){
+  var ref=G.videoSync||G.t0;
+  var entries=[];
+  // Collect all actions across all sets with timestamps
+  function addActs(sn,acts){
+    for(var pi=0;pi<2;pi++){
+      ["so","tr"].forEach(function(ph){
+        acts[pi][ph].forEach(function(a){
+          var label=ACT_LBL[a.v]||""+a.v;
+          var tp=a.tp?(" "+a.tp.replace("_"," ")):"";
+          var mode=ph==="so"?"SO":"TR";
+          var desc=label+tp+" "+PL[pi].name+" ("+mode+" S"+sn+")";
+          entries.push({t:a.t,desc:desc,v:a.v});
+        });
+      });
+    }
+  }
+  G.sets.forEach(function(s){addActs(s.setNum,s.act)});
+  addActs(G.setNum,G.act);
+  // Sort by timestamp
+  entries.sort(function(a,b){return a.t-b.t});
+  // Build OGM chapter format
+  var lines=[];
+  entries.forEach(function(e,i){
+    var n=i+1;
+    var pad=n<10?"0":"";
+    var tc=msToTC(e.t-ref);
+    lines.push("CHAPTER"+pad+n+"="+tc);
+    lines.push("CHAPTER"+pad+n+"NAME="+e.desc);
+  });
+  return lines.join("\n");
+}
+function downloadVLCChapters(){
+  var ch=buildVLCChapters();
+  if(!ch){return}
+  var b=new Blob([ch],{type:"text/plain"});
+  var u=URL.createObjectURL(b);
+  var l=document.createElement("a");
+  l.href=u;l.download="bv_"+new Date().toISOString().slice(0,10)+".chapters.txt";
+  l.click();URL.revokeObjectURL(u);
 }
 
 /* ═══════════════════════════════════
@@ -583,6 +668,19 @@ function upd(){
 
   $("g-undo").style.opacity=G.hist.length?"0.7":"0.2";
   $("g-bot-sub").textContent=iso?"Error":"Lost point";
+
+  // Sync indicator
+  var sb=$("sync-btn"),sl=$("sync-label");
+  if(G.videoSync){
+    sb.style.color="#FF1744";sb.style.background="rgba(255,23,68,0.15)";
+    var sec=Math.round((Date.now()-G.videoSync)/1000);
+    var m=Math.floor(sec/60),s=sec%60;
+    sl.textContent="REC "+m+":"+(s<10?"0":"")+s;
+    sl.style.color="rgba(255,80,80,0.5)";
+  }else{
+    sb.style.color="rgba(255,255,255,0.25)";sb.style.background="rgba(255,255,255,0.05)";
+    sl.textContent="";
+  }
 }
 
 /* ═══════════════════════════════════
@@ -988,7 +1086,21 @@ function hideSettings(){$("settings-view").classList.remove("active");showStats(
 /* ═══════════════════════════════════
    EXPORT
    ═══════════════════════════════════ */
-function showExport(){$("stats-view").classList.remove("active");$("export-view").classList.add("active")}
+function showExport(){
+  $("stats-view").classList.remove("active");
+  // Update VLC hint
+  var vh=$("vlc-hint");
+  if(G.videoSync){
+    var sec=Math.round((Date.now()-G.videoSync)/1000);
+    var m=Math.floor(sec/60);
+    vh.textContent="Synced "+m+" min ago — timecodes relative to sync point";
+    vh.style.color="#FF9100";
+  }else{
+    vh.textContent="No video sync — timecodes from match start. Tap ● on game screen to sync.";
+    vh.style.color="#666";
+  }
+  $("export-view").classList.add("active");
+}
 function hideExport(){$("export-view").classList.remove("active");showStats()}
 function buildDataStr(){
   var d=new Date().toISOString().slice(0,10),l=["BV "+d,"Sets:"+G.setsU+"-"+G.setsT];
