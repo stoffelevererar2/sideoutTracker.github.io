@@ -63,10 +63,34 @@
   #game-screen.active{display:flex!important;flex-direction:column!important}
 
   .game-header{
-    position:absolute;top:2%;left:50%;transform:translateX(-50%);
     font-size:clamp(14px,4.5vw,22px);font-weight:900;
-    z-index:12;pointer-events:none;
     text-shadow:0 2px 8px rgba(0,0,0,0.8);
+  }
+
+  /* ── GAME TOP (header + scoreboard stacked at top center) ── */
+  .game-top{
+    position:absolute;top:clamp(4px,2%,12px);left:50%;transform:translateX(-50%);
+    z-index:12;pointer-events:none;
+    display:flex;flex-direction:column;align-items:center;gap:1px;
+  }
+  .game-footer{
+    text-align:center;
+    background:rgba(0,0,0,0.55);
+    padding:clamp(3px,1.2vw,8px) clamp(10px,5vw,24px);
+    border-radius:6px;
+    display:flex;flex-direction:column;align-items:center;gap:0;
+  }
+  .game-footer-serve{
+    font-size:clamp(10px,4.5vw,15px);font-weight:700;
+    padding:0 5px;border-radius:3px;display:inline-block;line-height:1.3;
+  }
+  .game-footer-score{
+    font-size:clamp(24px,10vw,40px);font-weight:900;color:#fff;
+    font-variant-numeric:tabular-nums;line-height:1.1;
+  }
+  .game-footer-sets{
+    font-size:clamp(9px,3.5vw,13px);font-weight:600;
+    color:rgba(255,255,255,0.5);line-height:1.2;
   }
 
   /* ── ZONES (vertical columns on game screen) ── */
@@ -88,47 +112,21 @@
     text-shadow:0 1px 4px rgba(0,0,0,0.6);
   }
 
-  /* ── GAME BOTTOM BAR (centered row for round watch) ── */
+  /* ── GAME BOTTOM (undo + menu, centered) ── */
   .game-bottom{
-    position:absolute;bottom:clamp(6px,3%,14px);left:50%;transform:translateX(-50%);
+    position:absolute;bottom:clamp(8px,4%,18px);left:50%;transform:translateX(-50%);
     z-index:12;display:flex;align-items:center;
-    gap:clamp(4px,1.5vw,8px);
+    justify-content:center;
+    gap:clamp(12px,5vw,24px);
     pointer-events:auto;
   }
-  .game-bottom-side{
-    display:flex;align-items:center;gap:clamp(2px,0.8vw,4px);
-  }
-  .game-footer{
-    text-align:center;pointer-events:none;
-    background:rgba(0,0,0,0.65);
-    padding:clamp(3px,1vw,6px) clamp(8px,3vw,14px);
-    border-radius:8px;
-    display:flex;flex-direction:column;align-items:center;gap:1px;
-  }
-  .game-footer-serve{
-    font-size:clamp(8px,2.2vw,12px);font-weight:700;
-    padding:1px 5px;border-radius:3px;display:inline-block;line-height:1.3;
-  }
-  .game-footer-score{
-    font-size:clamp(16px,5.5vw,28px);font-weight:900;color:#fff;
-    font-variant-numeric:tabular-nums;line-height:1.15;
-  }
-  .game-footer-sets{
-    font-size:clamp(7px,2vw,11px);font-weight:600;
-    color:rgba(255,255,255,0.5);line-height:1.2;
-  }
   .ctrl-btn{
-    background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);
-    font-size:clamp(10px,2.8vw,14px);
-    width:clamp(22px,6.5vw,32px);height:clamp(22px,6.5vw,32px);
+    background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);
+    font-size:clamp(16px,6vw,22px);
+    width:clamp(36px,13vw,48px);height:clamp(36px,13vw,48px);
     border-radius:50%;cursor:pointer;
     display:flex;align-items:center;justify-content:center;
     pointer-events:auto;flex-shrink:0;
-  }
-  .sync-label{
-    font-size:clamp(6px,1.8vw,8px);font-weight:600;
-    color:rgba(255,255,255,0.3);pointer-events:none;
-    white-space:nowrap;
   }
 
   /* ── SUB-TYPE SCREENS (stacked rows) ── */
@@ -159,6 +157,14 @@
   .sm-sub{
     font-size:clamp(10px,2.5vw,13px);font-weight:600;pointer-events:none;
   }
+  .opp-miss-btn{
+    width:100%;padding:clamp(18px,8vw,32px) 0;
+    background:#2a2000;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    border-top:1px solid rgba(255,180,0,0.15);
+    -webkit-tap-highlight-color:transparent;
+    transition:background 0.15s;flex-shrink:0;
+  }
 
   /* ── SET/MATCH SCREENS ── */
   .s-center{align-items:center;justify-content:center;gap:12px;background:#000}
@@ -179,95 +185,97 @@
   }
   .overlay.active{display:flex}
 
-  /* Stats top bar */
+  /* Stats top bar — scrolls with content, padded for round safe zone */
   .stats-top-bar{
-    position:sticky;top:0;z-index:5;width:100%;
-    display:flex;gap:2px;padding:clamp(4px,1.5vw,8px);
-    background:#000;flex-shrink:0;
+    width:100%;max-width:400px;
+    display:flex;gap:2px;
+    padding:clamp(4px,1.5vw,8px) clamp(8px,3vw,16px);
+    flex-shrink:0;
+    margin-top:clamp(16px,12%,60px);
   }
   .stats-bar-btn{
-    flex:1;padding:clamp(6px,2vw,10px) 0;
-    background:#1a1a1a;color:#aaa;border-radius:clamp(4px,1vw,6px);
-    font-size:clamp(9px,2.5vw,12px);font-weight:700;
+    flex:1;padding:clamp(8px,3vw,12px) 0;
+    background:#1a1a1a;color:#aaa;border-radius:clamp(4px,1.5vw,6px);
+    font-size:clamp(10px,3.8vw,13px);font-weight:700;
     cursor:pointer;text-align:center;
   }
 
   /* Stats content area */
   #stats-content{
     width:100%;max-width:400px;
-    padding:0 clamp(8px,3vw,16px) clamp(12px,4vw,20px);
+    padding:0 clamp(8px,3vw,16px) clamp(60px,20%,120px);
   }
 
   /* Stats section headers */
   .st-hdr{
-    font-size:clamp(8px,2vw,10px);font-weight:700;color:#555;
-    letter-spacing:0.5px;text-transform:uppercase;
-    margin:clamp(10px,3vw,16px) 0 clamp(4px,1vw,6px);
+    font-size:clamp(9px,3.5vw,11px);font-weight:700;color:#555;
+    letter-spacing:0.3px;
+    margin:clamp(10px,4vw,16px) 0 clamp(4px,1.5vw,6px);
   }
-  .st-hdr:first-child{margin-top:clamp(4px,1vw,6px)}
+  .st-hdr:first-child{margin-top:clamp(4px,1.5vw,6px)}
 
   /* Score block */
   .score-block{
-    width:100%;padding:clamp(6px,2vw,10px);margin-bottom:clamp(3px,1vw,6px);
-    background:#111;border-radius:clamp(4px,1vw,6px);text-align:center;
+    width:100%;padding:clamp(8px,3vw,12px);margin-bottom:clamp(3px,1.2vw,6px);
+    background:#111;border-radius:clamp(4px,1.5vw,6px);text-align:center;
   }
   .score-block-val{
-    font-size:clamp(18px,5.5vw,26px);font-weight:900;color:#fff;
+    font-size:clamp(20px,7vw,28px);font-weight:900;color:#fff;
     font-variant-numeric:tabular-nums;
   }
   .score-block-label{
-    font-size:clamp(8px,2vw,10px);color:#555;font-weight:700;
+    font-size:clamp(9px,3.2vw,11px);color:#555;font-weight:700;
   }
 
   /* Stat rows */
   .st-row{
     display:flex;justify-content:space-between;align-items:center;
-    padding:clamp(4px,1.2vw,7px) clamp(6px,2vw,10px);
-    background:#111;border-radius:clamp(3px,0.8vw,5px);
+    padding:clamp(5px,2vw,8px) clamp(8px,3vw,12px);
+    background:#111;border-radius:clamp(3px,1vw,5px);
     margin-bottom:2px;
   }
   .st-row-label{
-    font-size:clamp(9px,2.5vw,12px);font-weight:600;color:#888;
+    font-size:clamp(10px,3.8vw,13px);font-weight:600;color:#888;
   }
   .st-row-val{
-    font-size:clamp(11px,3vw,14px);font-weight:900;color:#fff;
+    font-size:clamp(12px,4.5vw,16px);font-weight:900;color:#fff;
     font-variant-numeric:tabular-nums;
   }
 
   /* Player stat blocks */
   .player-stat-block{
-    width:100%;padding:clamp(5px,1.5vw,8px) clamp(6px,2vw,10px);
-    margin-bottom:clamp(2px,0.5vw,4px);background:#111;
-    border-radius:clamp(3px,0.8vw,5px);
+    width:100%;padding:clamp(6px,2.2vw,10px) clamp(8px,3vw,12px);
+    margin-bottom:clamp(2px,0.8vw,4px);background:#111;
+    border-radius:clamp(3px,1vw,5px);
   }
   .player-stat-row{display:flex;justify-content:space-between;align-items:center}
-  .player-stat-name{font-size:clamp(9px,2.5vw,12px);font-weight:900}
+  .player-stat-name{font-size:clamp(10px,3.8vw,13px);font-weight:900}
   .player-stat-eff{
-    font-size:clamp(13px,4vw,18px);font-weight:900;color:#fff;
+    font-size:clamp(15px,5.5vw,20px);font-weight:900;color:#fff;
     font-variant-numeric:tabular-nums;
   }
   .player-stat-counts{
-    font-size:clamp(9px,2.5vw,12px);font-weight:700;margin-top:1px;
+    font-size:clamp(10px,3.8vw,13px);font-weight:700;margin-top:1px;
     font-variant-numeric:tabular-nums;
   }
   .p-header{
-    font-size:clamp(10px,2.8vw,13px);font-weight:700;
-    margin:clamp(6px,2vw,10px) 0 clamp(3px,0.8vw,5px);
+    font-size:clamp(11px,4vw,14px);font-weight:700;
+    margin:clamp(6px,2.5vw,10px) 0 clamp(3px,1vw,5px);
   }
-  .tr-detail{font-size:clamp(8px,2vw,10px);color:#666;margin-top:2px}
+  .tr-detail{font-size:clamp(9px,3.2vw,11px);color:#666;margin-top:2px}
 
   /* Set history rows */
   .set-history-row{
-    width:100%;padding:clamp(4px,1.2vw,7px) clamp(6px,2vw,10px);
-    background:#111;border-radius:clamp(3px,0.8vw,5px);
+    width:100%;padding:clamp(5px,2vw,8px) clamp(8px,3vw,12px);
+    background:#111;border-radius:clamp(3px,1vw,5px);
     margin-bottom:2px;display:flex;justify-content:space-between;
-    font-size:clamp(10px,3vw,13px);font-weight:700;
+    font-size:clamp(11px,4vw,14px);font-weight:700;
     font-variant-numeric:tabular-nums;
   }
 
   .stats-btn-row{display:flex;gap:5px;margin-top:5px;width:100%;max-width:400px;padding:0 clamp(8px,3vw,16px)}
-  .stats-btn{flex:1;padding:clamp(6px,2vw,10px) 4px;background:#222;color:#aaa;border-radius:clamp(4px,1vw,6px);font-size:clamp(9px,2.5vw,12px);font-weight:700;cursor:pointer}
-  .stats-title{font-size:clamp(10px,2.8vw,13px);font-weight:700;color:#555;margin-bottom:8px;margin-top:clamp(10px,3vw,16px)}
+  .stats-btn{flex:1;padding:clamp(8px,3vw,12px) 4px;background:#222;color:#aaa;border-radius:clamp(4px,1.5vw,6px);font-size:clamp(10px,3.5vw,13px);font-weight:700;cursor:pointer}
+  .stats-title{font-size:clamp(11px,4vw,14px);font-weight:700;color:#555;margin-bottom:8px;margin-top:clamp(10px,4vw,16px)}
   .export-btn{width:100%;max-width:400px;padding:clamp(10px,3vw,14px);margin-bottom:clamp(4px,1.5vw,8px);border-radius:clamp(6px,2vw,10px);font-size:clamp(11px,3vw,14px);font-weight:800;cursor:pointer;text-align:center}
   .qr-container{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:8px}
   .qr-hint{font-size:clamp(9px,2.5vw,11px);color:#555;text-align:center;max-width:240px;line-height:1.4}
@@ -282,6 +290,15 @@
   .setting-row{width:100%;max-width:300px;padding:clamp(8px,2.5vw,12px);background:#111;border-radius:clamp(5px,1.5vw,8px);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
   .setting-label{font-size:clamp(10px,2.8vw,13px);font-weight:700;color:#888}
   .setting-val{font-size:clamp(11px,3vw,14px);font-weight:900;color:#fff}
+  .name-input{
+    flex:1;padding:clamp(6px,2vw,10px);
+    background:#1a1a1a;border:1px solid #333;border-radius:clamp(4px,1vw,6px);
+    color:#fff;font-size:clamp(12px,4vw,16px);font-weight:800;
+    font-family:inherit;text-align:center;
+    width:0;min-width:0;
+  }
+  .name-input::placeholder{color:#444;font-weight:600}
+  .name-input:focus{outline:none;border-color:#555}
 </style>
 </head>
 <body>
@@ -301,16 +318,24 @@
 <div class="screen split" id="server-screen" style="position:relative">
   <div class="float-label" id="server-q-label">Your first server?</div>
   <button class="split-btn" style="background:#0a1a3a" onclick="setFirstServer(0)">
-    <div class="split-label" style="color:#448AFF">P1</div>
+    <div class="split-label" style="color:#448AFF" id="srv-p1-label">P1</div>
   </button>
   <button class="split-btn" style="background:#3a1a00" onclick="setFirstServer(1)">
-    <div class="split-label" style="color:#FF9100">P2</div>
+    <div class="split-label" style="color:#FF9100" id="srv-p2-label">P2</div>
   </button>
 </div>
 
 <!-- GAME -->
 <div class="screen" id="game-screen">
-  <div class="game-header" id="game-mode-title">Sideout</div>
+  <!-- TOP: mode title + scoreboard -->
+  <div class="game-top">
+    <div class="game-header" id="game-mode-title">Sideout</div>
+    <div class="game-footer" id="game-score-block">
+      <div class="game-footer-serve" id="game-score-serve">1st server</div>
+      <div class="game-footer-score" id="game-score-val">0 : 0</div>
+      <div class="game-footer-sets" id="game-score-sets">S 0-0</div>
+    </div>
+  </div>
   <div class="zones" id="zones-container">
     <button class="zone" id="g-zone-plus" onclick="logAction(1)">
       <span class="zone-label">+1</span><span class="zone-sub">Point</span>
@@ -322,21 +347,10 @@
       <span class="zone-label">-1</span><span class="zone-sub" id="g-bot-sub">Error</span>
     </button>
   </div>
-  <!-- BOTTOM BAR: sync | scoreboard | controls — all centered for round watch -->
+  <!-- BOTTOM: undo + menu centered -->
   <div class="game-bottom">
-    <div class="game-bottom-side">
-      <button class="ctrl-btn" id="sync-btn" onclick="doVideoSync()" style="font-size:clamp(9px,2.5vw,12px)">●</button>
-      <div class="sync-label" id="sync-label"></div>
-    </div>
-    <div class="game-footer" id="game-score-block">
-      <div class="game-footer-serve" id="game-score-serve">1st server</div>
-      <div class="game-footer-score" id="game-score-val">0 : 0</div>
-      <div class="game-footer-sets" id="game-score-sets">S 0-0</div>
-    </div>
-    <div class="game-bottom-side">
-      <button class="ctrl-btn" id="g-undo" onclick="undoLast()">↩</button>
-      <button class="ctrl-btn" onclick="showStats()">☰</button>
-    </div>
+    <button class="ctrl-btn" id="g-undo" onclick="undoLast()">↩</button>
+    <button class="ctrl-btn" onclick="showStats()">☰</button>
   </div>
 </div>
 
@@ -375,15 +389,20 @@
 </div>
 
 <!-- PLAYER SELECT -->
-<div class="screen split" id="player-select" style="position:relative">
+<div class="screen" id="player-select" style="position:relative;flex-direction:column!important">
   <div class="float-label" id="ps-tag">Player</div>
-  <button class="split-btn" id="ps-left" onclick="selectPlayer('left')">
-    <div class="split-label" id="ps-left-name">P2</div>
-    <div class="split-sub" id="ps-left-action">+1</div>
-  </button>
-  <button class="split-btn" id="ps-right" onclick="selectPlayer('right')">
-    <div class="split-label" id="ps-right-name">P1</div>
-    <div class="split-sub" id="ps-right-action">+1</div>
+  <div style="flex:1;display:flex;flex-direction:row;min-height:0">
+    <button class="split-btn" id="ps-left" onclick="selectPlayer('left')">
+      <div class="split-label" id="ps-left-name">P2</div>
+      <div class="split-sub" id="ps-left-action">+1</div>
+    </button>
+    <button class="split-btn" id="ps-right" onclick="selectPlayer('right')">
+      <div class="split-label" id="ps-right-name">P1</div>
+      <div class="split-sub" id="ps-right-action">+1</div>
+    </button>
+  </div>
+  <button class="opp-miss-btn" id="opp-miss-btn" onclick="oppMissedServe()" style="display:none">
+    <span style="font-size:clamp(14px,5.5vw,20px);font-weight:800;color:#FFB300">Opp serve error</span>
   </button>
 </div>
 
@@ -421,13 +440,20 @@
   <div class="stats-top-bar">
     <button class="stats-bar-btn" onclick="hideStats()">← Back</button>
     <button class="stats-bar-btn" style="color:#64B5F6" onclick="showExport()">Export</button>
-    <button class="stats-bar-btn" onclick="showSettings()">Layout</button>
+    <button class="stats-bar-btn" onclick="showSettings()">Config</button>
     <button class="stats-bar-btn" style="color:#FF5252" onclick="showConfirm()">Reset</button>
   </div>
   <div id="stats-content"></div>
 </div>
-<div class="overlay" id="settings-view" style="padding:clamp(8px,3vw,16px)">
+<div class="overlay" id="settings-view" style="padding:clamp(16px,12%,60px) clamp(12px,8%,40px);justify-content:center">
   <div class="stats-title">Settings</div>
+  <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:clamp(6px,2vw,10px)">
+    <span class="setting-label">Player names</span>
+    <div style="display:flex;gap:clamp(4px,1.5vw,8px)">
+      <input id="name-p1" class="name-input" style="border-left:3px solid #448AFF" placeholder="P1" maxlength="12" oninput="saveNames()">
+      <input id="name-p2" class="name-input" style="border-left:3px solid #FF9100" placeholder="P2" maxlength="12" oninput="saveNames()">
+    </div>
+  </div>
   <div class="setting-row" onclick="toggleLayout()">
     <span class="setting-label">Player sides</span>
     <span class="setting-val" id="layout-val"></span>
@@ -435,7 +461,7 @@
   <div style="font-size:clamp(7px,2vw,9px);color:#444;text-align:center;margin-top:4px;max-width:300px;line-height:1.4">Tap to swap left/right</div>
   <div class="stats-btn-row" style="margin-top:12px"><button class="stats-btn" onclick="hideSettings()">Back</button></div>
 </div>
-<div class="overlay" id="export-view" style="padding:clamp(8px,3vw,16px)">
+<div class="overlay" id="export-view" style="padding:clamp(16px,12%,60px) clamp(12px,8%,40px);justify-content:center">
   <div class="stats-title">Export</div>
   <button class="export-btn" style="background:#1a1a3a;color:#7C8EFF" onclick="showQR()">QR code</button>
   <button class="export-btn" style="background:#0a3a1a;color:#66BB6A" onclick="showSheetsSetup()">Google Sheets</button>
@@ -444,16 +470,16 @@
   <div class="vlc-hint" id="vlc-hint"></div>
   <div class="stats-btn-row"><button class="stats-btn" onclick="hideExport()">Back</button></div>
 </div>
-<div class="overlay" id="qr-view" style="padding:clamp(8px,3vw,16px)">
+<div class="overlay" id="qr-view" style="padding:clamp(16px,12%,60px) clamp(12px,8%,40px);justify-content:center">
   <div class="qr-container"><div class="stats-title">Scan with phone</div><div id="qr-display"></div><div class="qr-hint" id="qr-hint"></div></div>
   <div class="stats-btn-row" style="flex-shrink:0;padding-bottom:8px"><button class="stats-btn" onclick="hideQR()">Back</button></div>
 </div>
-<div class="overlay" id="sheets-view" style="padding:clamp(8px,3vw,16px)">
+<div class="overlay" id="sheets-view" style="padding:clamp(16px,12%,60px) clamp(12px,8%,40px);justify-content:center">
   <div class="stats-title">Google Sheets</div>
   <div id="sheets-content"></div>
   <div class="stats-btn-row" style="margin-top:8px"><button class="stats-btn" onclick="hideSheets()">Back</button></div>
 </div>
-<div class="overlay" id="confirm-view" style="padding:clamp(8px,3vw,16px)">
+<div class="overlay" id="confirm-view" style="padding:clamp(16px,12%,60px) clamp(12px,8%,40px);justify-content:center">
   <div class="confirm-text">Reset?</div>
   <div class="confirm-sub" id="confirm-sub"></div>
   <div class="confirm-btns">
@@ -467,11 +493,30 @@
    CONFIG
    ═══════════════════════════════════ */
 var PL=[{name:"P1",color:"#448AFF"},{name:"P2",color:"#FF9100"}];
+
+/* ═══════════════════════════════════
+   PLAYER NAME INIT
+   Priority: URL params → localStorage → defaults
+   ═══════════════════════════════════ */
+(function initNames(){
+  var params=new URLSearchParams(location.search);
+  var p1=params.get("p1"),p2=params.get("p2");
+  if(p1)PL[0].name=p1;
+  if(p2)PL[1].name=p2;
+  // If no URL params, try localStorage
+  if(!p1||!p2){
+    try{
+      var s=localStorage.getItem("bv_players");
+      if(s){var d=JSON.parse(s);if(!p1&&d.p1)PL[0].name=d.p1;if(!p2&&d.p2)PL[1].name=d.p2}
+    }catch(e){}
+  }
+})();
+
 var SO={frame:"#448AFF",plus:{n:"#014d1e",f:"#00C853"},zero:{n:"#4d3800",f:"#FFB300"},minus:{n:"#4d0a15",f:"#FF1744"}};
 var TR={frame:"#FF9100",plus:{n:"#014d1e",f:"#00C853"},minus:{n:"#4d0a15",f:"#FF1744"}};
 var ACT_COL={1:"#00C853",0:"#FFB300","-1":"#FF1744"};
 var ACT_LBL={1:"+1",0:"0","-1":"-1"};
-var sheetsUrl="";
+var sheetsUrl="https://script.google.com/macros/s/AKfycbztM_I1rxvEUB2PXn8MSGgAztHBnOrQ1dsbbw3zBFLLFXa3W3GKhQNnQLs0XjYENP61/exec";
 var layout="p2left";
 
 /* ═══════════════════════════════════
@@ -486,7 +531,9 @@ function freshState(){
     sets:[],t0:Date.now(),hist:[],
     firstTeam:null,ourServer:0,ourNextServer:0,
     theirServer:0,theirNextServer:0,pending:null,
-    videoSync:null
+    videoSync:null,
+    livePush:false,
+    overlay:{sideout:false,momentum:false,ticker:false,players:false,serve:false,autoShow:true}
   };
 }
 G=freshState();
@@ -497,11 +544,72 @@ var fT=null;
    ═══════════════════════════════════ */
 function $(id){return document.getElementById(id)||document.createElement("div")}
 function vib(ms){try{if(navigator.vibrate)navigator.vibrate(ms)}catch(e){}}
+
+/* ═══════════════════════════════════
+   SWIPE-BACK PROTECTION
+   Uses History API so swiping back navigates
+   within the app instead of leaving the page.
+   ═══════════════════════════════════ */
+var screenStack=["start-screen"];
+var handlingPop=false;
+
 function show(id){
   var s=document.querySelectorAll(".screen");
   for(var i=0;i<s.length;i++)s[i].classList.remove("active");
   $(id).classList.add("active");
+  // Push to stack and browser history
+  if(!handlingPop){
+    screenStack.push(id);
+    try{history.pushState({screen:id},"","")}catch(e){}
+  }
 }
+
+function showOverlay(id){
+  $(id).classList.add("active");
+  if(!handlingPop){
+    screenStack.push("overlay:"+id);
+    try{history.pushState({overlay:id},"","")}catch(e){}
+  }
+}
+
+function hideOverlayById(id){
+  $(id).classList.remove("active");
+}
+
+window.addEventListener("popstate",function(e){
+  handlingPop=true;
+  if(screenStack.length>1){
+    var prev=screenStack.pop();
+    // If it was an overlay, just close it
+    if(prev.indexOf("overlay:")===0){
+      var ovId=prev.substring(8);
+      $(ovId).classList.remove("active");
+    }else{
+      // Go back to previous screen
+      var target=screenStack[screenStack.length-1];
+      if(target.indexOf("overlay:")===0) target="game-screen";
+      var s=document.querySelectorAll(".screen");
+      for(var i=0;i<s.length;i++)s[i].classList.remove("active");
+      $(target).classList.add("active");
+    }
+  }
+  // Always keep at least 2 history entries so we never leave
+  try{history.pushState({guard:true},"","")}catch(e){}
+  handlingPop=false;
+});
+
+// Seed initial history entries to prevent leaving on first swipe
+try{
+  history.replaceState({screen:"start-screen"},"","");
+  history.pushState({guard:true},"","");
+}catch(e){}
+
+// Also warn on actual page unload during active match
+window.addEventListener("beforeunload",function(e){
+  if(G&&(G.sU>0||G.sT>0||G.hist.length>0)){
+    e.preventDefault();e.returnValue="";
+  }
+});
 function hexDk(h,f){
   var r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);
   return"#"+((1<<24)+(Math.round(r*f)<<16)+(Math.round(g*f)<<8)+Math.round(b*f)).toString(16).slice(1);
@@ -512,23 +620,25 @@ function hexDk(h,f){
    ═══════════════════════════════════ */
 function gs(acts,ph){
   var a=acts[ph],t=a.length;
-  if(!t)return{total:0,plus:0,zero:0,minus:0,eff:0,blocks:0,defense:0,aces:0,svcErr:0,lostPt:0,spikes:0,shots:0,blockOuts:0,secondBalls:0};
-  var p=0,z=0,m=0,sm=0,bl=0,df=0,ac=0,sv=0,lp=0,sp=0,sh=0,bo=0,sb=0;
+  if(!t)return{total:0,plus:0,zero:0,minus:0,eff:0,blocks:0,defense:0,aces:0,svcErr:0,lostPt:0,oppSvcErr:0,spikes:0,shots:0,blockOuts:0,secondBalls:0};
+  var p=0,z=0,m=0,sm=0,bl=0,df=0,ac=0,sv=0,lp=0,ose=0,sp=0,sh=0,bo=0,sb=0;
   for(var i=0;i<t;i++){
     var x=a[i];
+    if(x.tp==="opp_service_error"){ose++;continue}
     if(x.v===1){p++;if(x.tp==="block")bl++;if(x.tp==="defense")df++;if(x.tp==="ace")ac++;if(x.tp==="spike")sp++;if(x.tp==="shot")sh++;if(x.tp==="block_out")bo++;if(x.tp==="second_ball")sb++}
     else if(x.v===0){z++;if(x.tp==="spike")sp++;if(x.tp==="shot")sh++;if(x.tp==="second_ball")sb++}
     else{m++;if(x.tp==="service_error")sv++;if(x.tp==="lost_point")lp++}
     sm+=x.v;
   }
-  return{total:t,plus:p,zero:z,minus:m,eff:(sm/t)*100,blocks:bl,defense:df,aces:ac,svcErr:sv,lostPt:lp,spikes:sp,shots:sh,blockOuts:bo,secondBalls:sb};
+  var ct=t-ose;
+  return{total:ct,plus:p,zero:z,minus:m,eff:ct?(sm/ct)*100:0,blocks:bl,defense:df,aces:ac,svcErr:sv,lostPt:lp,oppSvcErr:ose,spikes:sp,shots:sh,blockOuts:bo,secondBalls:sb};
 }
 function ga(pi){
   var all=[{so:[],tr:[]},{so:[],tr:[]}];
   G.sets.forEach(function(s){for(var p=0;p<2;p++){all[p].so=all[p].so.concat(s.act[p].so);all[p].tr=all[p].tr.concat(s.act[p].tr)}});
   for(var p=0;p<2;p++){all[p].so=all[p].so.concat(G.act[p].so);all[p].tr=all[p].tr.concat(G.act[p].tr)}
   var so=gs(all[pi],"so"),tr=gs(all[pi],"tr"),t=so.total+tr.total,sm=0;
-  all[pi].so.forEach(function(a){sm+=a.v});all[pi].tr.forEach(function(a){sm+=a.v});
+  all[pi].so.forEach(function(a){if(a.tp!=="opp_service_error")sm+=a.v});all[pi].tr.forEach(function(a){sm+=a.v});
   return{total:t,eff:t?((sm/t)*100):0,so:so,tr:tr};
 }
 function ef(s){return s.total?((s.eff>=0?"+":"")+Math.round(s.eff)+"%"):"--"}
@@ -543,24 +653,9 @@ function serveChange(np){
 }
 
 /* ═══════════════════════════════════
-   VIDEO SYNC
+   VIDEO SYNC & VLC CHAPTERS
+   Sync auto-starts when first server is picked.
    ═══════════════════════════════════ */
-function doVideoSync(){
-  G.videoSync=Date.now();
-  vib([100,50,100]);
-  // Flash the button
-  var sb=$("sync-btn");
-  sb.style.color="#fff";sb.style.background="rgba(255,23,68,0.5)";
-  setTimeout(function(){upd()},400);
-  // Start a timer to update the label every second
-  if(window._syncTimer)clearInterval(window._syncTimer);
-  window._syncTimer=setInterval(function(){
-    if(!G.videoSync){clearInterval(window._syncTimer);return}
-    var sec=Math.round((Date.now()-G.videoSync)/1000);
-    var m=Math.floor(sec/60),s=sec%60;
-    $("sync-label").textContent="REC "+m+":"+(s<10?"0":"")+s;
-  },1000);
-}
 function msToTC(ms){
   if(ms<0)ms=0;
   var h=Math.floor(ms/3600000);ms%=3600000;
@@ -619,6 +714,25 @@ function toggleLayout(){layout=layout==="p2left"?"p1left":"p2left";updLayoutLabe
 function updLayoutLabel(){$("layout-val").textContent="< "+PL[getLP()].name+" | "+PL[getRP()].name+" >"}
 
 /* ═══════════════════════════════════
+   PLAYER NAMES
+   ═══════════════════════════════════ */
+function saveNames(){
+  var n1=($("name-p1").value||"").trim();
+  var n2=($("name-p2").value||"").trim();
+  if(n1)PL[0].name=n1; else PL[0].name="P1";
+  if(n2)PL[1].name=n2; else PL[1].name="P2";
+  try{localStorage.setItem("bv_players",JSON.stringify({p1:PL[0].name,p2:PL[1].name}))}catch(e){}
+  updNames();
+}
+function updNames(){
+  // Server screen
+  $("srv-p1-label").textContent=PL[0].name;
+  $("srv-p2-label").textContent=PL[1].name;
+}
+// Init names on load
+updNames();
+
+/* ═══════════════════════════════════
    START FLOW
    ═══════════════════════════════════ */
 function setFirstTeam(t){
@@ -630,6 +744,7 @@ function setFirstServer(pi){
   G.ourNextServer=pi;G.theirServer=0;G.theirNextServer=0;
   if(G.firstTeam==="us"){G.ourServer=pi;G.phase="tr"}
   else{G.ourServer=pi;G.phase="so"}
+  G.videoSync=Date.now();
   show("game-screen");upd();vib(50);
 }
 
@@ -668,19 +783,6 @@ function upd(){
 
   $("g-undo").style.opacity=G.hist.length?"0.7":"0.2";
   $("g-bot-sub").textContent=iso?"Error":"Lost point";
-
-  // Sync indicator
-  var sb=$("sync-btn"),sl=$("sync-label");
-  if(G.videoSync){
-    sb.style.color="#FF1744";sb.style.background="rgba(255,23,68,0.15)";
-    var sec=Math.round((Date.now()-G.videoSync)/1000);
-    var m=Math.floor(sec/60),s=sec%60;
-    sl.textContent="REC "+m+":"+(s<10?"0":"")+s;
-    sl.style.color="rgba(255,80,80,0.5)";
-  }else{
-    sb.style.color="rgba(255,255,255,0.25)";sb.style.background="rgba(255,255,255,0.05)";
-    sl.textContent="";
-  }
 }
 
 /* ═══════════════════════════════════
@@ -743,7 +845,22 @@ function showPlayerSelect(v,type){
   $("ps-left-action").style.color=color;
   $("ps-right-action").textContent=label;
   $("ps-right-action").style.color=color;
+  // Show opp miss button only during sideout +1
+  $("opp-miss-btn").style.display=(iso&&v===1)?"flex":"none";
   show("player-select");
+}
+function oppMissedServe(){
+  if(!G.pending)return;
+  G.pending.tp="opp_service_error";
+  G.pending.pi=-1; // no player
+  vib(40);
+  // Record under a neutral player index (0) but with distinct type
+  var ph="so";
+  G.act[0][ph].push({v:1,t:Date.now(),e:Date.now()-G.t0,server:-1,oSrv:G.theirServer,tp:"opp_service_error"});
+  G.hist.push({ph:"so",pi:0,v:1,sc:"us",srv:G.ourServer,nxt:G.ourNextServer,tsrv:G.theirServer,tnxt:G.theirNextServer,tp:"opp_service_error"});
+  G.pending=null;
+  show("game-screen");
+  awardPoint("us");
 }
 function selectPlayer(side){
   var pi=side==="left"?getLP():getRP();
@@ -774,6 +891,7 @@ function resolvePoint(w){
 function awardPoint(to){
   if(to==="us")G.sU++;else G.sT++;
   if(!checkSetEnd()){serveChange(to==="us"?"tr":"so");upd()}
+  livePush(to==="us"?"+1":"-1");
 }
 function checkSetEnd(){
   var t=G.target;
@@ -797,6 +915,7 @@ function undoLast(){
   G.phase=l.ph;G.ourServer=l.srv;G.ourNextServer=l.nxt;
   G.theirServer=l.tsrv;G.theirNextServer=l.tnxt;
   vib(20);show("game-screen");upd();
+  livePush("undo");
 }
 function showSetComplete(){
   $("set-result-label").textContent="Set "+G.setNum+" complete";
@@ -824,6 +943,113 @@ function startNextSet(){
 }
 
 /* ═══════════════════════════════════
+   LIVE PUSH (Google Sheets)
+   ═══════════════════════════════════ */
+function getLast8(){
+  // Last 8 point results from current history
+  var r=[];
+  for(var i=G.hist.length-1;i>=0&&r.length<8;i--){
+    if(G.hist[i].sc==="us")r.unshift(1);
+    else if(G.hist[i].sc==="them")r.unshift(-1);
+  }
+  return r;
+}
+function getLastAction(){
+  if(!G.hist.length)return"";
+  var h=G.hist[G.hist.length-1];
+  var lbl=ACT_LBL[h.v]||"";
+  var tp=h.tp?(" "+h.tp.replace("_"," ")):"";
+  return lbl+tp+" "+PL[h.pi].name;
+}
+function buildLivePayload(action){
+  var teamSOsum=0,teamSOcnt=0;
+  var allSets=getAllSetsData();
+  allSets.forEach(function(acts){
+    for(var pi=0;pi<2;pi++){acts[pi].so.forEach(function(a){teamSOsum+=a.v;teamSOcnt++})}
+  });
+  var p1=ga(0),p2=ga(1);
+  var sv=serveStats();
+  var tc=trConversion();
+  var iso=G.phase==="so";
+  return{
+    timestamp:new Date().toISOString(),
+    scoreUs:G.sU, scoreThem:G.sT,
+    setsUs:G.setsU, setsThem:G.setsT,
+    setNum:G.setNum,
+    phase:iso?"sideout":"transition",
+    server:iso?"":(PL[G.ourServer].name),
+    oppServer:iso?((G.theirServer===0?"1st":"2nd")):"",
+    lastAction:action==="undo"?"undo":getLastAction(),
+    soEffTeam:teamSOcnt?Math.round((teamSOsum/teamSOcnt)*100):0,
+    soEffP1:Math.round(p1.so.eff||0),
+    soEffP2:Math.round(p2.so.eff||0),
+    trConvPct:tc.pct,
+    aces:sv.aces, svcErrors:sv.errors,
+    matchOver:G.matchOver,
+    last8:getLast8(),
+    p1Name:PL[0].name, p1Eff:Math.round(p1.eff||0),
+    p2Name:PL[1].name, p2Eff:Math.round(p2.eff||0),
+    overlay:G.overlay
+  };
+}
+function livePush(action){
+  if(!G.livePush||!sheetsUrl)return;
+  var payload=buildLivePayload(action);
+  try{
+    fetch(sheetsUrl,{
+      method:"POST",mode:"no-cors",
+      headers:{"Content-Type":"text/plain"},
+      body:JSON.stringify(payload)
+    }).catch(function(){});
+  }catch(e){}
+}
+function toggleOverlay(key){
+  G.overlay[key]=!G.overlay[key];
+  updStreamToggles();
+  // Push overlay state change immediately
+  if(G.livePush&&sheetsUrl){
+    livePush("overlay");
+  }
+  vib(30);
+}
+function toggleAutoShow(){
+  G.overlay.autoShow=!G.overlay.autoShow;
+  updStreamToggles();
+  if(G.livePush&&sheetsUrl)livePush("overlay");
+  vib(30);
+}
+function toggleLivePush(){
+  G.livePush=!G.livePush;
+  updStreamToggles();
+  if(G.livePush&&sheetsUrl){
+    // Send test ping
+    livePush("connect");
+  }
+  vib(G.livePush?[50,30,50]:30);
+}
+function updStreamToggles(){
+  var mods=["sideout","momentum","ticker","players","serve"];
+  mods.forEach(function(m){
+    var el=$("stog-"+m);
+    if(el){
+      el.style.background=G.overlay[m]?"rgba(68,138,255,0.3)":"#1a1a1a";
+      el.style.color=G.overlay[m]?"#64B5F6":"#555";
+    }
+  });
+  var ab=$("stog-auto");
+  if(ab){
+    ab.style.background=G.overlay.autoShow?"rgba(255,145,0,0.2)":"#1a1a1a";
+    ab.style.color=G.overlay.autoShow?"#FF9100":"#555";
+  }
+  var lp=$("stog-live");
+  if(lp){
+    lp.style.background=G.livePush?"rgba(0,200,83,0.2)":"#1a1a1a";
+    lp.style.color=G.livePush?"#00C853":"#555";
+    lp.textContent=G.livePush?"Live ON":"Live OFF";
+  }
+}
+
+/* ═══════════════════════════════════
    ANALYTICS HELPERS
    ═══════════════════════════════════ */
 // Get combined actions for a specific set (0-indexed from G.sets, or current)
@@ -842,6 +1068,7 @@ function soByOppServer(pi,oSrvIdx){
   var all=getAllSetsData(),sum=0,cnt=0;
   all.forEach(function(acts){
     acts[pi].so.forEach(function(a){
+      if(a.tp==="opp_service_error")return;
       if(a.oSrv===oSrvIdx){sum+=a.v;cnt++}
     });
   });
@@ -861,7 +1088,7 @@ function trConversion(){
 }
 // Total serve stats across both players
 function serveStats(){
-  var aces=0,errs=0,total=0;
+  var aces=0,errs=0,total=0,oppErrs=0;
   var all=getAllSetsData();
   all.forEach(function(acts){
     for(var pi=0;pi<2;pi++){
@@ -870,9 +1097,12 @@ function serveStats(){
         if(a.v===-1&&a.tp==="service_error")errs++;
         if(a.server>=0)total++;
       });
+      acts[pi].so.forEach(function(a){
+        if(a.tp==="opp_service_error")oppErrs++;
+      });
     }
   });
-  return{aces:aces,errors:errs,total:total};
+  return{aces:aces,errors:errs,total:total,oppErrors:oppErrs};
 }
 // Kill type distribution for a player
 function killDist(pi){
@@ -964,7 +1194,7 @@ function playerSetSO(pi,setActs){
    STATS VIEW
    ═══════════════════════════════════ */
 function showStats(){
-  $("confirm-view").classList.remove("active");
+  hideOverlayById("confirm-view");
   var c=$("stats-content");c.innerHTML="";
   var h="";
 
@@ -993,6 +1223,31 @@ function showStats(){
   });
   var teamSOpct=teamSOcnt?Math.round((teamSOsum/teamSOcnt)*100):0;
   h+='<div class="st-row" style="background:#0a1a2a;border-left:3px solid #448AFF"><span class="st-row-label" style="color:#fff">Total <span style="color:#555">('+teamSOcnt+')</span></span><span class="st-row-val" style="color:#448AFF">'+(teamSOpct>=0?"+":"")+teamSOpct+'%</span></div>';
+  // Earned SO% (excluding opp service errors)
+  var earnSum=0,earnCnt=0;
+  allSets.forEach(function(acts){
+    for(var pi=0;pi<2;pi++){acts[pi].so.forEach(function(a){if(a.tp!=="opp_service_error"){earnSum+=a.v;earnCnt++}})}
+  });
+  if(earnCnt<teamSOcnt){
+    var earnPct=earnCnt?Math.round((earnSum/earnCnt)*100):0;
+    h+='<div class="st-row"><span class="st-row-label">Earned <span style="color:#555">('+earnCnt+')</span></span><span class="st-row-val">'+(earnPct>=0?"+":"")+earnPct+'%</span></div>';
+  }
+
+  // ── P1 & P2 SIDEOUT % (right under team) ──
+  for(var pi=0;pi<2;pi++){
+    var pso=ga(pi).so;
+    h+='<div class="st-row" style="border-left:3px solid '+PL[pi].color+'"><span class="st-row-label" style="color:'+PL[pi].color+'">'+PL[pi].name+' SO <span style="color:#555">('+pso.total+')</span></span><span class="st-row-val">'+ef(pso)+'</span></div>';
+    // Per-set breakdown
+    if(allSets.length>1){
+      allSets.forEach(function(acts,si){
+        var ps=playerSetSO(pi,acts);
+        if(ps.total){
+          var sn=si<G.sets.length?"S"+(si+1):"Cur";
+          h+='<div class="st-row" style="padding-left:clamp(16px,5vw,24px)"><span class="st-row-label">'+sn+'</span><span class="st-row-val">'+ef(ps)+' <span style="color:#555">('+ps.total+')</span></span></div>';
+        }
+      });
+    }
+  }
 
   // ── TEAM TRANSITION % ──
   h+='<div class="st-hdr">Transition conversion</div>';
@@ -1006,47 +1261,26 @@ function showStats(){
   h+='<div class="st-row"><span class="st-row-label">Service errors</span><span class="st-row-val" style="color:#FF5252">'+sv.errors+'</span></div>';
   var svRatio=sv.aces+sv.errors?Math.round((sv.aces/(sv.aces+sv.errors))*100):0;
   h+='<div class="st-row"><span class="st-row-label">Ace/error ratio</span><span class="st-row-val">'+svRatio+'%</span></div>';
+  if(sv.oppErrors) h+='<div class="st-row"><span class="st-row-label">Opp serve errors</span><span class="st-row-val" style="color:#FFB300">'+sv.oppErrors+'</span></div>';
 
-  // ── SO BY OPPONENT SERVER ──
-  h+='<div class="st-hdr">Sideout vs opponent server</div>';
-  for(var pi=0;pi<2;pi++){
-    var s1=soByOppServer(pi,0),s2=soByOppServer(pi,1);
-    h+='<div class="st-row"><span class="st-row-label" style="color:'+PL[pi].color+'">'+PL[pi].name+' vs 1st</span><span class="st-row-val">'+(s1.total?(s1.eff>=0?"+":"")+s1.eff+'%':"--")+' <span style="color:#555">('+s1.total+')</span></span></div>';
-    h+='<div class="st-row"><span class="st-row-label" style="color:'+PL[pi].color+'">'+PL[pi].name+' vs 2nd</span><span class="st-row-val">'+(s2.total?(s2.eff>=0?"+":"")+s2.eff+'%':"--")+' <span style="color:#555">('+s2.total+')</span></span></div>';
-  }
-
-  // ── PLAYER BREAKDOWNS ──
+  // ── PLAYER BREAKDOWNS (SO detail + TR detail, no overall) ──
   for(var i=0;i<2;i++){
     var p=PL[i],a=ga(i);
-    h+='<div class="st-hdr" style="color:'+p.color+'">'+p.name+' overview</div>';
+    h+='<div class="st-hdr" style="color:'+p.color+'">'+p.name+' breakdown</div>';
 
-    // Overall
-    h+='<div class="player-stat-block" style="border-left:3px solid '+p.color+'"><div class="player-stat-row"><span class="player-stat-name" style="color:'+p.color+'">Overall</span><span class="player-stat-eff">'+ef(a)+' <span style="color:#555;font-size:0.7em">('+a.total+')</span></span></div></div>';
-
-    // SO
+    // SO detail
     h+='<div class="player-stat-block" style="border-left:3px solid '+SO.frame+'"><div class="player-stat-row"><span class="player-stat-name" style="color:'+SO.frame+'">Sideout</span><span class="player-stat-eff">'+ef(a.so)+'</span></div><div class="player-stat-counts"><span style="color:#00C853">'+a.so.plus+'</span><span style="color:#555"> / </span><span style="color:#FFB300">'+a.so.zero+'</span><span style="color:#555"> / </span><span style="color:#FF1744">'+a.so.minus+'</span></div>';
     var sod=[];if(a.so.spikes)sod.push("spk:"+a.so.spikes);if(a.so.shots)sod.push("sht:"+a.so.shots);if(a.so.blockOuts)sod.push("bko:"+a.so.blockOuts);if(a.so.secondBalls)sod.push("2nd:"+a.so.secondBalls);
     if(sod.length)h+='<div class="tr-detail">'+sod.join(' · ')+'</div>';
     h+='</div>';
 
-    // TR
+    // TR detail
     h+='<div class="player-stat-block" style="border-left:3px solid '+TR.frame+'"><div class="player-stat-row"><span class="player-stat-name" style="color:'+TR.frame+'">Transition</span><span class="player-stat-eff">'+ef(a.tr)+'</span></div><div class="player-stat-counts"><span style="color:#00C853">'+a.tr.plus+'</span><span style="color:#555"> / </span><span style="color:#FF1744">'+a.tr.minus+'</span></div>';
     var trd=[];if(a.tr.blocks)trd.push("blk:"+a.tr.blocks);if(a.tr.defense)trd.push("def:"+a.tr.defense);if(a.tr.aces)trd.push("ace:"+a.tr.aces);
     if(trd.length)h+='<div class="tr-detail">'+trd.join(' · ')+'</div>';
     if(a.tr.svcErr)h+='<div class="tr-detail" style="color:#FF5252">svc err: '+a.tr.svcErr+'</div>';
     if(a.tr.lostPt)h+='<div class="tr-detail" style="color:#FF8A65">lost pt: '+a.tr.lostPt+'</div>';
     h+='</div>';
-
-    // Per-set SO for this player
-    if(allSets.length>1){
-      h+='<div style="margin-top:2px">';
-      allSets.forEach(function(acts,si){
-        var pso=playerSetSO(i,acts);
-        var sn=si<G.sets.length?"S"+(si+1):"Cur";
-        h+='<div class="st-row"><span class="st-row-label">'+sn+' SO</span><span class="st-row-val">'+ef(pso)+' <span style="color:#555">('+pso.total+')</span></span></div>';
-      });
-      h+='</div>';
-    }
 
     // Kill distribution
     var kd=killDist(i);
@@ -1072,36 +1306,65 @@ function showStats(){
     h+='<div class="st-row"><span class="st-row-label">2nd half <span style="color:#555">('+arc.secondN+')</span></span><span class="st-row-val">'+(arc.secondEff>=0?"+":"")+arc.secondEff+'%</span></div>';
   }
 
+  // ── SO BY OPPONENT SERVER (moved to bottom) ──
+  h+='<div class="st-hdr">Sideout vs opponent server</div>';
+  for(var pi=0;pi<2;pi++){
+    var s1=soByOppServer(pi,0),s2=soByOppServer(pi,1);
+    h+='<div class="st-row"><span class="st-row-label" style="color:'+PL[pi].color+'">'+PL[pi].name+' vs 1st</span><span class="st-row-val">'+(s1.total?(s1.eff>=0?"+":"")+s1.eff+'%':"--")+' <span style="color:#555">('+s1.total+')</span></span></div>';
+    h+='<div class="st-row"><span class="st-row-label" style="color:'+PL[pi].color+'">'+PL[pi].name+' vs 2nd</span><span class="st-row-val">'+(s2.total?(s2.eff>=0?"+":"")+s2.eff+'%':"--")+' <span style="color:#555">('+s2.total+')</span></span></div>';
+  }
+
   // Match elapsed
   var elapsed=Math.round((Date.now()-G.t0)/60000);
   if(elapsed>0) h+='<div style="text-align:center;color:#333;font-size:clamp(8px,2vw,10px);margin-top:clamp(8px,2vw,12px)">'+elapsed+' min elapsed</div>';
 
+  // ── STREAM CONTROLS ──
+  if(sheetsUrl){
+    h+='<div class="st-hdr">Stream overlay</div>';
+    h+='<div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:4px">';
+    var mods=[{k:"sideout",l:"SO%"},{k:"momentum",l:"Mom"},{k:"ticker",l:"Ticker"},{k:"players",l:"Players"},{k:"serve",l:"Serve"}];
+    mods.forEach(function(m){
+      var on=G.overlay[m.k];
+      h+='<button id="stog-'+m.k+'" onclick="toggleOverlay(\''+m.k+'\')" style="padding:clamp(5px,1.5vw,8px) clamp(6px,2vw,10px);border-radius:clamp(3px,1vw,5px);font-size:clamp(8px,2.2vw,11px);font-weight:700;cursor:pointer;background:'+(on?"rgba(68,138,255,0.3)":"#1a1a1a")+';color:'+(on?"#64B5F6":"#555")+'">'+m.l+'</button>';
+    });
+    h+='</div>';
+    h+='<div style="display:flex;gap:3px">';
+    h+='<button id="stog-auto" onclick="toggleAutoShow()" style="flex:1;padding:clamp(5px,1.5vw,8px);border-radius:clamp(3px,1vw,5px);font-size:clamp(8px,2.2vw,11px);font-weight:700;cursor:pointer;background:'+(G.overlay.autoShow?"rgba(255,145,0,0.2)":"#1a1a1a")+';color:'+(G.overlay.autoShow?"#FF9100":"#555")+'">Auto-show</button>';
+    h+='<button id="stog-live" onclick="toggleLivePush()" style="flex:1;padding:clamp(5px,1.5vw,8px);border-radius:clamp(3px,1vw,5px);font-size:clamp(8px,2.2vw,11px);font-weight:700;cursor:pointer;background:'+(G.livePush?"rgba(0,200,83,0.2)":"#1a1a1a")+';color:'+(G.livePush?"#00C853":"#555")+'">'+(G.livePush?"Live ON":"Live OFF")+'</button>';
+    h+='</div>';
+  }
+
   c.innerHTML=h;
-  $("stats-view").classList.add("active");
+  showOverlay("stats-view");
 }
-function hideStats(){$("stats-view").classList.remove("active")}
-function showSettings(){$("stats-view").classList.remove("active");updLayoutLabel();$("settings-view").classList.add("active")}
-function hideSettings(){$("settings-view").classList.remove("active");showStats()}
+function hideStats(){hideOverlayById("stats-view")}
+function showSettings(){
+  hideOverlayById("stats-view");
+  updLayoutLabel();
+  $("name-p1").value=PL[0].name==="P1"?"":PL[0].name;
+  $("name-p2").value=PL[1].name==="P2"?"":PL[1].name;
+  showOverlay("settings-view");
+}
+function hideSettings(){hideOverlayById("settings-view");showStats()}
 
 /* ═══════════════════════════════════
    EXPORT
    ═══════════════════════════════════ */
 function showExport(){
-  $("stats-view").classList.remove("active");
-  // Update VLC hint
+  hideOverlayById("stats-view");
   var vh=$("vlc-hint");
   if(G.videoSync){
     var sec=Math.round((Date.now()-G.videoSync)/1000);
     var m=Math.floor(sec/60);
-    vh.textContent="Synced "+m+" min ago — timecodes relative to sync point";
+    vh.textContent="Recording since match start ("+m+" min ago)";
     vh.style.color="#FF9100";
   }else{
-    vh.textContent="No video sync — timecodes from match start. Tap ● on game screen to sync.";
+    vh.textContent="Start a match to enable timecodes";
     vh.style.color="#666";
   }
-  $("export-view").classList.add("active");
+  showOverlay("export-view");
 }
-function hideExport(){$("export-view").classList.remove("active");showStats()}
+function hideExport(){hideOverlayById("export-view");showStats()}
 function buildDataStr(){
   var d=new Date().toISOString().slice(0,10),l=["BV "+d,"Sets:"+G.setsU+"-"+G.setsT];
   G.sets.forEach(function(s){l.push("S"+s.setNum+":"+s.sU+"-"+s.sT)});
@@ -1174,6 +1437,7 @@ function buildCSV(){
   r.push("Aces,"+sv.aces);
   r.push("Service_Errors,"+sv.errors);
   r.push("Ace_Error_Ratio,"+(sv.aces+sv.errors?Math.round((sv.aces/(sv.aces+sv.errors))*100):0)+"%");
+  r.push("Opp_Service_Errors,"+sv.oppErrors);
 
   // Section 7: SO by opponent server
   r.push("");r.push("--- SIDEOUT VS OPPONENT SERVER ---");
@@ -1192,18 +1456,18 @@ function buildCSV(){
 
   return r.join("\n");
 }
-function showQR(){$("export-view").classList.remove("active");var d=buildDataStr(),u="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data="+encodeURIComponent(d);$("qr-display").innerHTML='<img style="border-radius:6px;background:#fff;padding:6px" src="'+u+'" width="160" height="160" onerror="qrFail()">';$("qr-hint").textContent="Scan with phone camera";$("qr-view").classList.add("active")}
+function showQR(){hideOverlayById("export-view");var d=buildDataStr(),u="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data="+encodeURIComponent(d);$("qr-display").innerHTML='<img style="border-radius:6px;background:#fff;padding:6px" src="'+u+'" width="160" height="160" onerror="qrFail()">';$("qr-hint").textContent="Scan with phone camera";showOverlay("qr-view")}
 function qrFail(){$("qr-display").innerHTML='<div style="color:#888;font-size:9px;background:#111;padding:6px;border-radius:4px;white-space:pre-wrap;max-height:120px;overflow-y:auto">'+buildDataStr()+'</div>'}
-function hideQR(){$("qr-view").classList.remove("active");showExport()}
-function showSheetsSetup(){$("export-view").classList.remove("active");var sc=$("sheets-content");if(sheetsUrl){sc.innerHTML='<div style="font-size:10px;color:#66BB6A;margin-bottom:8px;text-align:center">Connected</div><button class="export-btn" style="background:#0a3a1a;color:#66BB6A;padding:12px" onclick="sendToSheets()">Send</button><div class="sheets-status" id="sheets-status"></div><div style="margin-top:8px"><button class="stats-btn" style="font-size:8px" onclick="editSheetsUrl()">Change URL</button></div>'}else{sc.innerHTML='<div style="font-size:9px;color:#888;text-align:center;margin-bottom:8px;line-height:1.4">Paste Apps Script URL</div><input class="sheets-input" id="sheets-url-input" type="url" placeholder="https://script.google.com/..."><button class="export-btn" style="background:#0a3a1a;color:#66BB6A;padding:10px;font-size:10px" onclick="saveSheetsUrl()">Save & send</button><div class="sheets-status" id="sheets-status"></div>'};$("sheets-view").classList.add("active")}
-function editSheetsUrl(){sheetsUrl="";showSheetsSetup()}
-function saveSheetsUrl(){var u=($("sheets-url-input")||{}).value||"";if(!u)return;sheetsUrl=u;sendToSheets()}
-function sendToSheets(){var st=$("sheets-status");st.innerHTML='<span style="color:#FFB300">Sending...</span>';var p={date:new Date().toISOString(),setsUs:G.setsU,setsThem:G.setsT,matchOver:G.matchOver,setScores:[],players:[]};G.sets.forEach(function(s){p.setScores.push({set:s.setNum,us:s.sU,them:s.sT,winner:s.winner})});if(!G.matchOver)p.setScores.push({set:G.setNum,us:G.sU,them:G.sT,winner:"live"});for(var i=0;i<2;i++){var a=ga(i);p.players.push({name:PL[i].name,eff:Math.round(a.eff*10)/10,so_eff:Math.round(a.so.eff*10)/10,so_p:a.so.plus,so_z:a.so.zero,so_m:a.so.minus,so_spikes:a.so.spikes,so_shots:a.so.shots,so_blockOuts:a.so.blockOuts,so_secondBalls:a.so.secondBalls,tr_eff:Math.round(a.tr.eff*10)/10,tr_p:a.tr.plus,tr_m:a.tr.minus,tr_blocks:a.tr.blocks,tr_defense:a.tr.defense,tr_aces:a.tr.aces,tr_svcErr:a.tr.svcErr,tr_lostPt:a.tr.lostPt})}fetch(sheetsUrl,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(p)}).then(function(){st.innerHTML='<span style="color:#66BB6A">Sent!</span>';vib(50)}).catch(function(){st.innerHTML='<span style="color:#FF1744">Failed</span>'})}
-function hideSheets(){$("sheets-view").classList.remove("active");showExport()}
+function hideQR(){hideOverlayById("qr-view");showExport()}
+function showSheetsSetup(){hideOverlayById("export-view");var sc=$("sheets-content");if(sheetsUrl){sc.innerHTML='<div style="font-size:clamp(9px,2.5vw,12px);color:#66BB6A;margin-bottom:8px;text-align:center">Connected</div><div style="font-size:clamp(8px,2vw,10px);color:#555;text-align:center;margin-bottom:8px">Live push: '+(G.livePush?'<span style="color:#00C853">ON</span>':'<span style="color:#666">OFF</span>')+'</div><button class="export-btn" style="background:#0a3a1a;color:#66BB6A;padding:12px" onclick="sendTestPing()">Send test</button><div class="sheets-status" id="sheets-status"></div><div style="margin-top:8px"><button class="stats-btn" style="font-size:clamp(8px,2vw,10px)" onclick="editSheetsUrl()">Change URL</button></div>'}else{sc.innerHTML='<div style="font-size:clamp(9px,2.5vw,12px);color:#888;text-align:center;margin-bottom:8px;line-height:1.4">Paste Apps Script URL</div><input class="sheets-input" id="sheets-url-input" type="url" placeholder="https://script.google.com/..."><button class="export-btn" style="background:#0a3a1a;color:#66BB6A;padding:10px;font-size:clamp(9px,2.5vw,12px)" onclick="saveSheetsUrl()">Save</button><div class="sheets-status" id="sheets-status"></div>'};showOverlay("sheets-view")}
+function editSheetsUrl(){sheetsUrl="";G.livePush=false;showSheetsSetup()}
+function saveSheetsUrl(){var u=($("sheets-url-input")||{}).value||"";if(!u)return;sheetsUrl=u;var st=$("sheets-status");st.innerHTML='<span style="color:#66BB6A">URL saved! Enable Live Push in stats menu.</span>'}
+function sendTestPing(){var st=$("sheets-status");st.innerHTML='<span style="color:#FFB300">Sending...</span>';var payload=buildLivePayload("test");fetch(sheetsUrl,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(payload)}).then(function(){st.innerHTML='<span style="color:#66BB6A">Sent! Check your sheet.</span>';vib(50)}).catch(function(){st.innerHTML='<span style="color:#FF1744">Failed — check URL</span>'})}
+function hideSheets(){hideOverlayById("sheets-view");showExport()}
 function downloadCSV(){var c=buildCSV(),b=new Blob([c],{type:"text/csv"}),u=URL.createObjectURL(b),l=document.createElement("a");l.href=u;l.download="bv_"+new Date().toISOString().slice(0,10)+".csv";l.click();URL.revokeObjectURL(u)}
-function showConfirm(){$("stats-view").classList.remove("active");$("confirm-sub").textContent="All data will be cleared";$("confirm-view").classList.add("active")}
-function hideConfirm(){$("confirm-view").classList.remove("active");showStats()}
-function resetAll(){G=freshState();document.querySelectorAll(".overlay").forEach(function(o){o.classList.remove("active")});show("start-screen")}
+function showConfirm(){hideOverlayById("stats-view");$("confirm-sub").textContent="All data will be cleared";showOverlay("confirm-view")}
+function hideConfirm(){hideOverlayById("confirm-view");showStats()}
+function resetAll(){G=freshState();document.querySelectorAll(".overlay").forEach(function(o){o.classList.remove("active")});screenStack=["start-screen"];show("start-screen")}
 </script>
 </body>
 </html>
