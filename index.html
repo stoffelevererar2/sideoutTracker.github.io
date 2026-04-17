@@ -1530,15 +1530,23 @@ function getLastAction(){
   return lbl+tp+" "+PL[h.pi].name;
 }
 function buildLivePayload(action){
-  var teamSOsum=0,teamSOcnt=0;
+  var teamSOsum=0,teamSOcnt=0,earnSum=0,earnCnt=0;
   var allSets=getAllSetsData();
   allSets.forEach(function(acts){
-    for(var pi=0;pi<2;pi++){acts[pi].so.forEach(function(a){teamSOsum+=a.v;teamSOcnt++})}
+    for(var pi=0;pi<2;pi++){acts[pi].so.forEach(function(a){
+      teamSOsum+=a.v;teamSOcnt++;
+      if(a.tp!=="opp_service_error"){earnSum+=a.v;earnCnt++}
+    })}
   });
   var p1=ga(0),p2=ga(1);
   var sv=serveStats();
   var tc=trConversion();
+  var runs=scoringRuns();
+  var pace=pointPace();
+  var arc=setArc(G.act);
   var iso=G.phase==="so";
+  var s1p1=soByOppServer(0,0),s2p1=soByOppServer(0,1);
+  var s1p2=soByOppServer(1,0),s2p2=soByOppServer(1,1);
   return{
     timestamp:new Date().toISOString(),
     scoreUs:G.sU, scoreThem:G.sT,
@@ -1549,14 +1557,36 @@ function buildLivePayload(action){
     oppServer:iso?((G.theirServer===0?"1st":"2nd")):"",
     lastAction:action==="undo"?"undo":getLastAction(),
     soEffTeam:teamSOcnt?Math.round((teamSOsum/teamSOcnt)*100):0,
+    earnedSO:earnCnt?Math.round((earnSum/earnCnt)*100):0,
     soEffP1:Math.round(p1.so.eff||0),
     soEffP2:Math.round(p2.so.eff||0),
-    trConvPct:tc.pct,
+    trConvPct:tc.pct, trWins:tc.wins, trTotal:tc.total,
     aces:sv.aces, svcErrors:sv.errors, oppSvcErrors:sv.oppErrors||0,
     matchOver:G.matchOver,
     last8:getLast8(),
     p1Name:PL[0].name, p1Eff:Math.round(p1.eff||0),
     p2Name:PL[1].name, p2Eff:Math.round(p2.eff||0),
+    // Runs + pace
+    bestRunUs:runs.us, bestRunThem:runs.them,
+    pointPace:pace.avg,
+    // Set arc
+    arcFirst:arc?arc.firstEff:0, arcFirstN:arc?arc.firstN:0,
+    arcSecond:arc?arc.secondEff:0, arcSecondN:arc?arc.secondN:0,
+    // P1 sideout detail
+    p1SOplus:p1.so.plus, p1SOzero:p1.so.zero, p1SOminus:p1.so.minus,
+    p1Spk:p1.so.spikes||0, p1Sht:p1.so.shots||0, p1Bko:p1.so.blockOuts||0, p1Snd:p1.so.secondBalls||0,
+    // P1 transition detail
+    p1TRplus:p1.tr.plus, p1TRminus:p1.tr.minus,
+    p1Blk:p1.tr.blocks||0, p1Def:p1.tr.defense||0, p1Ace:p1.tr.aces||0, p1SE:p1.tr.svcErr||0,
+    // P2 sideout detail
+    p2SOplus:p2.so.plus, p2SOzero:p2.so.zero, p2SOminus:p2.so.minus,
+    p2Spk:p2.so.spikes||0, p2Sht:p2.so.shots||0, p2Bko:p2.so.blockOuts||0, p2Snd:p2.so.secondBalls||0,
+    // P2 transition detail
+    p2TRplus:p2.tr.plus, p2TRminus:p2.tr.minus,
+    p2Blk:p2.tr.blocks||0, p2Def:p2.tr.defense||0, p2Ace:p2.tr.aces||0, p2SE:p2.tr.svcErr||0,
+    // SO vs opponent server
+    p1vs1st:s1p1.eff, p1vs1stN:s1p1.total, p1vs2nd:s2p1.eff, p1vs2ndN:s2p1.total,
+    p2vs1st:s1p2.eff, p2vs1stN:s1p2.total, p2vs2nd:s2p2.eff, p2vs2ndN:s2p2.total,
     overlay:G.overlay
   };
 }
