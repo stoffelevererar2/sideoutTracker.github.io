@@ -376,6 +376,7 @@
     <button class="sub-btn" style="background:#0a3a2a" onclick="trType('block')"><span class="sub-label">Block</span><span class="sub-detail">select player</span></button>
     <button class="sub-btn" style="background:#1a2a3a" onclick="trType('defense')"><span class="sub-label">Defense</span><span class="sub-detail">select player</span></button>
     <button class="sub-btn" style="background:#3a2a0a" onclick="trType('ace')"><span class="sub-label">Ace</span><span class="sub-detail" id="ace-sub">auto > P1</span></button>
+    <button class="sub-btn" style="background:#2a1a1a" onclick="trType('unforced_error')"><span class="sub-label">Opp error</span><span class="sub-detail">unforced</span></button>
   </div>
 </div>
 
@@ -773,18 +774,18 @@ function hexDk(h,f){
    ═══════════════════════════════════ */
 function gs(acts,ph){
   var a=acts[ph],t=a.length;
-  if(!t)return{total:0,plus:0,zero:0,minus:0,eff:0,blocks:0,defense:0,aces:0,svcErr:0,lostPt:0,oppSvcErr:0,spikes:0,shots:0,blockOuts:0,secondBalls:0};
-  var p=0,z=0,m=0,sm=0,bl=0,df=0,ac=0,sv=0,lp=0,ose=0,sp=0,sh=0,bo=0,sb=0;
+  if(!t)return{total:0,plus:0,zero:0,minus:0,eff:0,blocks:0,defense:0,aces:0,unfErr:0,svcErr:0,lostPt:0,oppSvcErr:0,spikes:0,shots:0,blockOuts:0,secondBalls:0};
+  var p=0,z=0,m=0,sm=0,bl=0,df=0,ac=0,ue=0,sv=0,lp=0,ose=0,sp=0,sh=0,bo=0,sb=0;
   for(var i=0;i<t;i++){
     var x=a[i];
     if(x.tp==="opp_service_error"){ose++;continue}
-    if(x.v===1){p++;if(x.tp==="block")bl++;if(x.tp==="defense")df++;if(x.tp==="ace")ac++;if(x.tp==="spike")sp++;if(x.tp==="shot")sh++;if(x.tp==="block_out")bo++;if(x.tp==="second_ball")sb++}
+    if(x.v===1){p++;if(x.tp==="block")bl++;if(x.tp==="defense")df++;if(x.tp==="ace")ac++;if(x.tp==="unforced_error")ue++;if(x.tp==="spike")sp++;if(x.tp==="shot")sh++;if(x.tp==="block_out")bo++;if(x.tp==="second_ball")sb++}
     else if(x.v===0){z++;if(x.tp==="spike")sp++;if(x.tp==="shot")sh++;if(x.tp==="second_ball")sb++}
     else{m++;if(x.tp==="service_error")sv++;if(x.tp==="lost_point")lp++}
     sm+=x.v;
   }
   var ct=t-ose;
-  return{total:ct,plus:p,zero:z,minus:m,eff:ct?(sm/ct)*100:0,blocks:bl,defense:df,aces:ac,svcErr:sv,lostPt:lp,oppSvcErr:ose,spikes:sp,shots:sh,blockOuts:bo,secondBalls:sb};
+  return{total:ct,plus:p,zero:z,minus:m,eff:ct?(sm/ct)*100:0,blocks:bl,defense:df,aces:ac,unfErr:ue,svcErr:sv,lostPt:lp,oppSvcErr:ose,spikes:sp,shots:sh,blockOuts:bo,secondBalls:sb};
 }
 function ga(pi){
   var pc=G.act.length; // 2 or 4 players
@@ -1366,7 +1367,7 @@ function soType(type){
 function trType(type){
   if(!G.pending)return;
   G.pending.tp=type;vib(40);
-  if(type==="ace")commitAction(G.ourServer);
+  if(type==="ace"||type==="unforced_error")commitAction(G.ourServer);
   else showPlayerSelect(1,type);
 }
 function trError(isMiss){
@@ -1703,7 +1704,7 @@ function serveStats(){
 }
 function killDist(pi){
   var a=ga(pi),so=a.so,tr=a.tr;
-  return{spikes:so.spikes,shots:so.shots,blockOuts:so.blockOuts,secondBalls:so.secondBalls,blocks:tr.blocks,defense:tr.defense,aces:tr.aces};
+  return{spikes:so.spikes,shots:so.shots,blockOuts:so.blockOuts,secondBalls:so.secondBalls,blocks:tr.blocks,defense:tr.defense,aces:tr.aces,unfErr:tr.unfErr};
 }
 function scoringRuns(){
   var bestUs=0,bestThem=0,curUs=0,curThem=0;
@@ -1896,7 +1897,7 @@ function showStats(){
 
     if(showTR||isStr){
       h+='<div class="player-stat-block" style="border-left:3px solid '+pl.color+'"><div class="player-stat-row"><span class="player-stat-name" style="color:'+TR.frame+'">Transition</span><span class="player-stat-eff">'+ef(a.tr)+'</span></div><div class="player-stat-counts"><span style="color:#00C853">'+a.tr.plus+'</span><span style="color:#555"> / </span><span style="color:#FF1744">'+a.tr.minus+'</span></div>';
-      var trd=[];if(a.tr.blocks)trd.push("blk:"+a.tr.blocks);if(a.tr.defense)trd.push("def:"+a.tr.defense);if(a.tr.aces)trd.push("ace:"+a.tr.aces);
+      var trd=[];if(a.tr.blocks)trd.push("blk:"+a.tr.blocks);if(a.tr.defense)trd.push("def:"+a.tr.defense);if(a.tr.aces)trd.push("ace:"+a.tr.aces);if(a.tr.unfErr)trd.push("opp err:"+a.tr.unfErr);
       if(trd.length)h+='<div class="tr-detail">'+trd.join(' · ')+'</div>';
       if(a.tr.svcErr)h+='<div class="tr-detail" style="color:#FF5252">svc err: '+a.tr.svcErr+'</div>';
       if(a.tr.lostPt)h+='<div class="tr-detail" style="color:#FF8A65">lost pt: '+a.tr.lostPt+'</div>';
@@ -1904,7 +1905,7 @@ function showStats(){
     }
 
     var kd=killDist(pl.gi);
-    var kills=[];if(kd.spikes)kills.push("Spike:"+kd.spikes);if(kd.shots)kills.push("Shot:"+kd.shots);if(kd.blockOuts)kills.push("Block out:"+kd.blockOuts);if(kd.secondBalls)kills.push("2nd ball:"+kd.secondBalls);if(kd.blocks)kills.push("Block:"+kd.blocks);if(kd.defense)kills.push("Def:"+kd.defense);if(kd.aces)kills.push("Ace:"+kd.aces);
+    var kills=[];if(kd.spikes)kills.push("Spike:"+kd.spikes);if(kd.shots)kills.push("Shot:"+kd.shots);if(kd.blockOuts)kills.push("Block out:"+kd.blockOuts);if(kd.secondBalls)kills.push("2nd ball:"+kd.secondBalls);if(kd.blocks)kills.push("Block:"+kd.blocks);if(kd.defense)kills.push("Def:"+kd.defense);if(kd.aces)kills.push("Ace:"+kd.aces);if(kd.unfErr)kills.push("Opp err:"+kd.unfErr);
     if(kills.length) h+='<div class="st-row"><span class="st-row-label">Kill types</span><span class="st-row-val" style="font-size:0.75em;color:#aaa">'+kills.join(' · ')+'</span></div>';
   });
 
