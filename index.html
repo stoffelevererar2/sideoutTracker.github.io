@@ -31,11 +31,11 @@
 
   /* ── FLOAT LABEL (ONE style for ALL screens, NO background) ── */
   .float-label{
-    position:absolute;top:5%;left:50%;transform:translateX(-50%);
-    font-size:clamp(12px,3.5vw,16px);font-weight:700;
-    color:rgba(255,255,255,0.55);z-index:15;
+    position:absolute;top:clamp(20px,12%,40px);left:50%;transform:translateX(-50%);
+    font-size:clamp(16px,6vw,24px);font-weight:800;
+    color:rgba(255,255,255,0.7);z-index:15;
     pointer-events:none;white-space:nowrap;
-    text-shadow:0 1px 6px rgba(0,0,0,0.9);
+    text-shadow:0 2px 8px rgba(0,0,0,0.9);
   }
 
   /* ── SPLIT SCREENS (Us/Them, P1/P2, Yes/No) ── */
@@ -187,58 +187,59 @@
 
   /* Stats top bar — scrolls with content, padded for round safe zone */
   .stats-top-bar{
-    width:100%;max-width:400px;
+    width:100%;
     display:flex;gap:2px;
-    padding:clamp(4px,1.5vw,8px) clamp(8px,3vw,16px);
+    padding:clamp(4px,1.5vw,8px) clamp(30px,14%,50px);
     flex-shrink:0;
-    margin-top:clamp(16px,12%,60px);
+    margin-top:clamp(20px,14%,50px);
   }
   .stats-bar-btn{
-    flex:1;padding:clamp(8px,3vw,12px) 0;
-    background:#1a1a1a;color:#aaa;border-radius:clamp(4px,1.5vw,6px);
-    font-size:clamp(10px,3.8vw,13px);font-weight:700;
+    flex:1;padding:clamp(10px,4vw,14px) 0;
+    background:#1a1a1a;color:#aaa;border-radius:clamp(6px,2vw,8px);
+    font-size:clamp(11px,4.2vw,15px);font-weight:700;
     cursor:pointer;text-align:center;
   }
 
-  /* Stats content area */
+  /* Stats content area — generous horizontal padding for round screen */
   #stats-content{
-    width:100%;max-width:400px;
-    padding:0 clamp(8px,3vw,16px) clamp(60px,20%,120px);
+    width:100%;
+    padding:0 clamp(24px,12%,40px) clamp(60px,25%,100px);
   }
 
   /* Stats section headers */
   .st-hdr{
-    font-size:clamp(9px,3.5vw,11px);font-weight:700;color:#555;
+    font-size:clamp(11px,4.2vw,14px);font-weight:800;color:#666;
     letter-spacing:0.3px;
-    margin:clamp(10px,4vw,16px) 0 clamp(4px,1.5vw,6px);
+    margin:clamp(12px,5vw,18px) 0 clamp(4px,1.5vw,6px);
+    text-align:center;
   }
-  .st-hdr:first-child{margin-top:clamp(4px,1.5vw,6px)}
+  .st-hdr:first-child{margin-top:clamp(6px,2vw,10px)}
 
   /* Score block */
   .score-block{
-    width:100%;padding:clamp(8px,3vw,12px);margin-bottom:clamp(3px,1.2vw,6px);
-    background:#111;border-radius:clamp(4px,1.5vw,6px);text-align:center;
+    width:100%;padding:clamp(10px,4vw,16px);margin-bottom:clamp(4px,1.5vw,8px);
+    background:#111;border-radius:clamp(6px,2vw,10px);text-align:center;
   }
   .score-block-val{
-    font-size:clamp(20px,7vw,28px);font-weight:900;color:#fff;
+    font-size:clamp(28px,10vw,40px);font-weight:900;color:#fff;
     font-variant-numeric:tabular-nums;
   }
   .score-block-label{
-    font-size:clamp(9px,3.2vw,11px);color:#555;font-weight:700;
+    font-size:clamp(10px,3.5vw,13px);color:#555;font-weight:700;
   }
 
   /* Stat rows */
   .st-row{
     display:flex;justify-content:space-between;align-items:center;
-    padding:clamp(5px,2vw,8px) clamp(8px,3vw,12px);
-    background:#111;border-radius:clamp(3px,1vw,5px);
+    padding:clamp(6px,2.5vw,10px) clamp(10px,4vw,14px);
+    background:#111;border-radius:clamp(4px,1.5vw,6px);
     margin-bottom:2px;
   }
   .st-row-label{
-    font-size:clamp(10px,3.8vw,13px);font-weight:600;color:#888;
+    font-size:clamp(11px,4vw,14px);font-weight:600;color:#888;
   }
   .st-row-val{
-    font-size:clamp(12px,4.5vw,16px);font-weight:900;color:#fff;
+    font-size:clamp(13px,5vw,18px);font-weight:900;color:#fff;
     font-variant-numeric:tabular-nums;
   }
 
@@ -273,7 +274,7 @@
     font-variant-numeric:tabular-nums;
   }
 
-  .stats-btn-row{display:flex;gap:5px;margin-top:5px;width:100%;max-width:400px;padding:0 clamp(8px,3vw,16px)}
+  .stats-btn-row{display:flex;gap:5px;margin-top:5px;width:100%;padding:0 clamp(24px,12%,40px)}
   .stats-btn{flex:1;padding:clamp(8px,3vw,12px) 4px;background:#222;color:#aaa;border-radius:clamp(4px,1.5vw,6px);font-size:clamp(10px,3.5vw,13px);font-weight:700;cursor:pointer}
   .stats-title{font-size:clamp(11px,4vw,14px);font-weight:700;color:#555;margin-bottom:8px;margin-top:clamp(10px,4vw,16px)}
   .qr-container{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:8px}
@@ -307,184 +308,118 @@
 </head>
 <body>
 
-<!-- WHO SERVES FIRST / DRILL START -->
+<!-- START: Who serves first? -->
 <div class="screen split active" id="start-screen" style="position:relative">
   <div class="float-label" id="start-label">Who serves first?</div>
-  <button class="split-btn" style="background:#0a1a3a" id="start-left-btn" onclick="startLeft()">
+  <button class="split-btn" style="background:#0a1a3a" id="start-left-btn" onclick="startServe(0)">
     <div class="split-label" style="color:#448AFF" id="start-left-text">Us</div>
   </button>
-  <button class="split-btn" style="background:#3a1a00" id="start-right-btn" onclick="startRight()">
+  <button class="split-btn" style="background:#3a1a00" id="start-right-btn" onclick="startServe(1)">
     <div class="split-label" style="color:#FF9100" id="start-right-text">Them</div>
   </button>
 </div>
 
-<!-- YOUR FIRST SERVER -->
-<div class="screen split" id="server-screen" style="position:relative">
-  <div class="float-label" id="server-q-label">Your first server?</div>
-  <button class="split-btn" style="background:#0a1a3a" onclick="setFirstServer(0)">
-    <div class="split-label" style="color:#448AFF" id="srv-p1-label">P1</div>
-  </button>
-  <button class="split-btn" style="background:#3a1a00" onclick="setFirstServer(1)">
-    <div class="split-label" style="color:#FF9100" id="srv-p2-label">P2</div>
-  </button>
-</div>
-
-<!-- GAME -->
-<div class="screen" id="game-screen">
-  <!-- TOP: mode title + scoreboard -->
-  <div class="game-top">
-    <div class="game-header" id="game-mode-title">Sideout</div>
-    <div class="game-footer" id="game-score-block">
-      <div class="game-footer-serve" id="game-score-serve" onclick="tapServe()">1st server</div>
-      <div class="game-footer-score"><span id="score-us" style="color:#448AFF">0</span><span style="color:rgba(255,255,255,0.25)"> : </span><span id="score-them" style="color:#FF9100">0</span></div>
-      <div class="game-footer-sets"><span id="score-label-us" style="color:rgba(68,138,255,0.4)">us</span> <span id="game-score-sets">S 0-0</span> <span id="score-label-them" style="color:rgba(255,145,0,0.4)">them</span></div>
+<!-- SCREEN 1: Who received? (full-size zones, scoreboard overlay) -->
+<div class="screen" id="recv-screen" style="position:relative;flex-direction:column!important">
+  <!-- Phase label at top -->
+  <div style="position:absolute;top:clamp(6px,4%,14px);left:50%;transform:translateX(-50%);z-index:15;pointer-events:none">
+    <span id="game-mode-title" style="font-size:clamp(12px,4.5vw,18px);font-weight:800;color:#448AFF">Sideout</span>
+  </div>
+  <!-- Compact scoreboard overlay — between title and player names -->
+  <div style="position:absolute;top:28%;left:50%;transform:translate(-50%,-50%);z-index:12;pointer-events:none;text-align:center">
+    <div id="game-score-serve" style="font-size:clamp(7px,2.2vw,10px);font-weight:600;color:#5a9bd5">Opp 1 serving</div>
+    <div style="display:flex;align-items:baseline;justify-content:center;gap:2px">
+      <span id="score-us" style="font-size:clamp(28px,11vw,42px);font-weight:900;color:#448AFF">0</span>
+      <span style="font-size:clamp(18px,6vw,26px);color:rgba(255,255,255,0.2);font-weight:400">:</span>
+      <span id="score-them" style="font-size:clamp(28px,11vw,42px);font-weight:900;color:#FF9100">0</span>
+    </div>
+    <div style="font-size:clamp(7px,2vw,9px);color:rgba(255,255,255,0.25);font-weight:600">
+      <span id="score-label-us" style="color:rgba(68,138,255,0.4)">us</span>
+      <span id="game-score-sets">S 0-0</span>
+      <span id="score-label-them" style="color:rgba(255,145,0,0.4)">them</span>
     </div>
   </div>
-  <div class="zones" id="zones-container">
-    <button class="zone" id="g-zone-plus" onclick="logAction(1)">
-      <span class="zone-label">+1</span><span class="zone-sub">Point</span>
+  <!-- Full-size tap zones — names pushed lower -->
+  <div style="flex:1;display:flex;flex-direction:row;gap:1px;min-height:0;z-index:2">
+    <button class="zone" id="recv-left" onclick="pickRecv(0)" style="flex:1;flex-direction:column;justify-content:center;padding-top:clamp(60px,32%,90px)">
+      <span style="font-size:clamp(7px,2.5vw,10px);font-weight:600;color:rgba(255,255,255,0.35)">Receiver</span>
+      <span class="zone-label" id="recv-left-name" style="font-size:clamp(20px,8vw,32px)">P1</span>
+      <span class="zone-sub" id="recv-left-stat" style="font-size:clamp(10px,3.5vw,14px);font-weight:700;color:rgba(255,255,255,0.6)"></span>
     </button>
-    <button class="zone" id="g-zone-zero" onclick="logAction(0)">
-      <span class="zone-label">0</span><span class="zone-sub">Neutral</span>
-    </button>
-    <button class="zone" id="g-zone-minus" onclick="logAction(-1)">
-      <span class="zone-label">-1</span><span class="zone-sub" id="g-bot-sub">Error</span>
+    <button class="zone" id="recv-right" onclick="pickRecv(1)" style="flex:1;flex-direction:column;justify-content:center;padding-top:clamp(60px,32%,90px)">
+      <span style="font-size:clamp(7px,2.5vw,10px);font-weight:600;color:rgba(255,255,255,0.35)">Receiver</span>
+      <span class="zone-label" id="recv-right-name" style="font-size:clamp(20px,8vw,32px)">P2</span>
+      <span class="zone-sub" id="recv-right-stat" style="font-size:clamp(10px,3.5vw,14px);font-weight:700;color:rgba(255,255,255,0.6)"></span>
     </button>
   </div>
-  <!-- BOTTOM: undo + menu centered -->
-  <div class="game-bottom">
-    <button class="ctrl-btn" id="g-undo" onclick="undoLast()">↩</button>
-    <button class="ctrl-btn" onclick="showStats()">☰</button>
+  <!-- Serve error fills entire bottom, undo/menu overlaid -->
+  <div style="position:relative;flex-shrink:0;z-index:2">
+    <button class="opp-miss-btn" id="svc-err-btn" onclick="svcError()" style="padding:clamp(18px,8vw,32px) 0;width:100%">
+      <span style="font-size:clamp(12px,4.5vw,18px);font-weight:800;color:#FFB300" id="svc-err-text">Serve error</span>
+    </button>
+    <div style="position:absolute;bottom:clamp(2px,1%,6px);left:50%;transform:translateX(-50%);display:flex;gap:clamp(12px,5vw,24px);z-index:14">
+      <button class="ctrl-btn" id="g-undo" onclick="event.stopPropagation();undoLast()" style="width:clamp(24px,8vw,30px);height:clamp(24px,8vw,30px);font-size:clamp(10px,3.5vw,14px);opacity:0.5">↩</button>
+      <button class="ctrl-btn" onclick="event.stopPropagation();showStats()" style="width:clamp(24px,8vw,30px);height:clamp(24px,8vw,30px);font-size:clamp(10px,3.5vw,14px);opacity:0.5">☰</button>
+    </div>
   </div>
 </div>
 
-<!-- SIDEOUT SUB-TYPE -->
-<div class="screen" id="so-type-screen" style="position:relative">
-  <div class="float-label" id="so-type-tag">Sideout +1</div>
-  <div class="sub-zones">
-    <button class="sub-btn" style="background:#0a3a1a" onclick="soType('spike')"><span class="sub-label">Spike</span></button>
-    <button class="sub-btn" style="background:#1a2a0a" onclick="soType('shot')"><span class="sub-label">Shot</span></button>
-    <button class="sub-btn" id="so-blockout-btn" style="background:#0a2a3a" onclick="soType('block_out')"><span class="sub-label">Block out</span></button>
-    <button class="sub-btn" style="background:#2a1a3a" onclick="soType('second_ball')"><span class="sub-label">2nd ball</span></button>
+<!-- SCREEN 2: What happened? (4 zones + centered 0/Ace/Err) -->
+<div class="screen" id="outcome-screen" style="position:relative;flex-direction:column!important">
+  <!-- Title overlay — below Ace strip -->
+  <div style="position:absolute;top:clamp(34px,15%,46px);left:50%;transform:translateX(-50%);z-index:15;pointer-events:none">
+    <span id="outcome-tag" style="font-size:clamp(11px,4vw,16px);font-weight:800;color:rgba(255,255,255,0.6)">What happened?</span>
   </div>
-</div>
-
-<!-- TRANSITION SUB-TYPE -->
-<div class="screen" id="tr-type-screen" style="position:relative">
-  <div class="float-label">Transition +1</div>
-  <div class="sub-zones">
-    <button class="sub-btn" style="background:#0a3a2a" onclick="trType('block')"><span class="sub-label">Block</span><span class="sub-detail">select player</span></button>
-    <button class="sub-btn" style="background:#1a2a3a" onclick="trType('defense')"><span class="sub-label">Defense</span><span class="sub-detail">select player</span></button>
-    <button class="sub-btn" style="background:#3a2a0a" onclick="trType('ace')"><span class="sub-label">Ace</span><span class="sub-detail" id="ace-sub">auto > P1</span></button>
-    <button class="sub-btn" style="background:#2a1a1a" onclick="trType('unforced_error')"><span class="sub-label">Opp error</span><span class="sub-detail">unforced</span></button>
-  </div>
-</div>
-
-<!-- MISSED SERVE -->
-<div class="screen split" id="svc-miss-screen" style="position:relative">
-  <div class="float-label">Missed serve?</div>
-  <button class="split-btn" style="background:#3a0a0f" onclick="trError(true)">
-    <div class="sm-label" style="color:#FF5252">Yes</div>
-    <div class="sm-sub" style="color:#cc4444" id="sm-yes-sub">service miss</div>
+  <!-- Aced button — full top strip -->
+  <button id="out-ace" onclick="pickOutcome(-3)" style="position:absolute;top:0;left:0;right:0;height:clamp(32px,14%,42px);z-index:16;background:rgba(80,20,20,0.4);border-bottom:1px solid rgba(255,82,82,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent">
+    <span style="font-size:clamp(12px,4.5vw,18px);font-weight:800;color:rgba(255,130,130,0.7)">Aced</span>
   </button>
-  <button class="split-btn" style="background:#0a2a15" onclick="trError(false)">
-    <div class="sm-label" style="color:#66BB6A">No</div>
-    <div class="sm-sub" style="color:#448844">they did good</div>
+  <!-- 0 Rally button — dead center circle -->
+  <button id="out-zero" onclick="pickOutcome(-2)" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:16;width:clamp(52px,22vw,72px);height:clamp(52px,22vw,72px);border-radius:50%;background:rgba(42,32,0,0.9);border:2px solid rgba(255,179,0,0.5);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;box-shadow:0 2px 12px rgba(0,0,0,0.5)">
+    <span style="font-size:clamp(11px,4vw,15px);font-weight:900;color:#FFB300">0</span>
   </button>
-</div>
-
-<!-- PLAYER SELECT -->
-<div class="screen" id="player-select" style="position:relative;flex-direction:column!important">
-  <div class="float-label" id="ps-tag">Player</div>
-  <div style="flex:1;display:flex;flex-direction:row;min-height:0">
-    <button class="split-btn" id="ps-left" onclick="selectPlayer('left')">
-      <div class="split-label" id="ps-left-name">P2</div>
-      <div class="split-sub" id="ps-left-action">+1</div>
-    </button>
-    <button class="split-btn" id="ps-right" onclick="selectPlayer('right')">
-      <div class="split-label" id="ps-right-name">P1</div>
-      <div class="split-sub" id="ps-right-action">+1</div>
-    </button>
-  </div>
-  <button class="opp-miss-btn" id="opp-miss-btn" onclick="oppMissedServe()" style="display:none">
-    <span style="font-size:clamp(14px,5.5vw,20px);font-weight:800;color:#FFB300">Opp serve error</span>
+  <!-- Error button — full bottom strip -->
+  <button id="out-err" onclick="pickOutcome(-1)" style="position:absolute;bottom:0;left:0;right:0;height:clamp(32px,14%,42px);z-index:16;background:rgba(80,20,20,0.4);border-top:1px solid rgba(255,82,82,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent">
+    <span style="font-size:clamp(12px,4.5vw,18px);font-weight:800;color:rgba(255,130,130,0.7)">Err</span>
   </button>
-</div>
-
-<!-- WHO WON THE RALLY -->
-<div class="screen split" id="resolve-screen" style="position:relative">
-  <div class="float-label" id="resolve-hint">Who won the rally?</div>
-  <button class="split-btn" style="background:#0a3a1a" onclick="resolvePoint('us')">
-    <div class="split-label" id="resolve-us-label" style="color:#00C853">Us</div>
-  </button>
-  <button class="split-btn" style="background:#3a0a15" onclick="resolvePoint('them')">
-    <div class="split-label" id="resolve-them-label" style="color:#FF5252">Them</div>
-  </button>
-</div>
-
-<!-- STREAMER: 2×2 PLAYER SELECT -->
-<div class="screen" id="str-player-grid" style="position:relative;flex-direction:column!important">
-  <div class="float-label" id="str-grid-tag">Who made the play?</div>
-  <!-- Receiving team (top) -->
-  <div id="str-grid-recv-label" style="position:absolute;top:clamp(20px,8%,36px);left:clamp(6px,3%,14px);font-size:clamp(8px,2.5vw,10px);font-weight:700;z-index:15;pointer-events:none">Team A</div>
-  <div style="flex:1;display:flex;flex-direction:row;gap:1px;min-height:0">
-    <button class="split-btn" id="str-p0" onclick="strSelectPlayer(0)">
-      <div class="split-label" id="str-p0-name">A1</div>
-      <div class="split-sub" id="str-p0-action">+1</div>
-    </button>
-    <button class="split-btn" id="str-p1" onclick="strSelectPlayer(1)">
-      <div class="split-label" id="str-p1-name">A2</div>
-      <div class="split-sub" id="str-p1-action">+1</div>
-    </button>
-  </div>
-  <div style="height:1px;background:rgba(255,255,255,0.08);flex-shrink:0"></div>
-  <!-- Serving team (bottom) -->
-  <div id="str-grid-srv-label" style="position:absolute;bottom:clamp(45px,22%,80px);left:clamp(6px,3%,14px);font-size:clamp(8px,2.5vw,10px);font-weight:700;z-index:15;pointer-events:none">Team B</div>
-  <div style="flex:1;display:flex;flex-direction:row;gap:1px;min-height:0">
-    <button class="split-btn" id="str-p2" onclick="strSelectPlayer(2)">
-      <div class="split-label" id="str-p2-name">B1</div>
-      <div class="split-sub" id="str-p2-action">+1</div>
-    </button>
-    <button class="split-btn" id="str-p3" onclick="strSelectPlayer(3)">
-      <div class="split-label" id="str-p3-name">B2</div>
-      <div class="split-sub" id="str-p3-action">+1</div>
-    </button>
-  </div>
-  <button class="opp-miss-btn" id="str-opp-miss" onclick="strOppServeError()" style="display:none">
-    <span style="font-size:clamp(14px,5.5vw,20px);font-weight:800;color:#FFB300">Serve error</span>
-  </button>
-</div>
-
-<!-- STREAMER: WHAT STOPPED THEM (-1 reason) -->
-<div class="screen" id="str-stopped-screen" style="position:relative">
-  <div class="float-label" id="str-stopped-tag">What stopped them?</div>
-  <div class="sub-zones">
-    <button class="sub-btn" style="background:#4d0a15" onclick="strStopped('error')"><span class="sub-label">Error</span><span class="sub-detail">unforced</span></button>
-    <button class="sub-btn" style="background:#0a2a3a" onclick="strStopped('blocked')"><span class="sub-label">Blocked</span><span class="sub-detail">select blocker</span></button>
-    <button class="sub-btn" style="background:#1a2a3a" onclick="strStopped('defended')"><span class="sub-label">Defended</span><span class="sub-detail">select player</span></button>
-    <button class="sub-btn" style="background:#3a2a0a" onclick="strStopped('aced')"><span class="sub-label">Aced</span><span class="sub-detail" id="str-ace-sub">auto</span></button>
+  <!-- Full-screen 2x2 player grid -->
+  <div style="flex:1;display:flex;flex-direction:column;gap:1px;min-height:0;z-index:2">
+    <div style="flex:1;display:flex;flex-direction:row;gap:1px;min-height:0">
+      <button class="zone" id="out-p0" onclick="pickOutcome(0)" style="flex:1;flex-direction:column;justify-content:center">
+        <span class="zone-label" id="out-p0-name" style="font-size:clamp(16px,6vw,24px)">P1</span>
+        <span class="zone-sub" id="out-p0-sub" style="font-size:clamp(9px,3vw,12px)"></span>
+      </button>
+      <button class="zone" id="out-p1" onclick="pickOutcome(1)" style="flex:1;flex-direction:column;justify-content:center">
+        <span class="zone-label" id="out-p1-name" style="font-size:clamp(16px,6vw,24px)">P2</span>
+        <span class="zone-sub" id="out-p1-sub" style="font-size:clamp(9px,3vw,12px)"></span>
+      </button>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:row;gap:1px;min-height:0">
+      <button class="zone" id="out-p2" onclick="pickOutcome(2)" style="flex:1;flex-direction:column;justify-content:center">
+        <span class="zone-label" id="out-p2-name" style="font-size:clamp(16px,6vw,24px)">Opp 1</span>
+        <span class="zone-sub" id="out-p2-sub" style="font-size:clamp(9px,3vw,12px)"></span>
+      </button>
+      <button class="zone" id="out-p3" onclick="pickOutcome(3)" style="flex:1;flex-direction:column;justify-content:center">
+        <span class="zone-label" id="out-p3-name" style="font-size:clamp(16px,6vw,24px)">Opp 2</span>
+        <span class="zone-sub" id="out-p3-sub" style="font-size:clamp(9px,3vw,12px)"></span>
+      </button>
+    </div>
   </div>
 </div>
 
-<!-- STREAMER: HOW DID THEY WIN (0 resolution method) -->
-<div class="screen" id="str-how-screen" style="position:relative">
-  <div class="float-label" id="str-how-tag">How?</div>
-  <div class="sub-zones">
-    <button class="sub-btn" style="background:#014d1e" onclick="strHow('attack')"><span class="sub-label">Attack</span></button>
-    <button class="sub-btn" style="background:#0a2a3a" onclick="strHow('block')"><span class="sub-label">Block</span></button>
-    <button class="sub-btn" style="background:#4d0a15" onclick="strHow('error')"><span class="sub-label">Their error</span></button>
+<!-- SCREEN 3: Rally — who won? (simple Us/Them split) -->
+<div class="screen" id="rally-screen" style="position:relative;flex-direction:column!important">
+  <div style="position:absolute;top:clamp(6px,4%,14px);left:50%;transform:translateX(-50%);z-index:15;pointer-events:none">
+    <span id="rally-tag" style="font-size:clamp(11px,4vw,16px);font-weight:800;color:rgba(255,255,255,0.6)">Who won the rally?</span>
   </div>
-</div>
-
-<!-- STREAMER: CREDIT PLAYER (2 players from a team) -->
-<div class="screen split" id="str-credit-screen" style="position:relative">
-  <div class="float-label" id="str-credit-tag">Who?</div>
-  <button class="split-btn" id="str-credit-0" onclick="strCreditPlayer(0)">
-    <div class="split-label" id="str-credit-0-name">P1</div>
-  </button>
-  <button class="split-btn" id="str-credit-1" onclick="strCreditPlayer(1)">
-    <div class="split-label" id="str-credit-1-name">P2</div>
-  </button>
+  <div style="flex:1;display:flex;flex-direction:column;gap:1px;min-height:0;z-index:2">
+    <button class="zone" id="ral-us" onclick="pickRallyWinner(0)" style="flex:1;flex-direction:column;justify-content:center;background:#0a1a3a">
+      <span style="font-size:clamp(18px,7vw,28px);font-weight:900;color:#448AFF" id="ral-us-names">P1 + P2</span>
+    </button>
+    <button class="zone" id="ral-them" onclick="pickRallyWinner(1)" style="flex:1;flex-direction:column;justify-content:center;background:#3a1a00">
+      <span style="font-size:clamp(18px,7vw,28px);font-weight:900;color:#FF9100" id="ral-them-names">Opp 1 + Opp 2</span>
+    </button>
+  </div>
 </div>
 
 <!-- SET COMPLETE -->
@@ -519,34 +454,22 @@
   <div class="stats-top-bar">
     <button class="stats-bar-btn" onclick="hideSettings()">← Back</button>
   </div>
-  <div style="width:100%;max-width:400px;padding:0 clamp(8px,3vw,16px) clamp(60px,20%,120px)">
+  <div style="width:100%;padding:0 clamp(24px,12%,40px) clamp(60px,25%,100px)">
     <div class="st-hdr">Game mode</div>
-    <div style="display:flex;gap:2px;margin-bottom:4px" id="mode-btns">
+    <div style="display:flex;gap:2px;margin-bottom:6px">
       <button class="mode-btn" id="mode-match" onclick="setMode('match')">Match</button>
       <button class="mode-btn" id="mode-so_drill" onclick="setMode('so_drill')">SO drill</button>
       <button class="mode-btn" id="mode-tr_drill" onclick="setMode('tr_drill')">TR drill</button>
-      <button class="mode-btn" id="mode-streamer" onclick="setMode('streamer')">Streamer</button>
     </div>
-    <!-- 2-player names (match/drill modes) -->
-    <div id="names-2p">
-      <div class="st-hdr">Player names</div>
-      <div style="display:flex;gap:clamp(4px,1.5vw,8px);margin-bottom:4px">
-        <input id="name-p1" class="name-input" style="border-left:3px solid #448AFF" placeholder="P1" maxlength="12" oninput="saveNames()">
-        <input id="name-p2" class="name-input" style="border-left:3px solid #FF9100" placeholder="P2" maxlength="12" oninput="saveNames()">
-      </div>
+    <div class="st-hdr" style="color:#448AFF">Our team</div>
+    <div style="display:flex;gap:clamp(4px,1.5vw,8px);margin-bottom:4px">
+      <input id="name-p1" class="name-input" style="border-left:3px solid #448AFF" placeholder="P1" maxlength="12" oninput="saveNames()">
+      <input id="name-p2" class="name-input" style="border-left:3px solid #64B5F6" placeholder="P2" maxlength="12" oninput="saveNames()">
     </div>
-    <!-- 4-player names (streamer mode) -->
-    <div id="names-4p" style="display:none">
-      <div class="st-hdr" style="color:#448AFF">Team A</div>
-      <div style="display:flex;gap:clamp(4px,1.5vw,8px);margin-bottom:4px">
-        <input id="name-ta1" class="name-input" style="border-left:3px solid #448AFF" placeholder="A1" maxlength="12" oninput="saveNames()">
-        <input id="name-ta2" class="name-input" style="border-left:3px solid #64B5F6" placeholder="A2" maxlength="12" oninput="saveNames()">
-      </div>
-      <div class="st-hdr" style="color:#FF9100">Team B</div>
-      <div style="display:flex;gap:clamp(4px,1.5vw,8px);margin-bottom:4px">
-        <input id="name-tb1" class="name-input" style="border-left:3px solid #FF9100" placeholder="B1" maxlength="12" oninput="saveNames()">
-        <input id="name-tb2" class="name-input" style="border-left:3px solid #FFB74D" placeholder="B2" maxlength="12" oninput="saveNames()">
-      </div>
+    <div class="st-hdr" style="color:#FF9100">Opponents</div>
+    <div style="display:flex;gap:clamp(4px,1.5vw,8px);margin-bottom:4px">
+      <input id="name-ta1" class="name-input" style="border-left:3px solid #FF9100" placeholder="Opp 1" maxlength="12" oninput="saveNames()">
+      <input id="name-ta2" class="name-input" style="border-left:3px solid #FFB74D" placeholder="Opp 2" maxlength="12" oninput="saveNames()">
     </div>
     <div class="st-hdr">Player sides</div>
     <div class="st-row" style="cursor:pointer" onclick="toggleLayout()">
@@ -565,7 +488,7 @@
   <div class="stats-top-bar">
     <button class="stats-bar-btn" onclick="hideExport()">← Back</button>
   </div>
-  <div style="width:100%;max-width:400px;padding:0 clamp(8px,3vw,16px) clamp(60px,20%,120px)">
+  <div style="width:100%;padding:0 clamp(24px,12%,40px) clamp(60px,25%,100px)">
     <div class="st-hdr">Export data</div>
     <div class="st-row" style="cursor:pointer" onclick="showQR()">
       <span class="st-row-label" style="color:#7C8EFF">QR code</span>
@@ -593,7 +516,7 @@
   <div class="stats-top-bar">
     <button class="stats-bar-btn" onclick="hideQR()">← Back</button>
   </div>
-  <div style="width:100%;max-width:400px;padding:0 clamp(8px,3vw,16px) clamp(60px,20%,120px);display:flex;flex-direction:column;align-items:center;flex:1;justify-content:center;gap:12px">
+  <div style="width:100%;padding:0 clamp(24px,12%,40px) clamp(60px,25%,100px);display:flex;flex-direction:column;align-items:center;flex:1;justify-content:center;gap:12px">
     <div class="st-hdr" style="text-align:center;width:100%">Scan with phone</div>
     <div id="qr-display"></div>
     <div style="font-size:clamp(9px,3vw,12px);color:#555;text-align:center;max-width:240px;line-height:1.4" id="qr-hint"></div>
@@ -603,7 +526,7 @@
   <div class="stats-top-bar">
     <button class="stats-bar-btn" onclick="hideSheets()">← Back</button>
   </div>
-  <div style="width:100%;max-width:400px;padding:0 clamp(8px,3vw,16px) clamp(60px,20%,120px)">
+  <div style="width:100%;padding:0 clamp(24px,12%,40px) clamp(60px,25%,100px)">
     <div class="st-hdr">Google Sheets</div>
     <div id="sheets-content"></div>
   </div>
@@ -623,48 +546,35 @@
 /* ═══════════════════════════════════
    CONFIG
    ═══════════════════════════════════ */
-var PL=[{name:"P1",color:"#448AFF"},{name:"P2",color:"#FF9100"}];
-var TEAMS=[
-  {name:"Team A",color:"#448AFF",players:[{name:"A1",color:"#448AFF"},{name:"A2",color:"#64B5F6"}]},
-  {name:"Team B",color:"#FF9100",players:[{name:"B1",color:"#FF9100"},{name:"B2",color:"#FFB74D"}]}
+// Players: 0=P1, 1=P2 (our team), 2=Opp1, 3=Opp2
+var PL=[
+  {name:"P1",color:"#448AFF"},
+  {name:"P2",color:"#64B5F6"},
+  {name:"Opp 1",color:"#FF9100"},
+  {name:"Opp 2",color:"#FFB74D"}
 ];
-var gameMode="match"; // "match", "so_drill", "tr_drill", "streamer"
+var gameMode="match";
 
 /* ═══════════════════════════════════
    PLAYER NAME + MODE INIT
-   Priority: URL params → localStorage → defaults
    ═══════════════════════════════════ */
 (function initNames(){
   var params=new URLSearchParams(location.search);
-  var p1=params.get("p1"),p2=params.get("p2");
-  var p3=params.get("p3"),p4=params.get("p4");
+  var p1=params.get("p1"),p2=params.get("p2"),o1=params.get("o1"),o2=params.get("o2");
   var mode=params.get("mode");
-  if(p1)PL[0].name=p1;
-  if(p2)PL[1].name=p2;
-  if(p1)TEAMS[0].players[0].name=p1;
-  if(p2)TEAMS[0].players[1].name=p2;
-  if(p3)TEAMS[1].players[0].name=p3;
-  if(p4)TEAMS[1].players[1].name=p4;
-  if(mode&&["match","so_drill","tr_drill","streamer"].indexOf(mode)>=0)gameMode=mode;
+  if(p1)PL[0].name=p1;if(p2)PL[1].name=p2;
+  if(o1)PL[2].name=o1;if(o2)PL[3].name=o2;
+  if(mode&&["match","so_drill","tr_drill"].indexOf(mode)>=0)gameMode=mode;
   try{
     var s=localStorage.getItem("bv_players");
-    if(s){
-      var d=JSON.parse(s);
-      if(!p1&&d.p1){PL[0].name=d.p1;TEAMS[0].players[0].name=d.p1}
-      if(!p2&&d.p2){PL[1].name=d.p2;TEAMS[0].players[1].name=d.p2}
-      if(!p3&&d.p3)TEAMS[1].players[0].name=d.p3;
-      if(!p4&&d.p4)TEAMS[1].players[1].name=d.p4;
+    if(s){var d=JSON.parse(s);
+      if(!p1&&d.p1)PL[0].name=d.p1;if(!p2&&d.p2)PL[1].name=d.p2;
+      if(!o1&&d.o1)PL[2].name=d.o1;if(!o2&&d.o2)PL[3].name=d.o2;
       if(!mode&&d.mode)gameMode=d.mode;
-      if(d.ta)TEAMS[0].name=d.ta;
-      if(d.tb)TEAMS[1].name=d.tb;
     }
   }catch(e){}
 })();
 
-var SO={frame:"#448AFF",plus:{n:"#014d1e",f:"#00C853"},zero:{n:"#4d3800",f:"#FFB300"},minus:{n:"#4d0a15",f:"#FF1744"}};
-var TR={frame:"#FF9100",plus:{n:"#014d1e",f:"#00C853"},minus:{n:"#4d0a15",f:"#FF1744"}};
-var ACT_COL={1:"#00C853",0:"#FFB300","-1":"#FF1744"};
-var ACT_LBL={1:"+1",0:"0","-1":"-1"};
 var sheetsUrl="https://script.google.com/macros/s/AKfycbzSXy7P7jQcSq7yviCcxZS3hYbwCrrm0LrlDPpQWqjrwwF3Cn6h_c127eSX5aELIgbf/exec";
 var layout="p2left";
 
@@ -673,21 +583,22 @@ var layout="p2left";
    ═══════════════════════════════════ */
 var G;
 function freshState(){
-  var isStr=gameMode==="streamer";
   return{
-    phase:"start",sU:0,sT:0,setNum:1,setsU:0,setsT:0,
+    sU:0,sT:0,setNum:1,setsU:0,setsT:0,
     target:21,matchOver:false,
-    act:isStr?[{so:[],tr:[]},{so:[],tr:[]},{so:[],tr:[]},{so:[],tr:[]}]:[{so:[],tr:[]},{so:[],tr:[]}],
-    sets:[],t0:Date.now(),hist:[],
-    firstTeam:null,ourServer:0,ourNextServer:0,
-    theirServer:0,theirNextServer:0,pending:null,
+    // Who receives: 0=us, 1=them. Flips on sideout.
+    recvSide:0,
+    // Server index within each side: [ourServerIdx, theirServerIdx]
+    servers:[0,0],
+    // Actions: one entry per rally
+    actions:[],
+    // Per-set archives
+    sets:[],
+    t0:Date.now(),
+    pending:null,
     videoSync:null,
     livePush:false,
-    overlay:{sideout:false,momentum:false,ticker:false,players:false,serve:false,autoShow:true},
-    // Streamer-specific
-    recvTeam:0, // which team is receiving (0=Team A, 1=Team B)
-    servers:[0,0], // current server index per team (0 or 1 within each team)
-    nextServers:[0,0] // next server per team
+    overlay:{sideout:false,momentum:false,ticker:false,players:false,serve:false,autoShow:true}
   };
 }
 G=freshState();
@@ -760,7 +671,7 @@ try{
 
 // Also warn on actual page unload during active match
 window.addEventListener("beforeunload",function(e){
-  if(G&&(G.sU>0||G.sT>0||G.hist.length>0)){
+  if(G&&(G.sU>0||G.sT>0||G.actions.length>0)){
     e.preventDefault();e.returnValue="";
   }
 });
@@ -772,93 +683,24 @@ function hexDk(h,f){
 /* ═══════════════════════════════════
    STATS CALCULATIONS
    ═══════════════════════════════════ */
-function gs(acts,ph){
-  var a=acts[ph],t=a.length;
-  if(!t)return{total:0,plus:0,zero:0,minus:0,eff:0,blocks:0,defense:0,aces:0,unfErr:0,svcErr:0,lostPt:0,oppSvcErr:0,spikes:0,shots:0,blockOuts:0,secondBalls:0};
-  var p=0,z=0,m=0,sm=0,bl=0,df=0,ac=0,ue=0,sv=0,lp=0,ose=0,sp=0,sh=0,bo=0,sb=0;
-  for(var i=0;i<t;i++){
-    var x=a[i];
-    if(x.tp==="opp_service_error"){ose++;continue}
-    if(x.v===1){p++;if(x.tp==="block")bl++;if(x.tp==="defense")df++;if(x.tp==="ace")ac++;if(x.tp==="unforced_error")ue++;if(x.tp==="spike")sp++;if(x.tp==="shot")sh++;if(x.tp==="block_out")bo++;if(x.tp==="second_ball")sb++}
-    else if(x.v===0){z++;if(x.tp==="spike")sp++;if(x.tp==="shot")sh++;if(x.tp==="second_ball")sb++}
-    else{m++;if(x.tp==="service_error")sv++;if(x.tp==="lost_point")lp++}
-    sm+=x.v;
-  }
-  var ct=t-ose;
-  return{total:ct,plus:p,zero:z,minus:m,eff:ct?(sm/ct)*100:0,blocks:bl,defense:df,aces:ac,unfErr:ue,svcErr:sv,lostPt:lp,oppSvcErr:ose,spikes:sp,shots:sh,blockOuts:bo,secondBalls:sb};
-}
-function ga(pi){
-  var pc=G.act.length; // 2 or 4 players
-  var all=[];for(var i=0;i<pc;i++)all.push({so:[],tr:[]});
-  G.sets.forEach(function(s){for(var p=0;p<s.act.length;p++){if(all[p]){all[p].so=all[p].so.concat(s.act[p].so);all[p].tr=all[p].tr.concat(s.act[p].tr)}}});
-  for(var p=0;p<pc;p++){all[p].so=all[p].so.concat(G.act[p].so);all[p].tr=all[p].tr.concat(G.act[p].tr)}
-  if(!all[pi])return{total:0,eff:0,so:gs({so:[]},"so"),tr:gs({tr:[]},"tr")};
-  var so=gs(all[pi],"so"),tr=gs(all[pi],"tr"),t=so.total+tr.total,sm=0;
-  all[pi].so.forEach(function(a){if(a.tp!=="opp_service_error")sm+=a.v});all[pi].tr.forEach(function(a){sm+=a.v});
-  return{total:t,eff:t?((sm/t)*100):0,so:so,tr:tr};
-}
-function ef(s){return s.total?((s.eff>=0?"+":"")+Math.round(s.eff)+"%"):"--"}
+function ef(v){return typeof v==="number"?(v>=0?"+":"")+Math.round(v)+"%":"--"}
 
 /* ═══════════════════════════════════
-   SERVE ROTATION
+   SERVE HELPERS
    ═══════════════════════════════════ */
-function serveChange(np){
-  if(G.phase==="tr"&&np==="so"){G.ourNextServer=G.ourServer===0?1:0;G.theirServer=G.theirNextServer}
-  if(G.phase==="so"&&np==="tr"){G.theirNextServer=G.theirServer===0?1:0;G.ourServer=G.ourNextServer}
-  G.phase=np;
+// Server global player index: side 0=us (P1/P2), side 1=them (Opp1/Opp2)
+function serverGI(){
+  var side=G.recvSide===0?1:0; // serving side is opposite of receiving
+  return side*2+G.servers[side];
 }
-
-/* ═══════════════════════════════════
-   VIDEO SYNC & VLC CHAPTERS
-   Sync auto-starts when first server is picked.
-   ═══════════════════════════════════ */
-function msToTC(ms){
-  if(ms<0)ms=0;
-  var h=Math.floor(ms/3600000);ms%=3600000;
-  var m=Math.floor(ms/60000);ms%=60000;
-  var s=Math.floor(ms/1000);var fr=ms%1000;
-  return(h<10?"0":"")+h+":"+(m<10?"0":"")+m+":"+(s<10?"0":"")+s+"."+(fr<100?"0":"")+(fr<10?"0":"")+fr;
-}
-function buildVLCChapters(){
-  var ref=G.videoSync||G.t0;
-  var entries=[];
-  // Collect all actions across all sets with timestamps
-  function addActs(sn,acts){
-    for(var pi=0;pi<2;pi++){
-      ["so","tr"].forEach(function(ph){
-        acts[pi][ph].forEach(function(a){
-          var label=ACT_LBL[a.v]||""+a.v;
-          var tp=a.tp?(" "+a.tp.replace("_"," ")):"";
-          var mode=ph==="so"?"SO":"TR";
-          var desc=label+tp+" "+PL[pi].name+" ("+mode+" S"+sn+")";
-          entries.push({t:a.t,desc:desc,v:a.v});
-        });
-      });
-    }
-  }
-  G.sets.forEach(function(s){addActs(s.setNum,s.act)});
-  addActs(G.setNum,G.act);
-  // Sort by timestamp
-  entries.sort(function(a,b){return a.t-b.t});
-  // Build OGM chapter format
-  var lines=[];
-  entries.forEach(function(e,i){
-    var n=i+1;
-    var pad=n<10?"0":"";
-    var tc=msToTC(e.t-ref);
-    lines.push("CHAPTER"+pad+n+"="+tc);
-    lines.push("CHAPTER"+pad+n+"NAME="+e.desc);
-  });
-  return lines.join("\n");
-}
-function downloadVLCChapters(){
-  var ch=buildVLCChapters();
-  if(!ch){return}
-  var b=new Blob([ch],{type:"text/plain"});
-  var u=URL.createObjectURL(b);
-  var l=document.createElement("a");
-  l.href=u;l.download="bv_"+new Date().toISOString().slice(0,10)+".chapters.txt";
-  l.click();URL.revokeObjectURL(u);
+function serverName(){return PL[serverGI()].name}
+// The two receivers for current phase
+function recvPair(){return G.recvSide===0?[0,1]:[2,3]}
+function servRotate(){
+  // Called when receiving team wins (sideout): teams swap roles, server advances
+  var oldServ=G.recvSide===0?1:0;
+  G.servers[oldServ]=(G.servers[oldServ]===0)?1:0; // advance their rotation
+  G.recvSide=oldServ; // they now receive
 }
 
 /* ═══════════════════════════════════
@@ -873,587 +715,198 @@ function updLayoutLabel(){$("layout-val").textContent="< "+PL[getLP()].name+" | 
    PLAYER NAMES
    ═══════════════════════════════════ */
 function saveNames(){
-  if(gameMode==="streamer"){
-    var a1=($("name-ta1").value||"").trim();
-    var a2=($("name-ta2").value||"").trim();
-    var b1=($("name-tb1").value||"").trim();
-    var b2=($("name-tb2").value||"").trim();
-    TEAMS[0].players[0].name=a1||"A1";
-    TEAMS[0].players[1].name=a2||"A2";
-    TEAMS[1].players[0].name=b1||"B1";
-    TEAMS[1].players[1].name=b2||"B2";
-  }else{
-    var n1=($("name-p1").value||"").trim();
-    var n2=($("name-p2").value||"").trim();
-    if(n1)PL[0].name=n1; else PL[0].name="P1";
-    if(n2)PL[1].name=n2; else PL[1].name="P2";
-  }
+  var n1=($("name-p1").value||"").trim();
+  var n2=($("name-p2").value||"").trim();
+  var o1=($("name-ta1").value||"").trim();
+  var o2=($("name-ta2").value||"").trim();
+  if(n1)PL[0].name=n1;else PL[0].name="P1";
+  if(n2)PL[1].name=n2;else PL[1].name="P2";
+  if(o1)PL[2].name=o1;else PL[2].name="Opp 1";
+  if(o2)PL[3].name=o2;else PL[3].name="Opp 2";
   persistConfig();
-  updNames();
 }
 function persistConfig(){
   try{localStorage.setItem("bv_players",JSON.stringify({
-    p1:PL[0].name,p2:PL[1].name,
-    p3:TEAMS[1].players[0].name,p4:TEAMS[1].players[1].name,
-    ta:TEAMS[0].name,tb:TEAMS[1].name,mode:gameMode
+    p1:PL[0].name,p2:PL[1].name,o1:PL[2].name,o2:PL[3].name,mode:gameMode
   }))}catch(e){}
 }
-function saveMode(){
-  // Toggle name input visibility
-  $("names-2p").style.display=gameMode==="streamer"?"none":"block";
-  $("names-4p").style.display=gameMode==="streamer"?"block":"none";
-  persistConfig();
-}
-function updNames(){
-  $("srv-p1-label").textContent=PL[0].name;
-  $("srv-p2-label").textContent=PL[1].name;
-}
-function setMode(m){
-  gameMode=m;saveMode();updModeBtns();vib(30);
-}
+function saveMode(){persistConfig()}
+function setMode(m){gameMode=m;saveMode();updModeBtns();vib(30)}
 function updModeBtns(){
-  ["match","so_drill","tr_drill","streamer"].forEach(function(m){
+  ["match","so_drill","tr_drill"].forEach(function(m){
     var el=$("mode-"+m);
-    if(el){
-      if(m===gameMode){el.classList.add("active")}
-      else{el.classList.remove("active")}
-    }
+    if(el){if(m===gameMode)el.classList.add("active");else el.classList.remove("active")}
   });
-  // Toggle name panels
-  $("names-2p").style.display=gameMode==="streamer"?"none":"block";
-  $("names-4p").style.display=gameMode==="streamer"?"block":"none";
 }
-// Init on load
-updNames();updModeBtns();
+updModeBtns();
 
 /* ═══════════════════════════════════
-   STREAMER HELPERS
+   START FLOW
    ═══════════════════════════════════ */
-// Get player by global index: 0,1 = Team A; 2,3 = Team B
-function stP(gi){
-  var ti=gi<2?0:1, pi=gi%2;
-  return TEAMS[ti].players[pi];
+function startServe(side){
+  // side: 0=us serves first, 1=them serves first
+  G=freshState();
+  G.recvSide=side===0?1:0;
+  G.videoSync=Date.now();
+  vib(50);
+  show("recv-screen");upd();
 }
-// Get global index from team index + player index
-function stGI(ti,pi){return ti*2+pi}
-// Get the serving team index (opposite of receiving)
-function srvTeam(){return G.recvTeam===0?1:0}
-// Get current server's global player index
-function srvPlayerGI(){var st=srvTeam();return stGI(st,G.servers[st])}
-
-/* ═══════════════════════════════════
-   START FLOW (mode-aware)
-   ═══════════════════════════════════ */
-function updStartScreen(){
+function startNextSet(){
+  G.setNum++;G.sU=0;G.sT=0;
+  G.target=(G.setNum===3)?15:21;
+  G.actions=[];
+  show("start-screen");
+}
+function resetAll(){
+  G=freshState();
+  document.querySelectorAll(".overlay").forEach(function(o){o.classList.remove("active")});
+  screenStack=["start-screen"];show("start-screen");
+}
+function startGame(){
+  G=freshState();
+  document.querySelectorAll(".overlay").forEach(function(o){o.classList.remove("active")});
+  vib([50,30,50]);
   if(gameMode==="so_drill"){
-    $("start-label").textContent="Sideout drill";
-    $("start-left-text").textContent=PL[0].name;
-    $("start-right-text").textContent=PL[1].name;
-    $("start-left-text").style.color="#448AFF";
-    $("start-right-text").style.color="#FF9100";
-  }else if(gameMode==="tr_drill"){
-    $("start-label").textContent="Who serves first?";
-    $("start-left-text").textContent=PL[0].name;
-    $("start-right-text").textContent=PL[1].name;
-    $("start-left-text").style.color="#448AFF";
-    $("start-right-text").style.color="#FF9100";
-  }else if(gameMode==="streamer"){
-    $("start-label").textContent="Who receives first?";
-    $("start-left-text").textContent=TEAMS[0].name;
-    $("start-right-text").textContent=TEAMS[1].name;
-    $("start-left-text").style.color=TEAMS[0].color;
-    $("start-right-text").style.color=TEAMS[1].color;
-    $("start-left-btn").style.background=hexDk(TEAMS[0].color,0.15);
-    $("start-right-btn").style.background=hexDk(TEAMS[1].color,0.15);
-  }else{
-    $("start-label").textContent="Who serves first?";
-    $("start-left-text").textContent="Us";
-    $("start-right-text").textContent="Them";
-    $("start-left-text").style.color="#448AFF";
-    $("start-right-text").style.color="#FF9100";
-    $("start-left-btn").style.background="#0a1a3a";
-    $("start-right-btn").style.background="#3a1a00";
-  }
-}
-function startLeft(){
-  vib(30);
-  if(gameMode==="so_drill"){startSODrill()}
-  else if(gameMode==="tr_drill"){startTRDrill(0)}
-  else if(gameMode==="streamer"){streamerSetRecv(0)}
-  else{setFirstTeam("us")}
-}
-function startRight(){
-  vib(30);
-  if(gameMode==="so_drill"){startSODrill()}
-  else if(gameMode==="tr_drill"){startTRDrill(1)}
-  else if(gameMode==="streamer"){streamerSetRecv(1)}
-  else{setFirstTeam("them")}
-}
-function streamerSetRecv(ti){
-  G.recvTeam=ti;
-  // Show server select for serving team
-  var st=ti===0?1:0;
-  $("server-q-label").textContent=TEAMS[st].name+" - first server?";
-  $("srv-p1-label").textContent=TEAMS[st].players[0].name;
-  $("srv-p2-label").textContent=TEAMS[st].players[1].name;
-  $("srv-p1-label").style.color=TEAMS[st].players[0].color;
-  $("srv-p2-label").style.color=TEAMS[st].players[1].color;
-  show("server-screen");
-}
-function setFirstTeam(t){
-  G.firstTeam=t;
-  $("server-q-label").textContent="Set "+G.setNum+" - Your first server?";
-  $("srv-p1-label").textContent=PL[0].name;
-  $("srv-p2-label").textContent=PL[1].name;
-  $("srv-p1-label").style.color=PL[0].color;
-  $("srv-p2-label").style.color=PL[1].color;
-  show("server-screen");
-}
-function setFirstServer(pi){
-  if(gameMode==="streamer"){
-    var st=srvTeam();
-    G.servers[st]=pi;
-    G.nextServers[st]=(pi===0?1:0);
-    G.servers[G.recvTeam]=0;
-    G.nextServers[G.recvTeam]=1;
-    G.phase="so";
+    G.recvSide=0; // we always receive
     G.videoSync=Date.now();
-    show("game-screen");upd();vib(50);
-    return;
+    show("recv-screen");upd();
+  }else if(gameMode==="tr_drill"){
+    G.recvSide=1; // they always receive
+    G.videoSync=Date.now();
+    show("recv-screen");upd();
+  }else{
+    screenStack=["start-screen"];show("start-screen");
   }
-  G.ourNextServer=pi;G.theirServer=0;G.theirNextServer=0;
-  if(G.firstTeam==="us"){G.ourServer=pi;G.phase="tr"}
-  else{G.ourServer=pi;G.phase="so"}
-  G.videoSync=Date.now();
-  show("game-screen");upd();vib(50);
 }
-function startSODrill(){
-  G.phase="so";G.target=9999;
-  G.videoSync=Date.now();
-  show("game-screen");upd();vib(50);
-}
-function startTRDrill(serverIdx){
-  G.phase="tr";G.target=9999;
-  G.ourServer=serverIdx;
-  G.videoSync=Date.now();
-  show("game-screen");upd();vib(50);
-}
-// Call on load and after reset
-updStartScreen();
 
 /* ═══════════════════════════════════
-   UPDATE GAME UI
+   UPDATE GAME UI (Screen 1: receiver select)
    ═══════════════════════════════════ */
 function upd(){
-  var iso=G.phase==="so";
-  var isDrill=gameMode==="so_drill"||gameMode==="tr_drill";
-  var isStr=gameMode==="streamer";
-
-  // Header
-  if(gameMode==="so_drill") {
-    $("game-mode-title").textContent="Sideout drill";
-    $("game-mode-title").style.color=SO.frame;
-  } else if(gameMode==="tr_drill") {
-    $("game-mode-title").textContent="Transition drill";
-    $("game-mode-title").style.color=TR.frame;
-  } else if(isStr) {
-    var rt=TEAMS[G.recvTeam];
-    $("game-mode-title").textContent=rt.name+" sideout";
-    $("game-mode-title").style.color=rt.color;
-  } else {
-    $("game-mode-title").textContent=iso?"Sideout":"Transition";
-    $("game-mode-title").style.color=iso?SO.frame:TR.frame;
-  }
-
-  // Serve indicator
+  var weRecv=G.recvSide===0;
+  var pair=recvPair();
+  // Apply layout swap
+  var swapped=layout==="p2left";
+  var pL=swapped?pair[1]:pair[0];
+  var pR=swapped?pair[0]:pair[1];
+  $("game-mode-title").textContent=weRecv?"Sideout":"Transition";
+  $("game-mode-title").style.color=weRecv?"#448AFF":"#FF9100";
   var sv=$("game-score-serve");
-  if(isStr){
-    var sp=stP(srvPlayerGI());
-    sv.textContent=sp.name+" serving";
-    sv.style.color=sp.color;sv.style.background=hexDk(sp.color,0.15);
-    sv.style.pointerEvents="none";sv.style.cursor="default";
-  }else if(gameMode==="so_drill"){
-    sv.textContent="they serve";
-    sv.style.color="#5a9bd5";sv.style.background="rgba(68,138,255,0.2)";
-    sv.style.pointerEvents="none";sv.style.cursor="default";
-  }else if(gameMode==="tr_drill"){
-    sv.textContent=PL[G.ourServer].name+" serving ↔";
-    sv.style.color=PL[G.ourServer].color;
-    sv.style.background=G.ourServer===0?"rgba(68,138,255,0.25)":"rgba(255,145,0,0.25)";
-    sv.style.pointerEvents="auto";sv.style.cursor="pointer";
-  }else if(iso){
-    sv.textContent=(G.theirServer===0?"1st":"2nd")+" server";
-    sv.style.color="#5a9bd5";sv.style.background="rgba(68,138,255,0.2)";
-    sv.style.pointerEvents="none";sv.style.cursor="default";
-  }else{
-    sv.textContent=PL[G.ourServer].name+" serving";
-    sv.style.color=PL[G.ourServer].color;
-    sv.style.background=G.ourServer===0?"rgba(68,138,255,0.2)":"rgba(255,145,0,0.2)";
-    sv.style.pointerEvents="none";sv.style.cursor="default";
-  }
-
-  // Score + labels
+  sv.textContent=serverName()+" serving";
+  sv.style.color=PL[serverGI()].color;
   $("score-us").textContent=G.sU;
   $("score-them").textContent=G.sT;
-  if(isStr){
-    $("score-us").style.color=TEAMS[0].color;
-    $("score-them").style.color=TEAMS[1].color;
-    $("score-label-us").textContent=TEAMS[0].name;
-    $("score-label-them").textContent=TEAMS[1].name;
-    $("score-label-us").style.color=hexDk(TEAMS[0].color,0.4);
-    $("score-label-them").style.color=hexDk(TEAMS[1].color,0.4);
-  }else{
-    $("score-us").style.color="#448AFF";
-    $("score-them").style.color="#FF9100";
-    $("score-label-us").textContent="us";
-    $("score-label-them").textContent="them";
-    $("score-label-us").style.color="rgba(68,138,255,0.4)";
-    $("score-label-them").style.color="rgba(255,145,0,0.4)";
-  }
-  $("game-score-sets").textContent=(isDrill||isStr)?"·":"S "+G.setsU+"-"+G.setsT;
-
-  // Zones — streamer always shows 3 zones (sideout perspective)
-  var zp=$("g-zone-plus"),zz=$("g-zone-zero"),zm=$("g-zone-minus");
-  if(iso||isStr){
-    zz.style.display="flex";zp.style.flex="1";zz.style.flex="1";zm.style.flex="1";
-    zp.style.background=SO.plus.n;zz.style.background=SO.zero.n;zm.style.background=SO.minus.n;
-  }else{
-    zz.style.display="none";zp.style.flex="1";zm.style.flex="1";
-    zp.style.background=TR.plus.n;zm.style.background=TR.minus.n;
-  }
-
-  $("g-undo").style.opacity=G.hist.length?"0.7":"0.2";
-  $("g-bot-sub").textContent=(iso||isStr)?"Error":"Lost point";
-}
-function tapServe(){
-  if(gameMode!=="tr_drill")return;
-  G.ourServer=G.ourServer===0?1:0;
-  vib(30);upd();
+  $("game-score-sets").textContent="S "+G.setsU+"-"+G.setsT;
+  $("recv-left").style.background=hexDk(PL[pL].color,0.2);
+  $("recv-right").style.background=hexDk(PL[pR].color,0.2);
+  $("recv-left-name").textContent=PL[pL].name;
+  $("recv-left-name").style.color=PL[pL].color;
+  $("recv-right-name").textContent=PL[pR].name;
+  $("recv-right-name").style.color=PL[pR].color;
+  var sL=playerSO(pL),sR=playerSO(pR);
+  $("recv-left-stat").textContent=sL.recv?Math.round(sL.eff)+"%  "+sL.wins+"/"+sL.recv:"";
+  $("recv-right-stat").textContent=sR.recv?Math.round(sR.eff)+"%  "+sR.wins+"/"+sR.recv:"";
+  $("svc-err-text").textContent=weRecv?"Opp serve error":"Our serve error";
+  $("g-undo").style.opacity=G.actions.length?"0.7":"0.2";
 }
 
 /* ═══════════════════════════════════
-   STREAMER GAME FLOW
+   SCREEN 2/3 SETUP
    ═══════════════════════════════════ */
-function strShowPlayerGrid(v){
-  var rt=G.recvTeam,st=rt===0?1:0;
-  var label=ACT_LBL[v]||"";
-  var color=ACT_COL[v]||"#fff";
-  // Receiving team on top
-  var r0=TEAMS[rt].players[0],r1=TEAMS[rt].players[1];
-  var s0=TEAMS[st].players[0],s1=TEAMS[st].players[1];
-  $("str-grid-tag").textContent=v===1?"Who scored?":v===0?"Who attacked?":"Who lost it?";
-  $("str-grid-recv-label").textContent=TEAMS[rt].name;
-  $("str-grid-recv-label").style.color=TEAMS[rt].color;
-  $("str-grid-srv-label").textContent=TEAMS[st].name;
-  $("str-grid-srv-label").style.color=TEAMS[st].color;
-  // Top row (receiving team)
-  $("str-p0").style.background=hexDk(r0.color,0.2);
-  $("str-p0-name").textContent=r0.name;$("str-p0-name").style.color=r0.color;
-  $("str-p0-action").textContent=label;$("str-p0-action").style.color=color;
-  $("str-p1").style.background=hexDk(r1.color,0.2);
-  $("str-p1-name").textContent=r1.name;$("str-p1-name").style.color=r1.color;
-  $("str-p1-action").textContent=label;$("str-p1-action").style.color=color;
-  // Bottom row (serving team)
-  $("str-p2").style.background=hexDk(s0.color,0.2);
-  $("str-p2-name").textContent=s0.name;$("str-p2-name").style.color=s0.color;
-  $("str-p2-action").textContent=label;$("str-p2-action").style.color=color;
-  $("str-p3").style.background=hexDk(s1.color,0.2);
-  $("str-p3-name").textContent=s1.name;$("str-p3-name").style.color=s1.color;
-  $("str-p3-action").textContent=label;$("str-p3-action").style.color=color;
-  // Opp serve error only on +1
-  $("str-opp-miss").style.display=v===1?"flex":"none";
-  $("str-ace-sub").textContent="auto > "+stP(srvPlayerGI()).name;
-  show("str-player-grid");
-}
-function strSelectPlayer(gridIdx){
-  if(!G.pending)return;
-  // gridIdx 0,1 = receiving team; 2,3 = serving team
-  var rt=G.recvTeam,st=rt===0?1:0;
-  var gi=gridIdx<2?stGI(rt,gridIdx):stGI(st,gridIdx-2);
-  G.pending.pi=gi;
-  vib(40);
+function showOutcome(){
+  var p=G.pending;
+  var recvGI=p.receiver;
+  var recvTeam=recvGI<2?0:1;
+  var teammate=recvTeam===0?(recvGI===0?1:0):(recvGI===2?3:2);
 
-  var v=G.pending.v;
-  if(v===1){
-    // +1 → sideout sub-type (spike/shot/block out/2nd ball)
-    $("so-type-tag").textContent="Sideout +1";
-    $("so-blockout-btn").style.display="flex";
-    show("so-type-screen");
-  }else if(v===0){
-    // 0 → sideout sub-type first
-    $("so-type-tag").textContent="Sideout 0";
-    $("so-blockout-btn").style.display="none";
-    show("so-type-screen");
-  }else if(v===-1){
-    // -1 → what stopped them?
-    show("str-stopped-screen");
-  }
-}
-function strOppServeError(){
-  if(!G.pending)return;
-  vib(40);
-  var sgi=srvPlayerGI();
-  // Record as opp_service_error under receiving team player 0 (placeholder)
-  var rt=G.recvTeam;
-  G.act[stGI(rt,0)].so.push({v:1,t:Date.now(),e:Date.now()-G.t0,server:sgi,oSrv:-1,tp:"opp_service_error"});
-  G.hist.push({ph:"so",pi:stGI(rt,0),v:1,sc:"recv",srv:sgi,tp:"opp_service_error",mode:"str",recvTeam:rt});
-  G.pending=null;
-  show("game-screen");
-  strAwardPoint("recv");
-}
-function strStopped(reason){
-  if(!G.pending)return;
-  vib(40);
-  if(reason==="error"){
-    // Unforced error — just commit the -1
-    G.pending.tp="error";
-    strCommitSO();
-    strAwardPoint("srv");
-  }else if(reason==="aced"){
-    G.pending.tp="aced";
-    // Auto-credit server
-    var sgi=srvPlayerGI();
-    G.act[sgi].tr.push({v:1,t:Date.now(),e:Date.now()-G.t0,server:sgi,tp:"ace"});
-    strCommitSO();
-    strAwardPoint("srv");
-  }else if(reason==="blocked"||reason==="defended"){
-    G.pending.tp=reason;
-    strCommitSO();
-    // Show credit screen for serving team
-    G.pending._creditType=reason==="blocked"?"block":"defense";
-    strShowCredit(srvTeam());
-  }
-}
-function strCommitSO(){
-  // Record the sideout action for the receiving player
-  var p=G.pending;if(!p)return;
-  var gi=p.pi,sgi=srvPlayerGI();
-  G.act[gi].so.push({v:p.v,t:Date.now(),e:Date.now()-G.t0,server:sgi,oSrv:-1,tp:p.tp||null});
-  G.hist.push({ph:"so",pi:gi,v:p.v,sc:null,srv:sgi,tp:p.tp||null,mode:"str",recvTeam:G.recvTeam});
-}
-function strShowCredit(teamIdx){
-  var p0=TEAMS[teamIdx].players[0],p1=TEAMS[teamIdx].players[1];
-  $("str-credit-tag").textContent="Credit - "+TEAMS[teamIdx].name;
-  $("str-credit-tag").style.color=TEAMS[teamIdx].color;
-  $("str-credit-0").style.background=hexDk(p0.color,0.2);
-  $("str-credit-0-name").textContent=p0.name;
-  $("str-credit-0-name").style.color=p0.color;
-  $("str-credit-1").style.background=hexDk(p1.color,0.2);
-  $("str-credit-1-name").textContent=p1.name;
-  $("str-credit-1-name").style.color=p1.color;
-  G.pending._creditTeam=teamIdx;
-  show("str-credit-screen");
-}
-function strCreditPlayer(idx){
-  if(!G.pending)return;
-  vib(40);
-  var ti=G.pending._creditTeam,gi=stGI(ti,idx);
-  var ct=G.pending._creditType||"attack";
-  G.act[gi].tr.push({v:1,t:Date.now(),e:Date.now()-G.t0,server:srvPlayerGI(),tp:ct});
-  // Now award the point if not yet awarded
-  if(G.pending.v===-1){
-    strAwardPoint("srv");
-  }else if(G.pending._resolveWinner){
-    strAwardPoint(G.pending._resolveWinner);
-  }
-  G.pending=null;
-}
-function strAwardPoint(who){
-  // who: "recv" = receiving team scores, "srv" = serving team scores
-  if(who==="recv"){
-    if(G.recvTeam===0)G.sU++;else G.sT++;
-  }else{
-    if(G.recvTeam===0)G.sT++;else G.sU++;
-  }
-  // Serve rotation: receiving team won → they now serve (become serving team)
-  // serving team won → same server continues
-  if(who==="recv"){
-    // Side out: receiving team gets the serve
-    var oldRecv=G.recvTeam,oldSrv=oldRecv===0?1:0;
-    G.nextServers[oldSrv]=G.servers[oldSrv]===0?1:0; // advance their rotation
-    G.recvTeam=oldSrv; // teams swap
-    G.servers[oldRecv]=G.nextServers[oldRecv]; // new serving team uses next server
-  }
-  // If serving team won, no rotation change
-  if(!checkSetEnd())upd();
-  livePush(who==="recv"?"+1":"-1");
-  show("game-screen");
-}
+  var swapped=layout==="p2left";
+  var zm=swapped?[3,2,1,0]:[2,3,0,1];
+  p.zoneMap=zm;
 
-/* ═══════════════════════════════════
-   STREAMER: 0 resolution flow
-   After sideout sub-type and "who won?" we need "how?"
-   ═══════════════════════════════════ */
-function strResolvePoint(w){
-  // w = "recv" or "srv"
-  var l=G.hist[G.hist.length-1];
-  if(l)l.sc=w;
-  vib(50);
-  // Show "how did they win?" screen
-  var winTeam=w==="recv"?G.recvTeam:(G.recvTeam===0?1:0);
-  $("str-how-tag").textContent=TEAMS[winTeam].name+" won — how?";
-  $("str-how-tag").style.color=TEAMS[winTeam].color;
-  G.pending._resolveWinner=w;
-  G.pending._resolveWinTeam=winTeam;
-  show("str-how-screen");
-}
-function strHow(method){
-  if(!G.pending)return;
-  vib(40);
-  if(method==="error"){
-    // Losing team made an error — no credit to anyone
-    strAwardPoint(G.pending._resolveWinner);
-    G.pending=null;
-  }else{
-    // attack or block — credit a player from the winning team
-    G.pending._creditType=method==="block"?"block":"attack";
-    strShowCredit(G.pending._resolveWinTeam);
+  for(var z=0;z<4;z++){
+    var pi=zm[z];
+    $("out-p"+z+"-name").textContent=PL[pi].name;
+    $("out-p"+z+"-name").style.color=PL[pi].color;
+    $("out-p"+z).style.background=hexDk(PL[pi].color,0.2);
+    var sub=$("out-p"+z+"-sub");
+    sub.style.color=PL[pi].color;
+    sub.style.opacity="0.6";
+    if(pi===recvGI) sub.textContent="Clean SO";
+    else if(pi===teammate) sub.textContent="Option ball";
+    else sub.textContent="Won the ball";
   }
+
+  $("outcome-tag").textContent="What happened?";
+  show("outcome-screen");
+}
+function showRallyScreen(){
+  $("ral-us-names").textContent=PL[0].name+" + "+PL[1].name;
+  $("ral-them-names").textContent=PL[2].name+" + "+PL[3].name;
+  show("rally-screen");
 }
 
 /* ═══════════════════════════════════
    GAME FLOW
    ═══════════════════════════════════ */
-function logAction(v){
-  if(G.phase==="tr"&&v===0&&gameMode!=="streamer")return;
-  var iso=G.phase==="so"||gameMode==="streamer";
-  // Flash
-  var zid=v===1?"g-zone-plus":v===0?"g-zone-zero":"g-zone-minus";
-  var ck=v===1?"plus":v===0?"zero":"minus";
-  var c=iso?SO:TR;
-  if(c[ck])$(zid).style.background=c[ck].f;
-  clearTimeout(fT);
-  fT=setTimeout(function(){if(c[ck])$(zid).style.background=c[ck].n},250);
-  vib(v===1?50:v===-1?[50,30,50]:30);
-  G.pending={v:v,phase:G.phase,tp:null,pi:null};
-
-  if(gameMode==="streamer"){
-    strShowPlayerGrid(v);
-    return;
-  }
-
-  if(G.phase==="so"){
-    showPlayerSelect(v);
-  }else if(G.phase==="tr"&&v===1){
-    $("ace-sub").textContent="auto > "+PL[G.ourServer].name;
-    show("tr-type-screen");
-  }else if(G.phase==="tr"&&v===-1){
-    $("sm-yes-sub").textContent=PL[G.ourServer].name+" missed";
-    show("svc-miss-screen");
-  }
+function pickRecv(idx){
+  var pair=recvPair();
+  var swapped=layout==="p2left";
+  var pL=swapped?pair[1]:pair[0];
+  var pR=swapped?pair[0]:pair[1];
+  var recvGI=idx===0?pL:pR;
+  G.pending={receiver:recvGI,server:serverGI(),recvSide:G.recvSide};
+  vib(40);showOutcome();
 }
-function soType(type){
+function pickOutcome(code){
   if(!G.pending)return;
-  G.pending.tp=type;vib(40);
-  if(gameMode==="streamer"){
-    var v=G.pending.v;
-    strCommitSO();
-    if(v===1){
-      strAwardPoint("recv");
-      G.pending=null;
-    }else if(v===0){
-      // Show resolve: which team won?
-      $("resolve-hint").textContent="Who won?";
-      $("resolve-us-label").textContent=TEAMS[G.recvTeam].name;
-      $("resolve-us-label").style.color=TEAMS[G.recvTeam].color;
-      $("resolve-them-label").textContent=TEAMS[G.recvTeam===0?1:0].name;
-      $("resolve-them-label").style.color=TEAMS[G.recvTeam===0?1:0].color;
-      show("resolve-screen");
-    }
-    return;
-  }
-  commitAction(G.pending.pi);
+  vib(40);var p=G.pending;
+  if(code===-3){commitAction(p.receiver,"ace",serverGI(),null);return}
+  if(code===-1){commitAction(p.receiver,"error",null,null);return}
+  if(code===-2){p.soVal=0;showRallyScreen();return}
+  var winner=p.zoneMap?p.zoneMap[code]:code;
+  var recvTeam=p.receiver<2?0:1;
+  var winTeam=winner<2?0:1;
+  if(winTeam===recvTeam){commitAction(p.receiver,"plus",winner,null)}
+  else{commitAction(p.receiver,"minus",winner,null)}
 }
-function trType(type){
+function pickRallyWinner(code){
   if(!G.pending)return;
-  G.pending.tp=type;vib(40);
-  if(type==="ace"||type==="unforced_error")commitAction(G.ourServer);
-  else showPlayerSelect(1,type);
-}
-function trError(isMiss){
-  if(!G.pending)return;
-  G.pending.tp=isMiss?"service_error":"lost_point";vib(40);
-  commitAction(G.ourServer);
-}
-function showPlayerSelect(v,type){
-  var lp=getLP(),rp=getRP();
-  var label=ACT_LBL[v]||"+1";
-  var color=ACT_COL[v]||"#00C853";
-  var iso=G.pending&&G.pending.phase==="so";
-
-  $("ps-tag").style.color=iso?SO.frame:TR.frame;
-  $("ps-tag").textContent=type?type.replace("_"," "):"Player";
-  $("ps-left").style.background=hexDk(PL[lp].color,0.25);
-  $("ps-right").style.background=hexDk(PL[rp].color,0.25);
-  $("ps-left-name").textContent=PL[lp].name;
-  $("ps-left-name").style.color=PL[lp].color;
-  $("ps-right-name").textContent=PL[rp].name;
-  $("ps-right-name").style.color=PL[rp].color;
-  $("ps-left-action").textContent=label;
-  $("ps-left-action").style.color=color;
-  $("ps-right-action").textContent=label;
-  $("ps-right-action").style.color=color;
-  // Show opp miss button only during sideout +1
-  $("opp-miss-btn").style.display=(iso&&v===1)?"flex":"none";
-  show("player-select");
-}
-function oppMissedServe(){
-  if(!G.pending)return;
-  G.pending.tp="opp_service_error";
-  G.pending.pi=-1; // no player
-  vib(40);
-  // Record under a neutral player index (0) but with distinct type
-  var ph="so";
-  G.act[0][ph].push({v:1,t:Date.now(),e:Date.now()-G.t0,server:-1,oSrv:G.theirServer,tp:"opp_service_error"});
-  G.hist.push({ph:"so",pi:0,v:1,sc:"us",srv:G.ourServer,nxt:G.ourNextServer,tsrv:G.theirServer,tnxt:G.theirNextServer,tp:"opp_service_error"});
-  G.pending=null;
-  show("game-screen");
-  awardPoint("us");
-}
-function selectPlayer(side){
-  var pi=side==="left"?getLP():getRP();
-  if(!G.pending)return;
-  if(G.pending.phase==="so"&&(G.pending.v===1||G.pending.v===0)){
-    G.pending.pi=pi;vib(40);
-    $("so-type-tag").textContent="Sideout "+ACT_LBL[G.pending.v];
-    $("so-blockout-btn").style.display=G.pending.v===0?"none":"flex";
-    show("so-type-screen");
+  vib(40);var p=G.pending;
+  var recvTeam=p.receiver<2?0:1;
+  var usWon=code===0;
+  if((recvTeam===0&&usWon)||(recvTeam===1&&!usWon)){
+    commitAction(p.receiver,"zero_won",null,null);
   }else{
-    commitAction(pi);
+    commitAction(p.receiver,"zero_lost",null,null);
   }
 }
-function commitAction(pi){
-  var p=G.pending;if(!p)return;
-  var ph=p.phase==="so"?"so":"tr";
-  G.act[pi][ph].push({v:p.v,t:Date.now(),e:Date.now()-G.t0,server:G.phase==="tr"?G.ourServer:-1,oSrv:G.phase==="so"?G.theirServer:-1,tp:p.tp||null});
-  G.hist.push({ph:p.phase,pi:pi,v:p.v,sc:null,srv:G.ourServer,nxt:G.ourNextServer,tsrv:G.theirServer,tnxt:G.theirNextServer,tp:p.tp||null});
-  G.pending=null;vib(40);
-  if(p.v===1){G.hist[G.hist.length-1].sc="us";show("game-screen");awardPoint("us")}
-  else if(p.v===-1){G.hist[G.hist.length-1].sc="them";show("game-screen");awardPoint("them")}
-  else{show("resolve-screen")}
+function svcError(){
+  var sgi=serverGI();
+  var act={receiver:-1,winner:null,server:sgi,outcome:"svc_error",detail:null,recvSide:G.recvSide,t:Date.now(),e:Date.now()-G.t0};
+  G.actions.push(act);vib([40,20,40]);
+  awardPoint(G.recvSide===0?"us":"them");
+  show("recv-screen");
 }
-function resolvePoint(w){
-  if(gameMode==="streamer"){
-    // w = "us" maps to recv or srv depending on recvTeam
-    // "us" button = left = Team A side, "them" = right = Team B side
-    // But we labelled them as team names, so:
-    // left button = recvTeam, right button = serving team
-    var winner=w==="us"?"recv":"srv";
-    strResolvePoint(winner);
-    return;
-  }
-  var l=G.hist[G.hist.length-1];if(l)l.sc=w;
-  vib(50);show("game-screen");awardPoint(w);
+function commitAction(receiver,outcome,winner,detail){
+  var act={receiver:receiver,winner:winner,server:G.pending.server,outcome:outcome,detail:detail,recvSide:G.pending.recvSide,t:Date.now(),e:Date.now()-G.t0};
+  G.actions.push(act);G.pending=null;
+  var recvTeam=receiver<2?0:1;var usRecv=recvTeam===0;
+  if(outcome==="plus")awardPoint(usRecv?"us":"them");
+  else if(outcome==="minus")awardPoint(usRecv?"them":"us");
+  else if(outcome==="ace")awardPoint(usRecv?"them":"us");
+  else if(outcome==="error")awardPoint(usRecv?"them":"us");
+  else if(outcome==="zero_won")awardPoint(usRecv?"us":"them");
+  else if(outcome==="zero_lost")awardPoint(usRecv?"them":"us");
+  show("recv-screen");
 }
 function awardPoint(to){
   if(to==="us")G.sU++;else G.sT++;
   var isDrill=gameMode==="so_drill"||gameMode==="tr_drill";
-  if(isDrill){
-    // Drills: no serve rotation, no set end, just update
-    upd();
-  }else{
-    if(!checkSetEnd()){serveChange(to==="us"?"tr":"so");upd()}
+  if(!isDrill){
+    var recvWon=(G.recvSide===0&&to==="us")||(G.recvSide===1&&to==="them");
+    if(recvWon)servRotate();
   }
+  if(isDrill||!checkSetEnd())upd();
   livePush(to==="us"?"+1":"-1");
 }
 function checkSetEnd(){
@@ -1462,132 +915,200 @@ function checkSetEnd(){
   var tW=G.sT>=t&&(G.sT-G.sU)>=2;
   if(!uW&&!tW)return false;
   var w=uW?"us":"them";
-  var actCopy=G.act.map(function(p){return{so:p.so.slice(),tr:p.tr.slice()}});
-  G.sets.push({setNum:G.setNum,sU:G.sU,sT:G.sT,winner:w,act:actCopy});
+  G.sets.push({setNum:G.setNum,sU:G.sU,sT:G.sT,winner:w,actions:G.actions.slice()});
   if(w==="us")G.setsU++;else G.setsT++;
   if(G.setsU>=2||G.setsT>=2){G.matchOver=true;showMatchOver()}
   else showSetComplete();
   return true;
 }
 function undoLast(){
-  if(!G.hist.length)return;
-  var l=G.hist.pop();
-  var pa=G.act[l.pi][l.ph==="so"?"so":"tr"];
-  if(pa.length)pa.pop();
-  if(l.sc==="us"&&G.sU>0)G.sU--;
-  if(l.sc==="them"&&G.sT>0)G.sT--;
-  var isDrill=gameMode==="so_drill"||gameMode==="tr_drill";
-  if(!isDrill){
-    G.phase=l.ph;G.ourServer=l.srv;G.ourNextServer=l.nxt;
-    G.theirServer=l.tsrv;G.theirNextServer=l.tnxt;
-  }
-  vib(20);show("game-screen");upd();
+  if(!G.actions.length)return;
+  var last=G.actions.pop();
+  var recvTeam=last.receiver<2?0:1;var usRecv=recvTeam===0;
+  var usScored=false;
+  if(last.outcome==="plus"||last.outcome==="zero_won")usScored=usRecv;
+  else if(last.outcome==="minus"||last.outcome==="ace"||last.outcome==="error"||last.outcome==="zero_lost")usScored=!usRecv;
+  else if(last.outcome==="svc_error")usScored=last.recvSide===0;
+  if(usScored&&G.sU>0)G.sU--;
+  if(!usScored&&G.sT>0)G.sT--;
+  G.recvSide=last.recvSide;
+  vib(20);show("recv-screen");upd();
   livePush("undo");
 }
 function showSetComplete(){
   $("set-result-label").textContent="Set "+G.setNum+" complete";
   $("set-result-score").textContent=G.sU+" : "+G.sT;
   $("set-result-sets").textContent="Sets: "+G.setsU+" - "+G.setsT;
-  var d=(G.setsU===1&&G.setsT===1);
-  $("set-next-btn").textContent=d?"Deciding set":"Next set";
-  $("set-next-btn").style.background=d?"#FF9100":"#448AFF";
-  show("set-screen");vib([50,30,50,30,50]);
+  show("set-screen");
 }
 function showMatchOver(){
-  var w=G.setsU>=2;
-  $("match-winner").textContent=w?"We win!":"They win";
-  $("match-winner").style.color=w?"#00C853":"#FF1744";
+  $("match-winner").textContent=G.setsU>G.setsT?"We win":"They win";
+  $("match-winner").style.color=G.setsU>G.setsT?"#448AFF":"#FF9100";
   $("match-sets").textContent=G.setsU+" - "+G.setsT;
-  $("match-scores").textContent=G.sets.map(function(s){return s.sU+"-"+s.sT}).join(" | ");
-  show("match-screen");vib(w?[50,30,50,30,100]:[100,50,100]);
-}
-function startNextSet(){
-  G.setNum++;G.sU=0;G.sT=0;
-  G.target=(G.setNum===3)?15:21;
-  var isStr=gameMode==="streamer";
-  G.act=isStr?[{so:[],tr:[]},{so:[],tr:[]},{so:[],tr:[]},{so:[],tr:[]}]:[{so:[],tr:[]},{so:[],tr:[]}];
-  G.hist=[];
-  updStartScreen();
-  show("start-screen");
+  var sc=[];G.sets.forEach(function(s){sc.push(s.sU+"-"+s.sT)});
+  $("match-scores").textContent="("+sc.join(", ")+")";
+  show("match-screen");
 }
 
 /* ═══════════════════════════════════
-   LIVE PUSH (Google Sheets)
+   STATS HELPERS
    ═══════════════════════════════════ */
+function allActions(){
+  var a=[];G.sets.forEach(function(s){a=a.concat(s.actions)});
+  return a.concat(G.actions);
+}
+function playerSO(gi){
+  var acts=allActions(),recv=0,wins=0,losses=0,zeros=0,aced=0,sum=0;
+  acts.forEach(function(a){
+    if(a.receiver!==gi)return;
+    if(a.outcome==="svc_error")return;
+    recv++;
+    if(a.outcome==="plus"){wins++;sum+=1}
+    else if(a.outcome==="minus"||a.outcome==="error"){losses++;sum-=1}
+    else if(a.outcome==="ace"){aced++;losses++;sum-=1}
+    else if(a.outcome==="zero_won"){zeros++;wins++}
+    else if(a.outcome==="zero_lost"){zeros++;losses++}
+  });
+  return{recv:recv,wins:wins,losses:losses,zeros:zeros,aced:aced,eff:recv?(sum/recv)*100:0};
+}
+function playerKills(gi){
+  var acts=allActions(),k=0;
+  acts.forEach(function(a){if(a.winner===gi)k++});
+  return k;
+}
+function playerTR(gi){
+  var acts=allActions(),kills=0;
+  var myTeam=gi<2?0:1;
+  acts.forEach(function(a){
+    if(a.outcome==="svc_error"||a.outcome==="ace")return;
+    var recvTeam=a.receiver<2?0:1;
+    if(recvTeam===myTeam)return;
+    if(a.winner===gi)kills++;
+  });
+  return{kills:kills};
+}
+function playerServe(gi){
+  var acts=allActions(),aces=0,errs=0,total=0;
+  acts.forEach(function(a){
+    if(a.server!==gi)return;total++;
+    if(a.outcome==="ace")aces++;
+    if(a.outcome==="svc_error")errs++;
+  });
+  return{aces:aces,errs:errs,total:total};
+}
+function playerWinsVsUs(gi){
+  var acts=allActions(),w=0;
+  acts.forEach(function(a){if(a.winner===gi)w++});
+  return w;
+}
+function scoringRuns(){
+  var bestUs=0,bestThem=0,curUs=0,curThem=0;
+  allActions().forEach(function(a){
+    var recvTeam=a.receiver>=0?(a.receiver<2?0:1):(a.recvSide===0?0:1);
+    var usScored=false;
+    if(a.outcome==="plus"||a.outcome==="zero_won")usScored=recvTeam===0;
+    else if(a.outcome==="svc_error")usScored=a.recvSide===0;
+    else usScored=recvTeam!==0;
+    if(usScored){curUs++;curThem=0;if(curUs>bestUs)bestUs=curUs}
+    else{curThem++;curUs=0;if(curThem>bestThem)bestThem=curThem}
+  });
+  return{us:bestUs,them:bestThem};
+}
+function pointPace(){
+  var acts=allActions();
+  if(acts.length<2)return{avg:0};
+  var gaps=[];
+  for(var i=1;i<acts.length;i++)gaps.push(acts[i].t-acts[i-1].t);
+  var sum=0;gaps.forEach(function(g){sum+=g});
+  return{avg:Math.round(sum/gaps.length/1000)};
+}
 function getLast8(){
-  // Last 8 point results from current history
-  var r=[];
-  for(var i=G.hist.length-1;i>=0&&r.length<8;i--){
-    if(G.hist[i].sc==="us")r.unshift(1);
-    else if(G.hist[i].sc==="them")r.unshift(-1);
+  var acts=allActions(),r=[];
+  for(var i=acts.length-1;i>=0&&r.length<8;i--){
+    var a=acts[i],recvTeam=a.receiver>=0?(a.receiver<2?0:1):(a.recvSide===0?0:1);
+    var us=false;
+    if(a.outcome==="plus"||a.outcome==="zero_won")us=recvTeam===0;
+    else if(a.outcome==="svc_error")us=a.recvSide===0;
+    else us=recvTeam!==0;
+    r.unshift(us?1:-1);
   }
   return r;
 }
+
+/* ═══════════════════════════════════
+   VIDEO SYNC & VLC CHAPTERS
+   ═══════════════════════════════════ */
+function msToTC(ms){
+  if(ms<0)ms=0;
+  var h=Math.floor(ms/3600000);ms%=3600000;
+  var m=Math.floor(ms/60000);ms%=60000;
+  var s=Math.floor(ms/1000);var fr=ms%1000;
+  return(h<10?"0":"")+h+":"+(m<10?"0":"")+m+":"+(s<10?"0":"")+s+"."+(fr<100?"0":"")+(fr<10?"0":"")+fr;
+}
+function buildVLCChapters(){
+  var ref=G.videoSync||G.t0;
+  var acts=allActions();
+  var entries=[];
+  acts.forEach(function(a){
+    var recv=a.receiver>=0?PL[a.receiver].name:"?";
+    var win=a.winner!=null?PL[a.winner].name:"";
+    var desc=a.outcome+" recv:"+recv+(win?" win:"+win:"");
+    entries.push({t:a.t,desc:desc});
+  });
+  entries.sort(function(a,b){return a.t-b.t});
+  var lines=[];
+  entries.forEach(function(e,i){
+    var n=i+1;var pad=n<10?"0":"";
+    var tc=msToTC(e.t-ref);
+    lines.push("CHAPTER"+pad+n+"="+tc);
+    lines.push("CHAPTER"+pad+n+"NAME="+e.desc);
+  });
+  return lines.join("\n");
+}
+function downloadVLCChapters(){
+  var ch=buildVLCChapters();
+  if(!ch)return;
+  var b=new Blob([ch],{type:"text/plain"});
+  var u=URL.createObjectURL(b);
+  var l=document.createElement("a");
+  l.href=u;l.download="bv_"+new Date().toISOString().slice(0,10)+".chapters.txt";
+  l.click();URL.revokeObjectURL(u);
+}
 function getLastAction(){
-  if(!G.hist.length)return"";
-  var h=G.hist[G.hist.length-1];
-  var lbl=ACT_LBL[h.v]||"";
-  var tp=h.tp?(" "+h.tp.replace("_"," ")):"";
-  return lbl+tp+" "+PL[h.pi].name;
+  var acts=allActions();
+  if(!acts.length)return"";
+  var a=acts[acts.length-1];
+  var recv=a.receiver>=0?PL[a.receiver].name:"";
+  var win=a.winner!=null?PL[a.winner].name:"";
+  if(a.outcome==="svc_error")return"svc err "+PL[a.server].name;
+  if(a.outcome==="ace")return"ace "+PL[a.server].name;
+  return a.outcome+" "+recv+(win?" > "+win:"");
 }
 function buildLivePayload(action){
-  var teamSOsum=0,teamSOcnt=0,earnSum=0,earnCnt=0;
-  var allSets=getAllSetsData();
-  allSets.forEach(function(acts){
-    for(var pi=0;pi<2;pi++){acts[pi].so.forEach(function(a){
-      teamSOsum+=a.v;teamSOcnt++;
-      if(a.tp!=="opp_service_error"){earnSum+=a.v;earnCnt++}
-    })}
-  });
-  var p1=ga(0),p2=ga(1);
-  var sv=serveStats();
-  var tc=trConversion();
-  var runs=scoringRuns();
-  var pace=pointPace();
-  var arc=setArc(G.act);
-  var iso=G.phase==="so";
-  var s1p1=soByOppServer(0,0),s2p1=soByOppServer(0,1);
-  var s1p2=soByOppServer(1,0),s2p2=soByOppServer(1,1);
+  var p1so=playerSO(0),p2so=playerSO(1),o1so=playerSO(2),o2so=playerSO(3);
+  var p1sv=playerServe(0),p2sv=playerServe(1);
+  var p1tr=playerTR(0),p2tr=playerTR(1);
+  var runs=scoringRuns(),pace=pointPace();
+  var weRecv=G.recvSide===0;
+  // Team SO (our team only)
+  var tRecv=p1so.recv+p2so.recv,tWins=p1so.wins+p2so.wins;
+  var teamSO=tRecv?Math.round((tWins/tRecv)*100):0;
   return{
     timestamp:new Date().toISOString(),
-    scoreUs:G.sU, scoreThem:G.sT,
-    setsUs:G.setsU, setsThem:G.setsT,
-    setNum:G.setNum,
-    phase:iso?"sideout":"transition",
-    server:iso?"":(PL[G.ourServer].name),
-    oppServer:iso?((G.theirServer===0?"1st":"2nd")):"",
+    scoreUs:G.sU,scoreThem:G.sT,
+    setsUs:G.setsU,setsThem:G.setsT,setNum:G.setNum,
+    phase:weRecv?"sideout":"transition",
+    server:serverName(),
     lastAction:action==="undo"?"undo":getLastAction(),
-    soEffTeam:teamSOcnt?Math.round((teamSOsum/teamSOcnt)*100):0,
-    earnedSO:earnCnt?Math.round((earnSum/earnCnt)*100):0,
-    soEffP1:Math.round(p1.so.eff||0),
-    soEffP2:Math.round(p2.so.eff||0),
-    trConvPct:tc.pct, trWins:tc.wins, trTotal:tc.total,
-    aces:sv.aces, svcErrors:sv.errors, oppSvcErrors:sv.oppErrors||0,
-    matchOver:G.matchOver,
-    last8:getLast8(),
-    p1Name:PL[0].name, p1Eff:Math.round(p1.eff||0),
-    p2Name:PL[1].name, p2Eff:Math.round(p2.eff||0),
-    // Runs + pace
-    bestRunUs:runs.us, bestRunThem:runs.them,
-    pointPace:pace.avg,
-    // Set arc
-    arcFirst:arc?arc.firstEff:0, arcFirstN:arc?arc.firstN:0,
-    arcSecond:arc?arc.secondEff:0, arcSecondN:arc?arc.secondN:0,
-    // P1 sideout detail
-    p1SOplus:p1.so.plus, p1SOzero:p1.so.zero, p1SOminus:p1.so.minus,
-    p1Spk:p1.so.spikes||0, p1Sht:p1.so.shots||0, p1Bko:p1.so.blockOuts||0, p1Snd:p1.so.secondBalls||0,
-    // P1 transition detail
-    p1TRplus:p1.tr.plus, p1TRminus:p1.tr.minus,
-    p1Blk:p1.tr.blocks||0, p1Def:p1.tr.defense||0, p1Ace:p1.tr.aces||0, p1SE:p1.tr.svcErr||0,
-    // P2 sideout detail
-    p2SOplus:p2.so.plus, p2SOzero:p2.so.zero, p2SOminus:p2.so.minus,
-    p2Spk:p2.so.spikes||0, p2Sht:p2.so.shots||0, p2Bko:p2.so.blockOuts||0, p2Snd:p2.so.secondBalls||0,
-    // P2 transition detail
-    p2TRplus:p2.tr.plus, p2TRminus:p2.tr.minus,
-    p2Blk:p2.tr.blocks||0, p2Def:p2.tr.defense||0, p2Ace:p2.tr.aces||0, p2SE:p2.tr.svcErr||0,
-    // SO vs opponent server
-    p1vs1st:s1p1.eff, p1vs1stN:s1p1.total, p1vs2nd:s2p1.eff, p1vs2ndN:s2p1.total,
-    p2vs1st:s1p2.eff, p2vs1stN:s1p2.total, p2vs2nd:s2p2.eff, p2vs2ndN:s2p2.total,
+    soTeam:teamSO,
+    p1Name:PL[0].name,p1SO:Math.round(p1so.eff),p1Recv:p1so.recv,p1Kills:p1so.wins,p1Zeros:p1so.zeros,p1Lost:p1so.losses,
+    p1TRkills:p1tr.kills,p1Aces:p1sv.aces,p1SvcErr:p1sv.errs,
+    p2Name:PL[1].name,p2SO:Math.round(p2so.eff),p2Recv:p2so.recv,p2Kills:p2so.wins,p2Zeros:p2so.zeros,p2Lost:p2so.losses,
+    p2TRkills:p2tr.kills,p2Aces:p2sv.aces,p2SvcErr:p2sv.errs,
+    o1Name:PL[2].name,o1SO:Math.round(o1so.eff),o1Recv:o1so.recv,o1Kills:o1so.wins,o1KillsVsUs:playerWinsVsUs(2),
+    o2Name:PL[3].name,o2SO:Math.round(o2so.eff),o2Recv:o2so.recv,o2Kills:o2so.wins,o2KillsVsUs:playerWinsVsUs(3),
+    bestRunUs:runs.us,bestRunThem:runs.them,pointPace:pace.avg,
+    last8:getLast8(),matchOver:G.matchOver,
     overlay:G.overlay
   };
 }
@@ -1649,292 +1170,71 @@ function updStreamToggles(){
 }
 
 /* ═══════════════════════════════════
-   ANALYTICS HELPERS
-   ═══════════════════════════════════ */
-// Get combined actions for a specific set (0-indexed from G.sets, or current)
-function getSetData(si){
-  if(si<G.sets.length) return G.sets[si].act;
-  return G.act; // current set
-}
-function getAllSetsData(){
-  var list=[];
-  for(var i=0;i<G.sets.length;i++) list.push(G.sets[i].act);
-  if(!G.matchOver||(G.sU||G.sT)) list.push(G.act);
-  return list;
-}
-// SO% by opponent server (1st=0, 2nd=1) across all sets for a player
-function soByOppServer(pi,oSrvIdx){
-  var all=getAllSetsData(),sum=0,cnt=0;
-  all.forEach(function(acts){
-    acts[pi].so.forEach(function(a){
-      if(a.tp==="opp_service_error")return;
-      if(a.oSrv===oSrvIdx){sum+=a.v;cnt++}
-    });
-  });
-  return cnt?{eff:Math.round((sum/cnt)*100),total:cnt}:{eff:0,total:0};
-}
-// Transition conversion: when we serve, % of points we win
-function trConversion(){
-  var all=getAllSetsData(),wins=0,total=0;
-  all.forEach(function(acts){
-    for(var pi=0;pi<acts.length;pi++){
-      acts[pi].tr.forEach(function(a){
-        total++;if(a.v===1)wins++;
-      });
-    }
-  });
-  return total?{pct:Math.round((wins/total)*100),wins:wins,total:total}:{pct:0,wins:0,total:0};
-}
-function serveStats(){
-  var aces=0,errs=0,total=0,oppErrs=0;
-  var all=getAllSetsData();
-  all.forEach(function(acts){
-    for(var pi=0;pi<acts.length;pi++){
-      acts[pi].tr.forEach(function(a){
-        if(a.v===1&&a.tp==="ace")aces++;
-        if(a.v===-1&&a.tp==="service_error")errs++;
-        if(a.server>=0)total++;
-      });
-      acts[pi].so.forEach(function(a){
-        if(a.tp==="opp_service_error")oppErrs++;
-      });
-    }
-  });
-  return{aces:aces,errors:errs,total:total,oppErrors:oppErrs};
-}
-function killDist(pi){
-  var a=ga(pi),so=a.so,tr=a.tr;
-  return{spikes:so.spikes,shots:so.shots,blockOuts:so.blockOuts,secondBalls:so.secondBalls,blocks:tr.blocks,defense:tr.defense,aces:tr.aces,unfErr:tr.unfErr};
-}
-function scoringRuns(){
-  var bestUs=0,bestThem=0,curUs=0,curThem=0;
-  G.hist.forEach(function(h){
-    var w=h.sc;
-    if(gameMode==="streamer"){w=h.sc==="recv"?"us":"them"}
-    if(w==="us"){curUs++;curThem=0;if(curUs>bestUs)bestUs=curUs}
-    else if(w==="them"){curThem++;curUs=0;if(curThem>bestThem)bestThem=curThem}
-  });
-  return{us:bestUs,them:bestThem};
-}
-function pointPace(){
-  var allTimes=[];
-  for(var pi=0;pi<G.act.length;pi++){
-    ["so","tr"].forEach(function(ph){
-      G.act[pi][ph].forEach(function(a){allTimes.push(a.t)});
-    });
-  }
-  allTimes.sort(function(a,b){return a-b});
-  if(allTimes.length<2)return{avg:0,total:allTimes.length};
-  var gaps=[];
-  for(var i=1;i<allTimes.length;i++)gaps.push(allTimes[i]-allTimes[i-1]);
-  var sum=0;gaps.forEach(function(g){sum+=g});
-  return{avg:Math.round(sum/gaps.length/1000),total:allTimes.length};
-}
-function setArc(acts){
-  var allActs=[];
-  for(var pi=0;pi<acts.length;pi++){
-    ["so","tr"].forEach(function(ph){
-      acts[pi][ph].forEach(function(a){allActs.push(a)});
-    });
-  }
-  allActs.sort(function(a,b){return a.t-b.t});
-  var mid=Math.floor(allActs.length/2);
-  if(mid<1)return null;
-  var s1=0,s2=0;
-  for(var i=0;i<mid;i++)s1+=allActs[i].v;
-  for(var i=mid;i<allActs.length;i++)s2+=allActs[i].v;
-  var c1=mid,c2=allActs.length-mid;
-  return{
-    firstEff:c1?Math.round((s1/c1)*100):0,firstN:c1,
-    secondEff:c2?Math.round((s2/c2)*100):0,secondN:c2
-  };
-}
-// Per-set SO% for a player
-function playerSetSO(pi,setActs){
-  var so=gs(setActs[pi],"so");
-  return so;
-}
-
-/* ═══════════════════════════════════
-   STATS VIEW
+   STATS VIEW (4-player model)
    ═══════════════════════════════════ */
 function showStats(){
   hideOverlayById("confirm-view");
   var c=$("stats-content");c.innerHTML="";
   var h="";
-  var isDrill=gameMode==="so_drill"||gameMode==="tr_drill";
-  var showSO=gameMode!=="tr_drill"; // match + so_drill
-  var showTR=gameMode!=="so_drill"; // match + tr_drill
 
   // ── SCORE ──
-  var lbl=isDrill?(gameMode==="so_drill"?"Sideout drill":"Transition drill"):(G.matchOver?"Final":"Set "+G.setNum+" (to "+G.target+")");
+  var lbl=G.matchOver?"Final":"Set "+G.setNum+" (to "+G.target+")";
   h+='<div class="score-block"><div class="score-block-label">'+lbl+'</div><div class="score-block-val">'+G.sU+' : '+G.sT+'</div>';
-  if(!isDrill) h+='<div class="score-block-label">Sets: '+G.setsU+' - '+G.setsT+'</div>';
-  h+='</div>';
-
-  if(!isDrill){
-    for(var si=0;si<G.sets.length;si++){
-      var st=G.sets[si];
-      h+='<div class="set-history-row"><span style="color:#666">Set '+st.setNum+'</span><span style="color:'+(st.winner==="us"?"#448AFF":"#FF9100")+'">'+st.sU+' : '+st.sT+'</span></div>';
-    }
+  h+='<div class="score-block-label">Sets: '+G.setsU+' - '+G.setsT+'</div></div>';
+  for(var si=0;si<G.sets.length;si++){
+    var st=G.sets[si];
+    h+='<div class="set-history-row"><span style="color:#666">Set '+st.setNum+'</span><span style="color:'+(st.winner==="us"?"#448AFF":"#FF9100")+'">'+st.sU+' : '+st.sT+'</span></div>';
   }
 
-  var allSets=getAllSetsData();
+  // ── OUR TEAM SIDEOUT ──
+  var p1so=playerSO(0),p2so=playerSO(1);
+  var tRecv=p1so.recv+p2so.recv,tWins=p1so.wins+p2so.wins;
+  var teamSO=tRecv?Math.round((tWins/tRecv)*100):0;
+  h+='<div class="st-hdr" style="color:#448AFF">Our sideout</div>';
+  h+='<div class="st-row" style="border-left:3px solid #448AFF"><span class="st-row-label" style="color:#fff">Team</span><span class="st-row-val" style="color:#448AFF">'+teamSO+'% <span style="color:#555">('+tWins+'/'+tRecv+')</span></span></div>';
+  h+='<div class="st-row" style="border-left:3px solid '+PL[0].color+'"><span class="st-row-label" style="color:'+PL[0].color+'">'+PL[0].name+'</span><span class="st-row-val">'+ef(p1so.eff)+' <span style="color:#555">('+p1so.wins+'/'+p1so.recv+')</span></span></div>';
+  h+='<div class="st-row" style="border-left:3px solid '+PL[1].color+'"><span class="st-row-label" style="color:'+PL[1].color+'">'+PL[1].name+'</span><span class="st-row-val">'+ef(p2so.eff)+' <span style="color:#555">('+p2so.wins+'/'+p2so.recv+')</span></span></div>';
 
-  // ── TEAM SIDEOUT % ──
-  if(showSO){
-    var isStr=gameMode==="streamer";
-    if(isStr){
-      // Per-team SO% for streamer
-      for(var ti=0;ti<2;ti++){
-        h+='<div class="st-hdr" style="color:'+TEAMS[ti].color+'">'+TEAMS[ti].name+' sideout %</div>';
-        var tsum=0,tcnt=0;
-        allSets.forEach(function(acts){
-          for(var pi=0;pi<2;pi++){var gi=ti*2+pi;if(acts[gi])acts[gi].so.forEach(function(a){tsum+=a.v;tcnt++})}
-        });
-        var tpct=tcnt?Math.round((tsum/tcnt)*100):0;
-        h+='<div class="st-row" style="border-left:3px solid '+TEAMS[ti].color+'"><span class="st-row-label" style="color:#fff">Total <span style="color:#555">('+tcnt+')</span></span><span class="st-row-val" style="color:'+TEAMS[ti].color+'">'+(tpct>=0?"+":"")+tpct+'%</span></div>';
-        // Per-player SO under team
-        for(var pi=0;pi<2;pi++){
-          var gi=ti*2+pi,pso=ga(gi).so;
-          h+='<div class="st-row" style="padding-left:clamp(10px,3vw,16px);border-left:3px solid '+TEAMS[ti].players[pi].color+'"><span class="st-row-label" style="color:'+TEAMS[ti].players[pi].color+'">'+TEAMS[ti].players[pi].name+' <span style="color:#555">('+pso.total+')</span></span><span class="st-row-val">'+ef(pso)+'</span></div>';
-        }
-      }
-    }else{
-      h+='<div class="st-hdr">Team sideout %</div>';
-      var teamSOsum=0,teamSOcnt=0;
-      allSets.forEach(function(acts,si){
-        var s=0,n=0;
-        for(var pi=0;pi<2;pi++){acts[pi].so.forEach(function(a){s+=a.v;n++})}
-        teamSOcnt+=n;teamSOsum+=s;
-        if(allSets.length>1){
-          var sn=si<G.sets.length?"Set "+(si+1):"Current";
-          var pct=n?Math.round((s/n)*100):0;
-          h+='<div class="st-row"><span class="st-row-label">'+sn+' <span style="color:#555">('+n+')</span></span><span class="st-row-val" style="color:'+(pct>=0?"#448AFF":"#FF5252")+'">'+(pct>=0?"+":"")+pct+'%</span></div>';
-        }
-      });
-      var teamSOpct=teamSOcnt?Math.round((teamSOsum/teamSOcnt)*100):0;
-      h+='<div class="st-row" style="background:#0a1a2a;border-left:3px solid #448AFF"><span class="st-row-label" style="color:#fff">Total <span style="color:#555">('+teamSOcnt+')</span></span><span class="st-row-val" style="color:#448AFF">'+(teamSOpct>=0?"+":"")+teamSOpct+'%</span></div>';
-      var earnSum=0,earnCnt=0;
-      allSets.forEach(function(acts){
-        for(var pi=0;pi<2;pi++){acts[pi].so.forEach(function(a){if(a.tp!=="opp_service_error"){earnSum+=a.v;earnCnt++}})}
-      });
-      if(earnCnt<teamSOcnt){
-        var earnPct=earnCnt?Math.round((earnSum/earnCnt)*100):0;
-        h+='<div class="st-row"><span class="st-row-label">Earned <span style="color:#555">('+earnCnt+')</span></span><span class="st-row-val">'+(earnPct>=0?"+":"")+earnPct+'%</span></div>';
-      }
-
-      // P1 & P2 SO%
-      for(var pi=0;pi<2;pi++){
-        var pso=ga(pi).so;
-        h+='<div class="st-row" style="border-left:3px solid '+PL[pi].color+'"><span class="st-row-label" style="color:'+PL[pi].color+'">'+PL[pi].name+' SO <span style="color:#555">('+pso.total+')</span></span><span class="st-row-val">'+ef(pso)+'</span></div>';
-        if(allSets.length>1){
-          allSets.forEach(function(acts,si){
-            var ps=playerSetSO(pi,acts);
-            if(ps.total){
-              var sn=si<G.sets.length?"S"+(si+1):"Cur";
-              h+='<div class="st-row" style="padding-left:clamp(16px,5vw,24px)"><span class="st-row-label">'+sn+'</span><span class="st-row-val">'+ef(ps)+' <span style="color:#555">('+ps.total+')</span></span></div>';
-            }
-          });
-        }
-      }
-    }
-  }
-
-  // ── TEAM TRANSITION % ──
-  if(showTR){
-    h+='<div class="st-hdr">Transition conversion</div>';
-    var tc=trConversion();
-    h+='<div class="st-row"><span class="st-row-label">Points won on our serve</span><span class="st-row-val" style="color:#FF9100">'+tc.pct+'% <span style="color:#555">('+tc.wins+'/'+tc.total+')</span></span></div>';
-  }
+  // ── OPPONENT SIDEOUT (their weakness) ──
+  var o1so=playerSO(2),o2so=playerSO(3);
+  h+='<div class="st-hdr" style="color:#FF9100">Opponent sideout</div>';
+  h+='<div class="st-row" style="border-left:3px solid '+PL[2].color+'"><span class="st-row-label" style="color:'+PL[2].color+'">'+PL[2].name+'</span><span class="st-row-val">'+ef(o1so.eff)+' <span style="color:#555">('+o1so.wins+'/'+o1so.recv+')</span></span></div>';
+  h+='<div class="st-row" style="border-left:3px solid '+PL[3].color+'"><span class="st-row-label" style="color:'+PL[3].color+'">'+PL[3].name+'</span><span class="st-row-val">'+ef(o2so.eff)+' <span style="color:#555">('+o2so.wins+'/'+o2so.recv+')</span></span></div>';
 
   // ── SERVE STATS ──
-  if(showTR){
-    h+='<div class="st-hdr">Serve stats</div>';
-    var sv=serveStats();
-    h+='<div class="st-row"><span class="st-row-label">Aces</span><span class="st-row-val" style="color:#00C853">'+sv.aces+'</span></div>';
-    h+='<div class="st-row"><span class="st-row-label">Service errors</span><span class="st-row-val" style="color:#FF5252">'+sv.errors+'</span></div>';
-    var svRatio=sv.aces+sv.errors?Math.round((sv.aces/(sv.aces+sv.errors))*100):0;
-    h+='<div class="st-row"><span class="st-row-label">Ace/error ratio</span><span class="st-row-val">'+svRatio+'%</span></div>';
-    if(sv.oppErrors) h+='<div class="st-row"><span class="st-row-label">Opp serve errors</span><span class="st-row-val" style="color:#FFB300">'+sv.oppErrors+'</span></div>';
-  }
-  // Show opp serve errors in SO drill too
-  if(gameMode==="so_drill"){
-    var sv2=serveStats();
-    if(sv2.oppErrors) {
-      h+='<div class="st-hdr">Serve stats</div>';
-      h+='<div class="st-row"><span class="st-row-label">Opp serve errors</span><span class="st-row-val" style="color:#FFB300">'+sv2.oppErrors+'</span></div>';
+  h+='<div class="st-hdr">Serve</div>';
+  for(var pi=0;pi<2;pi++){
+    var sv=playerServe(pi);
+    if(sv.total){
+      h+='<div class="st-row" style="border-left:3px solid '+PL[pi].color+'"><span class="st-row-label" style="color:'+PL[pi].color+'">'+PL[pi].name+'</span><span class="st-row-val"><span style="color:#00C853">'+sv.aces+' ace</span> <span style="color:#FF5252">'+sv.errs+' err</span> <span style="color:#555">/'+sv.total+'</span></span></div>';
     }
   }
 
-  // ── PLAYER BREAKDOWNS ──
-  var isStr=gameMode==="streamer";
-  var plist=isStr?[
-    {gi:0,name:TEAMS[0].players[0].name,color:TEAMS[0].players[0].color,team:TEAMS[0].name},
-    {gi:1,name:TEAMS[0].players[1].name,color:TEAMS[0].players[1].color,team:TEAMS[0].name},
-    {gi:2,name:TEAMS[1].players[0].name,color:TEAMS[1].players[0].color,team:TEAMS[1].name},
-    {gi:3,name:TEAMS[1].players[1].name,color:TEAMS[1].players[1].color,team:TEAMS[1].name}
-  ]:[
-    {gi:0,name:PL[0].name,color:PL[0].color},
-    {gi:1,name:PL[1].name,color:PL[1].color}
-  ];
-  // Team headers for streamer
-  var lastTeam="";
-  plist.forEach(function(pl){
-    if(isStr&&pl.team!==lastTeam){
-      lastTeam=pl.team;
-      h+='<div class="st-hdr" style="color:'+pl.color+';font-size:clamp(11px,4vw,14px)">'+pl.team+'</div>';
-    }
-    var a=ga(pl.gi);
-    h+='<div class="st-hdr" style="color:'+pl.color+'">'+pl.name+'</div>';
+  // ── PLAYER DETAIL: OUR TEAM ──
+  h+='<div class="st-hdr" style="color:#448AFF">Player detail</div>';
+  for(var pi=0;pi<2;pi++){
+    var so=playerSO(pi),tr=playerTR(pi),sv=playerServe(pi),k=playerKills(pi);
+    h+='<div class="st-row" style="background:#0a1a2a;border-left:3px solid '+PL[pi].color+'"><span class="st-row-label" style="color:'+PL[pi].color+';font-weight:800">'+PL[pi].name+'</span><span class="st-row-val"></span></div>';
+    h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">SO%</span><span class="st-row-val">'+ef(so.eff)+' <span style="color:#555">('+so.recv+' recv)</span></span></div>';
+    h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">Kills / zeros / lost</span><span class="st-row-val"><span style="color:#00C853">'+so.wins+'</span> / <span style="color:#FFB300">'+so.zeros+'</span> / <span style="color:#FF5252">'+so.losses+'</span></span></div>';
+    h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">TR kills</span><span class="st-row-val" style="color:#FF9100">'+tr.kills+'</span></div>';
+    h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">Aces / svc errors</span><span class="st-row-val"><span style="color:#00C853">'+sv.aces+'</span> / <span style="color:#FF5252">'+sv.errs+'</span></span></div>';
+  }
 
-    if(showSO){
-      h+='<div class="player-stat-block" style="border-left:3px solid '+pl.color+'"><div class="player-stat-row"><span class="player-stat-name" style="color:'+SO.frame+'">Sideout</span><span class="player-stat-eff">'+ef(a.so)+'</span></div><div class="player-stat-counts"><span style="color:#00C853">'+a.so.plus+'</span><span style="color:#555"> / </span><span style="color:#FFB300">'+a.so.zero+'</span><span style="color:#555"> / </span><span style="color:#FF1744">'+a.so.minus+'</span></div>';
-      var sod=[];if(a.so.spikes)sod.push("spk:"+a.so.spikes);if(a.so.shots)sod.push("sht:"+a.so.shots);if(a.so.blockOuts)sod.push("bko:"+a.so.blockOuts);if(a.so.secondBalls)sod.push("2nd:"+a.so.secondBalls);
-      if(sod.length)h+='<div class="tr-detail">'+sod.join(' · ')+'</div>';
-      h+='</div>';
-    }
-
-    if(showTR||isStr){
-      h+='<div class="player-stat-block" style="border-left:3px solid '+pl.color+'"><div class="player-stat-row"><span class="player-stat-name" style="color:'+TR.frame+'">Transition</span><span class="player-stat-eff">'+ef(a.tr)+'</span></div><div class="player-stat-counts"><span style="color:#00C853">'+a.tr.plus+'</span><span style="color:#555"> / </span><span style="color:#FF1744">'+a.tr.minus+'</span></div>';
-      var trd=[];if(a.tr.blocks)trd.push("blk:"+a.tr.blocks);if(a.tr.defense)trd.push("def:"+a.tr.defense);if(a.tr.aces)trd.push("ace:"+a.tr.aces);if(a.tr.unfErr)trd.push("opp err:"+a.tr.unfErr);
-      if(trd.length)h+='<div class="tr-detail">'+trd.join(' · ')+'</div>';
-      if(a.tr.svcErr)h+='<div class="tr-detail" style="color:#FF5252">svc err: '+a.tr.svcErr+'</div>';
-      if(a.tr.lostPt)h+='<div class="tr-detail" style="color:#FF8A65">lost pt: '+a.tr.lostPt+'</div>';
-      h+='</div>';
-    }
-
-    var kd=killDist(pl.gi);
-    var kills=[];if(kd.spikes)kills.push("Spike:"+kd.spikes);if(kd.shots)kills.push("Shot:"+kd.shots);if(kd.blockOuts)kills.push("Block out:"+kd.blockOuts);if(kd.secondBalls)kills.push("2nd ball:"+kd.secondBalls);if(kd.blocks)kills.push("Block:"+kd.blocks);if(kd.defense)kills.push("Def:"+kd.defense);if(kd.aces)kills.push("Ace:"+kd.aces);if(kd.unfErr)kills.push("Opp err:"+kd.unfErr);
-    if(kills.length) h+='<div class="st-row"><span class="st-row-label">Kill types</span><span class="st-row-val" style="font-size:0.75em;color:#aaa">'+kills.join(' · ')+'</span></div>';
-  });
+  // ── OPPONENT THREAT ──
+  h+='<div class="st-hdr" style="color:#FF9100">Opponent threat</div>';
+  for(var pi=2;pi<4;pi++){
+    var so=playerSO(pi),w=playerWinsVsUs(pi);
+    h+='<div class="st-row" style="border-left:3px solid '+PL[pi].color+'"><span class="st-row-label" style="color:'+PL[pi].color+'">'+PL[pi].name+'</span><span class="st-row-val">SO '+ef(so.eff)+' · <span style="color:#FF5252">'+w+' kills vs us</span></span></div>';
+  }
 
   // ── MOMENTUM ──
   h+='<div class="st-hdr">Momentum</div>';
   var runs=scoringRuns();
-  h+='<div class="st-row"><span class="st-row-label">Best run ('+(isStr?TEAMS[0].name:"us")+')</span><span class="st-row-val" style="color:#00C853">'+runs.us+'</span></div>';
-  h+='<div class="st-row"><span class="st-row-label">Best run ('+(isStr?TEAMS[1].name:"them")+')</span><span class="st-row-val" style="color:#FF5252">'+runs.them+'</span></div>';
-
+  h+='<div class="st-row"><span class="st-row-label">Best run (us)</span><span class="st-row-val" style="color:#00C853">'+runs.us+'</span></div>';
+  h+='<div class="st-row"><span class="st-row-label">Best run (them)</span><span class="st-row-val" style="color:#FF5252">'+runs.them+'</span></div>';
   var pace=pointPace();
   if(pace.avg)h+='<div class="st-row"><span class="st-row-label">Avg point pace</span><span class="st-row-val">'+pace.avg+'s</span></div>';
-
-  // Set arc
-  var arc=setArc(G.act);
-  if(arc&&arc.firstN>1){
-    h+='<div class="st-hdr">Set arc</div>';
-    h+='<div class="st-row"><span class="st-row-label">1st half <span style="color:#555">('+arc.firstN+')</span></span><span class="st-row-val">'+(arc.firstEff>=0?"+":"")+arc.firstEff+'%</span></div>';
-    h+='<div class="st-row"><span class="st-row-label">2nd half <span style="color:#555">('+arc.secondN+')</span></span><span class="st-row-val">'+(arc.secondEff>=0?"+":"")+arc.secondEff+'%</span></div>';
-  }
-
-  // ── SO BY OPPONENT SERVER ──
-  if(showSO && !isDrill && !isStr){
-    h+='<div class="st-hdr">Sideout vs opponent server</div>';
-    for(var pi=0;pi<2;pi++){
-      var s1=soByOppServer(pi,0),s2=soByOppServer(pi,1);
-      h+='<div class="st-row"><span class="st-row-label" style="color:'+PL[pi].color+'">'+PL[pi].name+' vs 1st</span><span class="st-row-val">'+(s1.total?(s1.eff>=0?"+":"")+s1.eff+'%':"--")+' <span style="color:#555">('+s1.total+')</span></span></div>';
-      h+='<div class="st-row"><span class="st-row-label" style="color:'+PL[pi].color+'">'+PL[pi].name+' vs 2nd</span><span class="st-row-val">'+(s2.total?(s2.eff>=0?"+":"")+s2.eff+'%':"--")+' <span style="color:#555">('+s2.total+')</span></span></div>';
-    }
-  }
 
   // Match elapsed
   var elapsed=Math.round((Date.now()-G.t0)/60000);
@@ -1964,14 +1264,10 @@ function showSettings(){
   hideOverlayById("stats-view");
   updLayoutLabel();
   updModeBtns();
-  // 2-player inputs
   $("name-p1").value=PL[0].name==="P1"?"":PL[0].name;
   $("name-p2").value=PL[1].name==="P2"?"":PL[1].name;
-  // 4-player inputs
-  $("name-ta1").value=TEAMS[0].players[0].name==="A1"?"":TEAMS[0].players[0].name;
-  $("name-ta2").value=TEAMS[0].players[1].name==="A2"?"":TEAMS[0].players[1].name;
-  $("name-tb1").value=TEAMS[1].players[0].name==="B1"?"":TEAMS[1].players[0].name;
-  $("name-tb2").value=TEAMS[1].players[1].name==="B2"?"":TEAMS[1].players[1].name;
+  $("name-ta1").value=PL[2].name==="Opp 1"?"":PL[2].name;
+  $("name-ta2").value=PL[3].name==="Opp 2"?"":PL[3].name;
   showOverlay("settings-view");
 }
 function hideSettings(){hideOverlayById("settings-view");showStats()}
@@ -2015,90 +1311,40 @@ function buildDataStr(){
   G.sets.forEach(function(s){l.push("S"+s.setNum+":"+s.sU+"-"+s.sT)});
   if(!G.matchOver&&(G.sU||G.sT))l.push("S"+G.setNum+":"+G.sU+"-"+G.sT);
   l.push("");
-  for(var i=0;i<2;i++){var a=ga(i);l.push(PL[i].name+" "+ef(a));l.push(" SO:"+ef(a.so)+" TR:"+ef(a.tr))}
+  for(var i=0;i<4;i++){
+    var so=playerSO(i),k=playerKills(i);
+    l.push(PL[i].name+" SO:"+ef(so.eff)+" ("+so.wins+"/"+so.recv+") K:"+k);
+  }
   return l.join("\n");
 }
 function buildCSV(){
   var r=[];
-
-  // Section 1: Raw actions
+  // Raw actions
   r.push("--- RAW ACTIONS ---");
-  r.push("Set,Player,Phase,Value,Type,Our_Server,Opp_Server,Timestamp,Elapsed_ms");
+  r.push("Set,Receiver,Winner,Outcome,Server,RecvSide,Timestamp,Elapsed_ms");
   function add(sn,acts){
-    for(var pi=0;pi<2;pi++){
-      ["so","tr"].forEach(function(ph){
-        acts[pi][ph].forEach(function(a){
-          var ts=new Date(a.t).toISOString();
-          r.push(sn+","+PL[pi].name+","+(ph==="so"?"sideout":"transition")+","+a.v+","+(a.tp||"")+","+(a.server>=0?PL[a.server].name:"")+","+(a.oSrv>=0?(a.oSrv===0?"1st":"2nd"):"")+","+ts+","+a.e);
-        });
-      });
-    }
+    acts.forEach(function(a){
+      var recv=a.receiver>=0?PL[a.receiver].name:"";
+      var win=a.winner!=null?PL[a.winner].name:"";
+      var srv=PL[a.server].name;
+      r.push(sn+","+recv+","+win+","+a.outcome+","+srv+","+(a.recvSide===0?"us":"them")+","+new Date(a.t).toISOString()+","+a.e);
+    });
   }
-  G.sets.forEach(function(s){add(s.setNum,s.act)});
-  add(G.setNum,G.act);
-
-  // Section 2: Set scores
+  G.sets.forEach(function(s){add(s.setNum,s.actions)});
+  add(G.setNum,G.actions);
+  // Set scores
   r.push("");r.push("--- SET SCORES ---");
   r.push("Set,Us,Them,Winner");
   G.sets.forEach(function(s){r.push(s.setNum+","+s.sU+","+s.sT+","+s.winner)});
   if(!G.matchOver)r.push(G.setNum+","+G.sU+","+G.sT+",live");
-  r.push("Match,"+G.setsU+","+G.setsT+","+(G.matchOver?(G.setsU>G.setsT?"us":"them"):"live"));
-
-  // Section 3: Player totals
-  r.push("");r.push("--- PLAYER TOTALS ---");
-  r.push("Player,Overall_Eff,Total_Actions,SO_Eff,SO_Plus,SO_Zero,SO_Minus,SO_Spikes,SO_Shots,SO_BlockOuts,SO_2ndBall,TR_Eff,TR_Plus,TR_Minus,TR_Blocks,TR_Defense,TR_Aces,TR_SvcErrors,TR_LostPoints");
-  for(var i=0;i<2;i++){
-    var a=ga(i);
-    r.push(PL[i].name+","+Math.round(a.eff*10)/10+","+a.total+","+Math.round(a.so.eff*10)/10+","+a.so.plus+","+a.so.zero+","+a.so.minus+","+a.so.spikes+","+a.so.shots+","+a.so.blockOuts+","+a.so.secondBalls+","+Math.round(a.tr.eff*10)/10+","+a.tr.plus+","+a.tr.minus+","+a.tr.blocks+","+a.tr.defense+","+a.tr.aces+","+a.tr.svcErr+","+a.tr.lostPt);
+  // Player stats
+  r.push("");r.push("--- PLAYER STATS ---");
+  r.push("Player,Team,SO_Eff,Recv,Wins,Zeros,Losses,Kills,TR_Kills,Aces,SvcErr");
+  for(var i=0;i<4;i++){
+    var so=playerSO(i),tr=playerTR(i),sv=playerServe(i),k=playerKills(i);
+    var team=i<2?"us":"them";
+    r.push(PL[i].name+","+team+","+Math.round(so.eff)+","+so.recv+","+so.wins+","+so.zeros+","+so.losses+","+k+","+tr.kills+","+sv.aces+","+sv.errs);
   }
-
-  // Section 4: Per-set per-player sideout
-  r.push("");r.push("--- PER SET SIDEOUT ---");
-  r.push("Set,Player,SO_Eff,SO_Plus,SO_Zero,SO_Minus,SO_Total");
-  var allSets=getAllSetsData();
-  allSets.forEach(function(acts,si){
-    var sn=si<G.sets.length?"Set"+(si+1):"Current";
-    for(var pi=0;pi<2;pi++){
-      var so=gs(acts[pi],"so");
-      r.push(sn+","+PL[pi].name+","+Math.round(so.eff*10)/10+","+so.plus+","+so.zero+","+so.minus+","+so.total);
-    }
-  });
-
-  // Section 5: Team sideout per set
-  r.push("");r.push("--- TEAM SIDEOUT PER SET ---");
-  r.push("Set,SO_Eff,Total_Actions");
-  allSets.forEach(function(acts,si){
-    var sn=si<G.sets.length?"Set"+(si+1):"Current";
-    var s=0,n=0;
-    for(var pi=0;pi<2;pi++){acts[pi].so.forEach(function(a){s+=a.v;n++})}
-    r.push(sn+","+Math.round(n?(s/n)*100:0)+","+n);
-  });
-
-  // Section 6: Serve stats
-  r.push("");r.push("--- SERVE STATS ---");
-  r.push("Metric,Value");
-  var sv=serveStats();
-  r.push("Total_Serves,"+sv.total);
-  r.push("Aces,"+sv.aces);
-  r.push("Service_Errors,"+sv.errors);
-  r.push("Ace_Error_Ratio,"+(sv.aces+sv.errors?Math.round((sv.aces/(sv.aces+sv.errors))*100):0)+"%");
-  r.push("Opp_Service_Errors,"+sv.oppErrors);
-
-  // Section 7: SO by opponent server
-  r.push("");r.push("--- SIDEOUT VS OPPONENT SERVER ---");
-  r.push("Player,Vs_1st_Eff,Vs_1st_N,Vs_2nd_Eff,Vs_2nd_N");
-  for(var i=0;i<2;i++){
-    var s1=soByOppServer(i,0),s2=soByOppServer(i,1);
-    r.push(PL[i].name+","+s1.eff+"%,"+s1.total+","+s2.eff+"%,"+s2.total);
-  }
-
-  // Section 8: Transition conversion
-  r.push("");r.push("--- TRANSITION CONVERSION ---");
-  var tc=trConversion();
-  r.push("Points_Won_On_Our_Serve,"+tc.wins);
-  r.push("Total_Our_Serve_Rallies,"+tc.total);
-  r.push("Conversion_Pct,"+tc.pct+"%");
-
   return r.join("\n");
 }
 function showQR(){hideOverlayById("export-view");var d=buildDataStr(),u="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data="+encodeURIComponent(d);$("qr-display").innerHTML='<img style="border-radius:6px;background:#fff;padding:6px" src="'+u+'" width="160" height="160" onerror="qrFail()">';$("qr-hint").textContent="Scan with phone camera";showOverlay("qr-view")}
@@ -2112,8 +1358,7 @@ function hideSheets(){hideOverlayById("sheets-view");showExport()}
 function downloadCSV(){var c=buildCSV(),b=new Blob([c],{type:"text/csv"}),u=URL.createObjectURL(b),l=document.createElement("a");l.href=u;l.download="bv_"+new Date().toISOString().slice(0,10)+".csv";l.click();URL.revokeObjectURL(u)}
 function showConfirm(){hideOverlayById("stats-view");$("confirm-sub").textContent="All data will be cleared";showOverlay("confirm-view")}
 function hideConfirm(){hideOverlayById("confirm-view");showStats()}
-function resetAll(){G=freshState();document.querySelectorAll(".overlay").forEach(function(o){o.classList.remove("active")});screenStack=["start-screen"];updStartScreen();if(gameMode==="so_drill"){startSODrill()}else{show("start-screen")}}
-function startGame(){G=freshState();document.querySelectorAll(".overlay").forEach(function(o){o.classList.remove("active")});screenStack=["start-screen"];updStartScreen();if(gameMode==="so_drill"){startSODrill()}else{show("start-screen")}vib([50,30,50])}
+
 </script>
 </body>
 </html>
