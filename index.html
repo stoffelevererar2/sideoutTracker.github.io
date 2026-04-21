@@ -814,7 +814,6 @@ function svcError(){
   var act={receiver:-1,winner:null,server:sgi,outcome:"svc_error",detail:null,recvSide:G.recvSide,servers:[G.servers[0],G.servers[1]],t:Date.now(),e:Date.now()-G.t0};
   G.actions.push(act);vib([40,20,40]);
   awardPoint(G.recvSide===0?"us":"them");
-  show("recv-screen");
 }
 function commitAction(receiver,outcome,winner,detail){
   var act={receiver:receiver,winner:winner,server:G.pending.server,outcome:outcome,detail:detail,recvSide:G.pending.recvSide,servers:[G.servers[0],G.servers[1]],t:Date.now(),e:Date.now()-G.t0};
@@ -826,7 +825,6 @@ function commitAction(receiver,outcome,winner,detail){
   else if(outcome==="error")awardPoint(usRecv?"them":"us");
   else if(outcome==="zero_won")awardPoint(usRecv?"us":"them");
   else if(outcome==="zero_lost")awardPoint(usRecv?"them":"us");
-  show("recv-screen");
 }
 function awardPoint(to){
   if(to==="us")G.sU++;else G.sT++;
@@ -835,7 +833,7 @@ function awardPoint(to){
     var recvWon=(G.recvSide===0&&to==="us")||(G.recvSide===1&&to==="them");
     if(recvWon)servRotate();
   }
-  if(isDrill||!checkSetEnd())upd();
+  if(isDrill||!checkSetEnd()){show("recv-screen");upd()}
   livePush(to==="us"?"+1":"-1");
 }
 function checkSetEnd(){
@@ -1149,11 +1147,14 @@ function showStats(){
     h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">Aces / svc errors</span><span class="st-row-val"><span style="color:#00C853">'+sv.aces+'</span> / <span style="color:#FF5252">'+sv.errs+'</span></span></div>';
   }
 
-  // ── OPPONENT SIDEOUT ──
-  h+='<div class="st-hdr" style="color:#FF9100">Opponent sideout</div>';
+  // ── OPPONENT DETAIL ──
+  h+='<div class="st-hdr" style="color:#FF9100">Opponent detail</div>';
   for(var pi=2;pi<4;pi++){
-    var so=playerSO(pi);
-    h+='<div class="st-row" style="border-left:3px solid '+PL[pi].color+'"><span class="st-row-label" style="color:'+PL[pi].color+'">'+PL[pi].name+'</span><span class="st-row-val">'+ef(so.eff)+' <span style="color:#555">('+so.wins+'/'+so.recv+')</span></span></div>';
+    var so=playerSO(pi),d=playerDetail(pi);
+    h+='<div class="st-row" style="background:#2a1a00;border-left:3px solid '+PL[pi].color+'"><span class="st-row-label" style="color:'+PL[pi].color+';font-weight:800">'+PL[pi].name+'</span><span class="st-row-val"></span></div>';
+    h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">SO%</span><span class="st-row-val">'+ef(so.eff)+' <span style="color:#555">('+so.recv+' recv)</span></span></div>';
+    h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">Won / 0 / lost</span><span class="st-row-val"><span style="color:#00C853">'+so.wins+'</span> / <span style="color:#FFB300">'+so.zeros+'</span> / <span style="color:#FF5252">'+so.losses+'</span></span></div>';
+    if(d.blocked||d.aced||d.errors) h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">-1 detail</span><span class="st-row-val"><span style="color:#FF5252">'+d.blocked+' blk · '+d.aced+' aced · '+d.errors+' err</span></span></div>';
   }
 
   // ── MOMENTUM ──
