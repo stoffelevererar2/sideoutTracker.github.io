@@ -352,34 +352,33 @@
       <span class="zone-sub" id="recv-right-stat" style="font-size:clamp(12px,4.5vw,18px);font-weight:700;color:rgba(255,255,255,0.6)"></span>
     </button>
   </div>
-  <!-- Serve error fills bottom, undo left / menu right -->
-  <div style="position:relative;flex-shrink:0;z-index:2">
-    <button class="opp-miss-btn" id="svc-err-btn" onclick="svcError()" style="padding:clamp(26px,12vw,44px) 0;width:100%">
-      <span style="font-size:clamp(16px,6vw,24px);font-weight:800;color:#FFB300" id="svc-err-text">Serve error</span>
-    </button>
-    <button class="ctrl-btn" id="g-undo" onclick="event.stopPropagation();undoLast()" style="position:absolute;left:clamp(6px,4%,16px);top:50%;transform:translateY(-50%);width:clamp(32px,12vw,42px);height:clamp(32px,12vw,42px);font-size:clamp(14px,5vw,20px);opacity:0.6;z-index:14">↩</button>
-    <button class="ctrl-btn" onclick="event.stopPropagation();showStats()" style="position:absolute;right:clamp(6px,4%,16px);top:50%;transform:translateY(-50%);width:clamp(32px,12vw,42px);height:clamp(32px,12vw,42px);font-size:clamp(14px,5vw,20px);opacity:0.6;z-index:14">☰</button>
-  </div>
+  <!-- Undo/menu positioned under player names -->
+  <button class="ctrl-btn" id="g-undo" onclick="event.stopPropagation();undoLast()" style="position:absolute;left:clamp(10px,6%,20px);bottom:clamp(52px,22%,72px);width:clamp(30px,11vw,38px);height:clamp(30px,11vw,38px);font-size:clamp(13px,4.5vw,18px);opacity:0.5;z-index:14">↩</button>
+  <button class="ctrl-btn" onclick="event.stopPropagation();showStats()" style="position:absolute;right:clamp(10px,6%,20px);bottom:clamp(52px,22%,72px);width:clamp(30px,11vw,38px);height:clamp(30px,11vw,38px);font-size:clamp(13px,4.5vw,18px);opacity:0.5;z-index:14">☰</button>
+  <!-- Serve error fills bottom -->
+  <button class="opp-miss-btn" id="svc-err-btn" onclick="svcError()" style="flex-shrink:0;padding:clamp(26px,12vw,44px) 0;width:100%;z-index:2">
+    <span style="font-size:clamp(16px,6vw,24px);font-weight:800;color:#FFB300" id="svc-err-text">Serve error</span>
+  </button>
 </div>
 
 <!-- SCREEN 2: What happened? (3 rows: +1 / 0 / -1) -->
 <div class="screen" id="outcome-screen" style="position:relative;flex-direction:column!important">
   <div style="flex:1;display:flex;flex-direction:column;gap:1px;min-height:0;z-index:2">
-    <!-- Top: Clean SO (+1) -->
-    <button class="zone" onclick="pickOutcome('clean_so')" style="flex:1;flex-direction:column;justify-content:center;background:rgba(0,30,60,0.5)">
-      <span style="font-size:clamp(22px,9vw,34px);font-weight:900;color:#448AFF">Clean SO</span>
+    <!-- Top: Clean SO (+1) — smaller -->
+    <button class="zone" onclick="pickOutcome('clean_so')" style="flex:2;flex-direction:column;justify-content:center;background:rgba(0,40,20,0.5)">
+      <span style="font-size:clamp(18px,7vw,28px);font-weight:900;color:#00C853">Clean SO</span>
     </button>
     <!-- Middle: 0 Won / 0 Lost -->
-    <div style="flex:1;display:flex;flex-direction:row;gap:1px;min-height:0">
+    <div style="flex:3;display:flex;flex-direction:row;gap:1px;min-height:0">
       <button class="zone" onclick="pickOutcome('zero_won')" style="flex:1;flex-direction:column;justify-content:center;background:rgba(60,40,0,0.35)">
-        <span style="font-size:clamp(18px,7vw,28px);font-weight:900;color:rgba(255,179,0,0.8)">0 Won</span>
+        <span style="font-size:clamp(16px,6vw,24px);font-weight:900;color:rgba(255,179,0,0.8)">0 Won</span>
       </button>
       <button class="zone" onclick="pickOutcome('zero_lost')" style="flex:1;flex-direction:column;justify-content:center;background:rgba(60,40,0,0.35)">
-        <span style="font-size:clamp(18px,7vw,28px);font-weight:900;color:rgba(255,179,0,0.8)">0 Lost</span>
+        <span style="font-size:clamp(16px,6vw,24px);font-weight:900;color:rgba(255,179,0,0.8)">0 Lost</span>
       </button>
     </div>
-    <!-- Bottom: Aced / Blocked / Error (-1) -->
-    <div style="flex:1;display:flex;flex-direction:row;gap:1px;min-height:0">
+    <!-- Bottom: Aced / Blocked / Error (-1) — larger -->
+    <div style="flex:3;display:flex;flex-direction:row;gap:1px;min-height:0">
       <button class="zone" onclick="pickOutcome('aced')" style="flex:1;flex-direction:column;justify-content:center;background:rgba(80,20,20,0.4)">
         <span style="font-size:clamp(14px,5.5vw,22px);font-weight:900;color:rgba(255,130,130,0.8)">Aced</span>
       </button>
@@ -902,20 +901,21 @@ function playerSO(gi){
   return{recv:recv,wins:wins,losses:losses,zeros:zeros,aced:aced,eff:recv?(sum/recv)*100:0};
 }
 function playerKills(gi){
+  // Clean SO count (only outcome where winner is set to receiver)
   var acts=allActions(),k=0;
   acts.forEach(function(a){if(a.winner===gi)k++});
   return k;
 }
-function playerTR(gi){
-  var acts=allActions(),kills=0;
-  var myTeam=gi<2?0:1;
+function playerDetail(gi){
+  // Breakdown of -1 outcomes for this receiver
+  var acts=allActions(),blocked=0,aced=0,errors=0;
   acts.forEach(function(a){
-    if(a.outcome==="svc_error"||a.outcome==="ace")return;
-    var recvTeam=a.receiver<2?0:1;
-    if(recvTeam===myTeam)return;
-    if(a.winner===gi)kills++;
+    if(a.receiver!==gi)return;
+    if(a.outcome==="minus"&&a.detail==="blocked")blocked++;
+    else if(a.outcome==="ace")aced++;
+    else if(a.outcome==="error")errors++;
   });
-  return{kills:kills};
+  return{blocked:blocked,aced:aced,errors:errors};
 }
 function playerServe(gi){
   var acts=allActions(),aces=0,errs=0,total=0;
@@ -925,11 +925,6 @@ function playerServe(gi){
     if(a.outcome==="svc_error")errs++;
   });
   return{aces:aces,errs:errs,total:total};
-}
-function playerWinsVsUs(gi){
-  var acts=allActions(),w=0;
-  acts.forEach(function(a){if(a.winner===gi)w++});
-  return w;
 }
 function scoringRuns(){
   var bestUs=0,bestThem=0,curUs=0,curThem=0;
@@ -1017,10 +1012,9 @@ function getLastAction(){
 function buildLivePayload(action){
   var p1so=playerSO(0),p2so=playerSO(1),o1so=playerSO(2),o2so=playerSO(3);
   var p1sv=playerServe(0),p2sv=playerServe(1);
-  var p1tr=playerTR(0),p2tr=playerTR(1);
+  var p1d=playerDetail(0),p2d=playerDetail(1);
   var runs=scoringRuns(),pace=pointPace();
   var weRecv=G.recvSide===0;
-  // Team SO (our team only)
   var tRecv=p1so.recv+p2so.recv,tWins=p1so.wins+p2so.wins;
   var teamSO=tRecv?Math.round((tWins/tRecv)*100):0;
   return{
@@ -1031,12 +1025,14 @@ function buildLivePayload(action){
     server:serverName(),
     lastAction:action==="undo"?"undo":getLastAction(),
     soTeam:teamSO,
-    p1Name:PL[0].name,p1SO:Math.round(p1so.eff),p1Recv:p1so.recv,p1Kills:p1so.wins,p1Zeros:p1so.zeros,p1Lost:p1so.losses,
-    p1TRkills:p1tr.kills,p1Aces:p1sv.aces,p1SvcErr:p1sv.errs,
-    p2Name:PL[1].name,p2SO:Math.round(p2so.eff),p2Recv:p2so.recv,p2Kills:p2so.wins,p2Zeros:p2so.zeros,p2Lost:p2so.losses,
-    p2TRkills:p2tr.kills,p2Aces:p2sv.aces,p2SvcErr:p2sv.errs,
-    o1Name:PL[2].name,o1SO:Math.round(o1so.eff),o1Recv:o1so.recv,o1Kills:o1so.wins,o1KillsVsUs:playerWinsVsUs(2),
-    o2Name:PL[3].name,o2SO:Math.round(o2so.eff),o2Recv:o2so.recv,o2Kills:o2so.wins,o2KillsVsUs:playerWinsVsUs(3),
+    p1Name:PL[0].name,p1SO:Math.round(p1so.eff),p1Recv:p1so.recv,p1Wins:p1so.wins,p1Zeros:p1so.zeros,p1Lost:p1so.losses,
+    p1Blocked:p1d.blocked,p1Aced:p1d.aced,p1Errors:p1d.errors,
+    p1SvAces:p1sv.aces,p1SvcErr:p1sv.errs,
+    p2Name:PL[1].name,p2SO:Math.round(p2so.eff),p2Recv:p2so.recv,p2Wins:p2so.wins,p2Zeros:p2so.zeros,p2Lost:p2so.losses,
+    p2Blocked:p2d.blocked,p2Aced:p2d.aced,p2Errors:p2d.errors,
+    p2SvAces:p2sv.aces,p2SvcErr:p2sv.errs,
+    o1Name:PL[2].name,o1SO:Math.round(o1so.eff),o1Recv:o1so.recv,o1Wins:o1so.wins,o1Lost:o1so.losses,
+    o2Name:PL[3].name,o2SO:Math.round(o2so.eff),o2Recv:o2so.recv,o2Wins:o2so.wins,o2Lost:o2so.losses,
     bestRunUs:runs.us,bestRunThem:runs.them,pointPace:pace.avg,
     last8:getLast8(),matchOver:G.matchOver,
     overlay:G.overlay
@@ -1143,19 +1139,19 @@ function showStats(){
   // ── PLAYER DETAIL: OUR TEAM ──
   h+='<div class="st-hdr" style="color:#448AFF">Player detail</div>';
   for(var pi=0;pi<2;pi++){
-    var so=playerSO(pi),tr=playerTR(pi),sv=playerServe(pi),k=playerKills(pi);
+    var so=playerSO(pi),d=playerDetail(pi),sv=playerServe(pi);
     h+='<div class="st-row" style="background:#0a1a2a;border-left:3px solid '+PL[pi].color+'"><span class="st-row-label" style="color:'+PL[pi].color+';font-weight:800">'+PL[pi].name+'</span><span class="st-row-val"></span></div>';
     h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">SO%</span><span class="st-row-val">'+ef(so.eff)+' <span style="color:#555">('+so.recv+' recv)</span></span></div>';
-    h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">Kills / zeros / lost</span><span class="st-row-val"><span style="color:#00C853">'+so.wins+'</span> / <span style="color:#FFB300">'+so.zeros+'</span> / <span style="color:#FF5252">'+so.losses+'</span></span></div>';
-    h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">TR kills</span><span class="st-row-val" style="color:#FF9100">'+tr.kills+'</span></div>';
+    h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">Won / 0 / lost</span><span class="st-row-val"><span style="color:#00C853">'+so.wins+'</span> / <span style="color:#FFB300">'+so.zeros+'</span> / <span style="color:#FF5252">'+so.losses+'</span></span></div>';
+    if(d.blocked||d.aced||d.errors) h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">-1 detail</span><span class="st-row-val"><span style="color:#FF5252">'+d.blocked+' blk · '+d.aced+' aced · '+d.errors+' err</span></span></div>';
     h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">Aces / svc errors</span><span class="st-row-val"><span style="color:#00C853">'+sv.aces+'</span> / <span style="color:#FF5252">'+sv.errs+'</span></span></div>';
   }
 
-  // ── OPPONENT THREAT ──
-  h+='<div class="st-hdr" style="color:#FF9100">Opponent threat</div>';
+  // ── OPPONENT SIDEOUT ──
+  h+='<div class="st-hdr" style="color:#FF9100">Opponent sideout</div>';
   for(var pi=2;pi<4;pi++){
-    var so=playerSO(pi),w=playerWinsVsUs(pi);
-    h+='<div class="st-row" style="border-left:3px solid '+PL[pi].color+'"><span class="st-row-label" style="color:'+PL[pi].color+'">'+PL[pi].name+'</span><span class="st-row-val">SO '+ef(so.eff)+' · <span style="color:#FF5252">'+w+' kills vs us</span></span></div>';
+    var so=playerSO(pi);
+    h+='<div class="st-row" style="border-left:3px solid '+PL[pi].color+'"><span class="st-row-label" style="color:'+PL[pi].color+'">'+PL[pi].name+'</span><span class="st-row-val">'+ef(so.eff)+' <span style="color:#555">('+so.wins+'/'+so.recv+')</span></span></div>';
   }
 
   // ── MOMENTUM ──
@@ -1269,11 +1265,11 @@ function buildCSV(){
   if(!G.matchOver)r.push(G.setNum+","+G.sU+","+G.sT+",live");
   // Player stats
   r.push("");r.push("--- PLAYER STATS ---");
-  r.push("Player,Team,SO_Eff,Recv,Wins,Zeros,Losses,Kills,TR_Kills,Aces,SvcErr");
+  r.push("Player,Team,SO_Eff,Recv,Wins,Zeros,Losses,Blocked,Aced,Errors,SvAces,SvcErr");
   for(var i=0;i<4;i++){
-    var so=playerSO(i),tr=playerTR(i),sv=playerServe(i),k=playerKills(i);
+    var so=playerSO(i),d=playerDetail(i),sv=playerServe(i);
     var team=i<2?"us":"them";
-    r.push(PL[i].name+","+team+","+Math.round(so.eff)+","+so.recv+","+so.wins+","+so.zeros+","+so.losses+","+k+","+tr.kills+","+sv.aces+","+sv.errs);
+    r.push(PL[i].name+","+team+","+Math.round(so.eff)+","+so.recv+","+so.wins+","+so.zeros+","+so.losses+","+d.blocked+","+d.aced+","+d.errors+","+sv.aces+","+sv.errs);
   }
   return r.join("\n");
 }
