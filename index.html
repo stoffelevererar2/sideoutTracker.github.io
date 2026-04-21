@@ -811,13 +811,13 @@ function pickOutcome(code){
 }
 function svcError(){
   var sgi=serverGI();
-  var act={receiver:-1,winner:null,server:sgi,outcome:"svc_error",detail:null,recvSide:G.recvSide,t:Date.now(),e:Date.now()-G.t0};
+  var act={receiver:-1,winner:null,server:sgi,outcome:"svc_error",detail:null,recvSide:G.recvSide,servers:[G.servers[0],G.servers[1]],t:Date.now(),e:Date.now()-G.t0};
   G.actions.push(act);vib([40,20,40]);
   awardPoint(G.recvSide===0?"us":"them");
   show("recv-screen");
 }
 function commitAction(receiver,outcome,winner,detail){
-  var act={receiver:receiver,winner:winner,server:G.pending.server,outcome:outcome,detail:detail,recvSide:G.pending.recvSide,t:Date.now(),e:Date.now()-G.t0};
+  var act={receiver:receiver,winner:winner,server:G.pending.server,outcome:outcome,detail:detail,recvSide:G.pending.recvSide,servers:[G.servers[0],G.servers[1]],t:Date.now(),e:Date.now()-G.t0};
   G.actions.push(act);G.pending=null;
   var recvTeam=receiver<2?0:1;var usRecv=recvTeam===0;
   if(outcome==="plus")awardPoint(usRecv?"us":"them");
@@ -860,7 +860,9 @@ function undoLast(){
   else if(last.outcome==="svc_error")usScored=last.recvSide===0;
   if(usScored&&G.sU>0)G.sU--;
   if(!usScored&&G.sT>0)G.sT--;
+  // Restore full serve state
   G.recvSide=last.recvSide;
+  if(last.servers){G.servers[0]=last.servers[0];G.servers[1]=last.servers[1]}
   vib(20);show("recv-screen");upd();
   livePush("undo");
 }
