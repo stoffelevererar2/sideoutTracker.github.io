@@ -32,7 +32,7 @@
   /* ── FLOAT LABEL (ONE style for ALL screens, NO background) ── */
   .float-label{
     position:absolute;top:clamp(20px,12%,40px);left:50%;transform:translateX(-50%);
-    font-size:clamp(16px,6vw,24px);font-weight:800;
+    font-size:clamp(20px,8vw,30px);font-weight:800;
     color:rgba(255,255,255,0.7);z-index:15;
     pointer-events:none;white-space:nowrap;
     text-shadow:0 2px 8px rgba(0,0,0,0.9);
@@ -49,11 +49,11 @@
   }
   .split-btn+.split-btn{border-left:1px solid rgba(0,0,0,0.5)}
   .split-label{
-    font-size:clamp(22px,7vw,32px);font-weight:900;
+    font-size:clamp(28px,10vw,42px);font-weight:900;
     pointer-events:none;text-shadow:0 2px 8px rgba(0,0,0,0.6);
   }
   .split-sub{
-    font-size:clamp(10px,2.5vw,14px);font-weight:600;
+    font-size:clamp(12px,3.5vw,16px);font-weight:600;
     pointer-events:none;opacity:0.5;
     text-shadow:0 1px 4px rgba(0,0,0,0.5);
   }
@@ -323,17 +323,17 @@
 <div class="screen" id="recv-screen" style="position:relative;flex-direction:column!important">
   <!-- Phase label at top -->
   <div style="position:absolute;top:clamp(6px,4%,14px);left:50%;transform:translateX(-50%);z-index:15;pointer-events:none">
-    <span id="game-mode-title" style="font-size:clamp(12px,4.5vw,18px);font-weight:800;color:#448AFF">Sideout</span>
+    <span id="game-mode-title" style="font-size:clamp(16px,6vw,24px);font-weight:800;color:#448AFF">Sideout</span>
   </div>
   <!-- Compact scoreboard overlay — between title and player names -->
   <div style="position:absolute;top:28%;left:50%;transform:translate(-50%,-50%);z-index:12;pointer-events:none;text-align:center">
-    <div id="game-score-serve" style="font-size:clamp(12px,4.5vw,18px);font-weight:700;color:#5a9bd5">Opp 1 serving</div>
+    <div id="game-score-serve" style="font-size:clamp(14px,5.5vw,22px);font-weight:700;color:#5a9bd5">Opp 1 serving</div>
     <div style="display:flex;align-items:baseline;justify-content:center;gap:2px">
-      <span id="score-us" style="font-size:clamp(28px,11vw,42px);font-weight:900;color:#448AFF">0</span>
-      <span style="font-size:clamp(18px,6vw,26px);color:rgba(255,255,255,0.2);font-weight:400">:</span>
-      <span id="score-them" style="font-size:clamp(28px,11vw,42px);font-weight:900;color:#FF9100">0</span>
+      <span id="score-us" style="font-size:clamp(34px,14vw,52px);font-weight:900;color:#448AFF">0</span>
+      <span style="font-size:clamp(22px,8vw,32px);color:rgba(255,255,255,0.2);font-weight:400">:</span>
+      <span id="score-them" style="font-size:clamp(34px,14vw,52px);font-weight:900;color:#FF9100">0</span>
     </div>
-    <div style="font-size:clamp(7px,2vw,9px);color:rgba(255,255,255,0.25);font-weight:600">
+    <div style="font-size:clamp(9px,3vw,12px);color:rgba(255,255,255,0.25);font-weight:600">
       <span id="score-label-us" style="color:rgba(68,138,255,0.4)">us</span>
       <span id="game-score-sets">S 0-0</span>
       <span id="score-label-them" style="color:rgba(255,145,0,0.4)">them</span>
@@ -342,83 +342,54 @@
   <!-- Full-size tap zones — names pushed lower -->
   <div style="flex:1;display:flex;flex-direction:row;gap:1px;min-height:0;z-index:2">
     <button class="zone" id="recv-left" onclick="pickRecv(0)" style="flex:1;flex-direction:column;justify-content:center;padding-top:clamp(60px,32%,90px)">
-      <span style="font-size:clamp(7px,2.5vw,10px);font-weight:600;color:rgba(255,255,255,0.35)">Receiver</span>
-      <span class="zone-label" id="recv-left-name" style="font-size:clamp(20px,8vw,32px)">P1</span>
-      <span class="zone-sub" id="recv-left-stat" style="font-size:clamp(10px,3.5vw,14px);font-weight:700;color:rgba(255,255,255,0.6)"></span>
+      <span style="font-size:clamp(10px,3.5vw,14px);font-weight:600;color:rgba(255,255,255,0.35)">Receiver</span>
+      <span class="zone-label" id="recv-left-name" style="font-size:clamp(26px,10vw,40px)">P1</span>
+      <span class="zone-sub" id="recv-left-stat" style="font-size:clamp(12px,4.5vw,18px);font-weight:700;color:rgba(255,255,255,0.6)"></span>
     </button>
     <button class="zone" id="recv-right" onclick="pickRecv(1)" style="flex:1;flex-direction:column;justify-content:center;padding-top:clamp(60px,32%,90px)">
-      <span style="font-size:clamp(7px,2.5vw,10px);font-weight:600;color:rgba(255,255,255,0.35)">Receiver</span>
-      <span class="zone-label" id="recv-right-name" style="font-size:clamp(20px,8vw,32px)">P2</span>
-      <span class="zone-sub" id="recv-right-stat" style="font-size:clamp(10px,3.5vw,14px);font-weight:700;color:rgba(255,255,255,0.6)"></span>
+      <span style="font-size:clamp(10px,3.5vw,14px);font-weight:600;color:rgba(255,255,255,0.35)">Receiver</span>
+      <span class="zone-label" id="recv-right-name" style="font-size:clamp(26px,10vw,40px)">P2</span>
+      <span class="zone-sub" id="recv-right-stat" style="font-size:clamp(12px,4.5vw,18px);font-weight:700;color:rgba(255,255,255,0.6)"></span>
     </button>
   </div>
-  <!-- Serve error fills entire bottom, undo/menu overlaid -->
+  <!-- Serve error fills bottom, undo left / menu right -->
   <div style="position:relative;flex-shrink:0;z-index:2">
-    <button class="opp-miss-btn" id="svc-err-btn" onclick="svcError()" style="padding:clamp(18px,8vw,32px) 0;width:100%">
-      <span style="font-size:clamp(12px,4.5vw,18px);font-weight:800;color:#FFB300" id="svc-err-text">Serve error</span>
+    <button class="opp-miss-btn" id="svc-err-btn" onclick="svcError()" style="padding:clamp(26px,12vw,44px) 0;width:100%">
+      <span style="font-size:clamp(16px,6vw,24px);font-weight:800;color:#FFB300" id="svc-err-text">Serve error</span>
     </button>
-    <div style="position:absolute;bottom:clamp(2px,1%,6px);left:50%;transform:translateX(-50%);display:flex;gap:clamp(12px,5vw,24px);z-index:14">
-      <button class="ctrl-btn" id="g-undo" onclick="event.stopPropagation();undoLast()" style="width:clamp(24px,8vw,30px);height:clamp(24px,8vw,30px);font-size:clamp(10px,3.5vw,14px);opacity:0.5">↩</button>
-      <button class="ctrl-btn" onclick="event.stopPropagation();showStats()" style="width:clamp(24px,8vw,30px);height:clamp(24px,8vw,30px);font-size:clamp(10px,3.5vw,14px);opacity:0.5">☰</button>
-    </div>
+    <button class="ctrl-btn" id="g-undo" onclick="event.stopPropagation();undoLast()" style="position:absolute;left:clamp(6px,4%,16px);top:50%;transform:translateY(-50%);width:clamp(32px,12vw,42px);height:clamp(32px,12vw,42px);font-size:clamp(14px,5vw,20px);opacity:0.6;z-index:14">↩</button>
+    <button class="ctrl-btn" onclick="event.stopPropagation();showStats()" style="position:absolute;right:clamp(6px,4%,16px);top:50%;transform:translateY(-50%);width:clamp(32px,12vw,42px);height:clamp(32px,12vw,42px);font-size:clamp(14px,5vw,20px);opacity:0.6;z-index:14">☰</button>
   </div>
 </div>
 
-<!-- SCREEN 2: What happened? (4 zones + centered 0/Ace/Err) -->
+<!-- SCREEN 2: What happened? (3 rows: +1 / 0 / -1) -->
 <div class="screen" id="outcome-screen" style="position:relative;flex-direction:column!important">
-  <!-- Title overlay — below Ace strip -->
-  <div style="position:absolute;top:clamp(34px,15%,46px);left:50%;transform:translateX(-50%);z-index:15;pointer-events:none">
-    <span id="outcome-tag" style="font-size:clamp(11px,4vw,16px);font-weight:800;color:rgba(255,255,255,0.6)">What happened?</span>
-  </div>
-  <!-- Aced button — full top strip -->
-  <button id="out-ace" onclick="pickOutcome(-3)" style="position:absolute;top:0;left:0;right:0;height:clamp(32px,14%,42px);z-index:16;background:rgba(80,20,20,0.4);border-bottom:1px solid rgba(255,82,82,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent">
-    <span style="font-size:clamp(12px,4.5vw,18px);font-weight:800;color:rgba(255,130,130,0.7)">Aced</span>
-  </button>
-  <!-- 0 Rally button — dead center circle -->
-  <button id="out-zero" onclick="pickOutcome(-2)" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:16;width:clamp(52px,22vw,72px);height:clamp(52px,22vw,72px);border-radius:50%;background:rgba(42,32,0,0.9);border:2px solid rgba(255,179,0,0.5);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;box-shadow:0 2px 12px rgba(0,0,0,0.5)">
-    <span style="font-size:clamp(11px,4vw,15px);font-weight:900;color:#FFB300">0</span>
-  </button>
-  <!-- Error button — full bottom strip -->
-  <button id="out-err" onclick="pickOutcome(-1)" style="position:absolute;bottom:0;left:0;right:0;height:clamp(32px,14%,42px);z-index:16;background:rgba(80,20,20,0.4);border-top:1px solid rgba(255,82,82,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent">
-    <span style="font-size:clamp(12px,4.5vw,18px);font-weight:800;color:rgba(255,130,130,0.7)">Err</span>
-  </button>
-  <!-- Full-screen 2x2 player grid -->
   <div style="flex:1;display:flex;flex-direction:column;gap:1px;min-height:0;z-index:2">
+    <!-- Top: Clean SO (+1) -->
+    <button class="zone" onclick="pickOutcome('clean_so')" style="flex:1;flex-direction:column;justify-content:center;background:rgba(0,30,60,0.5)">
+      <span style="font-size:clamp(22px,9vw,34px);font-weight:900;color:#448AFF">Clean SO</span>
+    </button>
+    <!-- Middle: 0 Won / 0 Lost -->
     <div style="flex:1;display:flex;flex-direction:row;gap:1px;min-height:0">
-      <button class="zone" id="out-p0" onclick="pickOutcome(0)" style="flex:1;flex-direction:column;justify-content:center">
-        <span class="zone-label" id="out-p0-name" style="font-size:clamp(16px,6vw,24px)">P1</span>
-        <span class="zone-sub" id="out-p0-sub" style="font-size:clamp(9px,3vw,12px)"></span>
+      <button class="zone" onclick="pickOutcome('zero_won')" style="flex:1;flex-direction:column;justify-content:center;background:rgba(60,40,0,0.35)">
+        <span style="font-size:clamp(18px,7vw,28px);font-weight:900;color:rgba(255,179,0,0.8)">0 Won</span>
       </button>
-      <button class="zone" id="out-p1" onclick="pickOutcome(1)" style="flex:1;flex-direction:column;justify-content:center">
-        <span class="zone-label" id="out-p1-name" style="font-size:clamp(16px,6vw,24px)">P2</span>
-        <span class="zone-sub" id="out-p1-sub" style="font-size:clamp(9px,3vw,12px)"></span>
+      <button class="zone" onclick="pickOutcome('zero_lost')" style="flex:1;flex-direction:column;justify-content:center;background:rgba(60,40,0,0.35)">
+        <span style="font-size:clamp(18px,7vw,28px);font-weight:900;color:rgba(255,179,0,0.8)">0 Lost</span>
       </button>
     </div>
+    <!-- Bottom: Aced / Blocked / Error (-1) -->
     <div style="flex:1;display:flex;flex-direction:row;gap:1px;min-height:0">
-      <button class="zone" id="out-p2" onclick="pickOutcome(2)" style="flex:1;flex-direction:column;justify-content:center">
-        <span class="zone-label" id="out-p2-name" style="font-size:clamp(16px,6vw,24px)">Opp 1</span>
-        <span class="zone-sub" id="out-p2-sub" style="font-size:clamp(9px,3vw,12px)"></span>
+      <button class="zone" onclick="pickOutcome('aced')" style="flex:1;flex-direction:column;justify-content:center;background:rgba(80,20,20,0.4)">
+        <span style="font-size:clamp(14px,5.5vw,22px);font-weight:900;color:rgba(255,130,130,0.8)">Aced</span>
       </button>
-      <button class="zone" id="out-p3" onclick="pickOutcome(3)" style="flex:1;flex-direction:column;justify-content:center">
-        <span class="zone-label" id="out-p3-name" style="font-size:clamp(16px,6vw,24px)">Opp 2</span>
-        <span class="zone-sub" id="out-p3-sub" style="font-size:clamp(9px,3vw,12px)"></span>
+      <button class="zone" onclick="pickOutcome('blocked')" style="flex:1;flex-direction:column;justify-content:center;background:rgba(80,20,20,0.4)">
+        <span style="font-size:clamp(14px,5.5vw,22px);font-weight:900;color:rgba(255,130,130,0.8)">Blocked</span>
+      </button>
+      <button class="zone" onclick="pickOutcome('error')" style="flex:1;flex-direction:column;justify-content:center;background:rgba(80,20,20,0.4)">
+        <span style="font-size:clamp(14px,5.5vw,22px);font-weight:900;color:rgba(255,130,130,0.8)">Error</span>
       </button>
     </div>
-  </div>
-</div>
-
-<!-- SCREEN 3: Rally — who won? (simple Us/Them split) -->
-<div class="screen" id="rally-screen" style="position:relative;flex-direction:column!important">
-  <div style="position:absolute;top:clamp(6px,4%,14px);left:50%;transform:translateX(-50%);z-index:15;pointer-events:none">
-    <span id="rally-tag" style="font-size:clamp(11px,4vw,16px);font-weight:800;color:rgba(255,255,255,0.6)">Who won the rally?</span>
-  </div>
-  <div style="flex:1;display:flex;flex-direction:column;gap:1px;min-height:0;z-index:2">
-    <button class="zone" id="ral-us" onclick="pickRallyWinner(0)" style="flex:1;flex-direction:column;justify-content:center;background:#0a1a3a">
-      <span style="font-size:clamp(18px,7vw,28px);font-weight:900;color:#448AFF" id="ral-us-names">P1 + P2</span>
-    </button>
-    <button class="zone" id="ral-them" onclick="pickRallyWinner(1)" style="flex:1;flex-direction:column;justify-content:center;background:#3a1a00">
-      <span style="font-size:clamp(18px,7vw,28px);font-weight:900;color:#FF9100" id="ral-them-names">Opp 1 + Opp 2</span>
-    </button>
   </div>
 </div>
 
@@ -814,35 +785,7 @@ function upd(){
    SCREEN 2/3 SETUP
    ═══════════════════════════════════ */
 function showOutcome(){
-  var p=G.pending;
-  var recvGI=p.receiver;
-  var recvTeam=recvGI<2?0:1;
-  var teammate=recvTeam===0?(recvGI===0?1:0):(recvGI===2?3:2);
-
-  var swapped=layout==="p2left";
-  var zm=swapped?[3,2,1,0]:[2,3,0,1];
-  p.zoneMap=zm;
-
-  for(var z=0;z<4;z++){
-    var pi=zm[z];
-    $("out-p"+z+"-name").textContent=PL[pi].name;
-    $("out-p"+z+"-name").style.color=PL[pi].color;
-    $("out-p"+z).style.background=hexDk(PL[pi].color,0.2);
-    var sub=$("out-p"+z+"-sub");
-    sub.style.color=PL[pi].color;
-    sub.style.opacity="0.6";
-    if(pi===recvGI) sub.textContent="Clean SO";
-    else if(pi===teammate) sub.textContent="Option ball";
-    else sub.textContent="Won the ball";
-  }
-
-  $("outcome-tag").textContent="What happened?";
   show("outcome-screen");
-}
-function showRallyScreen(){
-  $("ral-us-names").textContent=PL[0].name+" + "+PL[1].name;
-  $("ral-them-names").textContent=PL[2].name+" + "+PL[3].name;
-  show("rally-screen");
 }
 
 /* ═══════════════════════════════════
@@ -860,25 +803,12 @@ function pickRecv(idx){
 function pickOutcome(code){
   if(!G.pending)return;
   vib(40);var p=G.pending;
-  if(code===-3){commitAction(p.receiver,"ace",serverGI(),null);return}
-  if(code===-1){commitAction(p.receiver,"error",null,null);return}
-  if(code===-2){p.soVal=0;showRallyScreen();return}
-  var winner=p.zoneMap?p.zoneMap[code]:code;
-  var recvTeam=p.receiver<2?0:1;
-  var winTeam=winner<2?0:1;
-  if(winTeam===recvTeam){commitAction(p.receiver,"plus",winner,null)}
-  else{commitAction(p.receiver,"minus",winner,null)}
-}
-function pickRallyWinner(code){
-  if(!G.pending)return;
-  vib(40);var p=G.pending;
-  var recvTeam=p.receiver<2?0:1;
-  var usWon=code===0;
-  if((recvTeam===0&&usWon)||(recvTeam===1&&!usWon)){
-    commitAction(p.receiver,"zero_won",null,null);
-  }else{
-    commitAction(p.receiver,"zero_lost",null,null);
-  }
+  if(code==="aced")commitAction(p.receiver,"ace",null,"aced");
+  else if(code==="blocked")commitAction(p.receiver,"minus",null,"blocked");
+  else if(code==="error")commitAction(p.receiver,"error",null,"error");
+  else if(code==="zero_lost")commitAction(p.receiver,"zero_lost",null,null);
+  else if(code==="zero_won")commitAction(p.receiver,"zero_won",null,null);
+  else if(code==="clean_so")commitAction(p.receiver,"plus",p.receiver,null);
 }
 function svcError(){
   var sgi=serverGI();
