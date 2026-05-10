@@ -1035,8 +1035,36 @@ function buildLivePayload(action){
     o2Name:PL[3].name,o2SO:Math.round(o2so.eff),o2Recv:o2so.recv,o2Wins:o2so.wins,o2Lost:o2so.losses,
     bestRunUs:runs.us,bestRunThem:runs.them,pointPace:pace.avg,
     last8:getLast8(),matchOver:G.matchOver,
-    overlay:G.overlay
+    overlay:G.overlay,
+    lastActionFull:buildActionRecord(action)
   };
+}
+function buildActionRecord(action){
+  if(action==="undo"||action==="overlay")return null;
+  var acts=G.actions;
+  if(!acts.length)return null;
+  var a=acts[acts.length-1];
+  var ref=G.videoSync||G.t0;
+  return{
+    pointNum:totalActionCount(),
+    timestamp:new Date(a.t).toISOString(),
+    videoMs:Math.max(0,a.t-ref),
+    setNum:G.setNum,
+    scoreUs:G.sU,
+    scoreThem:G.sT,
+    receiver:a.receiver>=0?PL[a.receiver].name:"",
+    receiverIdx:a.receiver,
+    server:a.server>=0?PL[a.server].name:"",
+    serverIdx:a.server,
+    outcome:a.outcome,
+    detail:a.detail||"",
+    phase:a.recvSide===0?"sideout":"transition"
+  };
+}
+function totalActionCount(){
+  var n=G.actions.length;
+  G.sets.forEach(function(s){n+=s.actions.length});
+  return n;
 }
 function livePush(action){
   if(!G.livePush||!sheetsUrl)return;
