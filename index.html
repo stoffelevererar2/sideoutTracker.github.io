@@ -1,707 +1,281 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>BV Tracker</title>
 <style>
-  /* ── GLOBAL RESET ── */
-  *{margin:0;padding:0;box-sizing:border-box}
-  html,body{
-    width:100%;height:100%;overflow:hidden;background:#1B1810;
-    font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;
-    user-select:none;-webkit-user-select:none;
-    touch-action:manipulation;-webkit-tap-highlight-color:transparent;
-  }
-  /* CRITICAL: force all buttons to inherit color, no browser defaults */
-  button{
-    color:#E5E0D8;background:transparent;border:none;
-    font-family:inherit;-webkit-appearance:none;
-    -moz-appearance:none;appearance:none;
-  }
+/* @css-shared */
+/* FROZEN section — editing anything here requires the full manual watch checklist
+   (see CONTRACT.md §9). Everything below @css-screens must be #scr-/#ovl- rooted. */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;background:#000;font-family:system-ui,-apple-system,sans-serif;color:#E5E0D8;overflow:hidden}
+button{border:none;background:none;color:inherit;font-family:inherit;cursor:pointer;outline:none}
+input{font-family:inherit;outline:none}
+.screen{position:fixed;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column;background:#000}
+.screen.active{display:flex}
+.overlay{position:fixed;top:0;left:0;width:100%;height:100%;display:none;z-index:50;background:rgba(0,0,0,0.88);align-items:center;justify-content:center}
+.overlay.active{display:flex}
+.ctrl-btn{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.65);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
-  /* ── SCREENS ── */
-  .screen{
-    position:fixed;top:0;left:0;width:100%;height:100%;
-    display:none;flex-direction:column;
-  }
-  .screen.active{display:flex}
+/* @css-screens */
+#scr-start{flex-direction:row}
+#scr-start .split{flex:1;display:flex;align-items:center;justify-content:center}
+#scr-start .split-label{font-size:clamp(28px,10vw,42px);font-weight:900}
 
-  /* ── FLOAT LABEL (ONE style for ALL screens, NO background) ── */
-  .float-label{
-    position:absolute;top:clamp(20px,12%,40px);left:50%;transform:translateX(-50%);
-    font-size:clamp(20px,8vw,30px);font-weight:800;
-    color:rgba(255,255,255,0.7);z-index:15;
-    pointer-events:none;white-space:nowrap;
-    text-shadow:0 2px 8px rgba(0,0,0,0.9);
-  }
+#scr-recv .zone{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:clamp(60px,32%,90px);transition:background 0.15s ease;z-index:2}
+#scr-recv .zone-name{font-size:clamp(26px,10vw,40px);font-weight:900;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,0.7);pointer-events:none}
+#scr-recv .zone-stat{font-size:clamp(12px,4.5vw,18px);font-weight:700;color:rgba(255,255,255,0.6);pointer-events:none;margin-top:2px}
+#scr-recv .zone-hint{font-size:clamp(10px,3.5vw,14px);font-weight:600;color:rgba(255,255,255,0.35);pointer-events:none}
 
-  /* ── SPLIT SCREENS (Us/Them, P1/P2, Yes/No) ── */
-  .split{flex-direction:row!important}
-  .split-btn{
-    flex:1;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;
-    cursor:pointer;color:#E5E0D8;
-    -webkit-tap-highlight-color:transparent;
-    transition:background 0.15s;gap:clamp(3px,1vw,6px);
-  }
-  .split-btn+.split-btn{border-left:1px solid rgba(0,0,0,0.5)}
-  .split-label{
-    font-size:clamp(28px,10vw,42px);font-weight:900;
-    pointer-events:none;text-shadow:0 2px 8px rgba(0,0,0,0.6);
-  }
-  .split-sub{
-    font-size:clamp(12px,3.5vw,16px);font-weight:600;
-    pointer-events:none;opacity:0.5;
-    text-shadow:0 1px 4px rgba(0,0,0,0.5);
-  }
+#scr-outcome .zone{display:flex;align-items:center;justify-content:center;z-index:2}
+#scr-outcome .zone-label{font-weight:900;pointer-events:none}
 
-  /* ── GAME SCREEN ── */
-  #game-screen{position:relative}
-  #game-screen.active{display:flex!important;flex-direction:column!important}
+#scr-score .half{flex:1;display:flex;align-items:center;justify-content:center;user-select:none}
+#scr-score .big{font-size:clamp(58px,22vw,108px);font-weight:900;line-height:1;letter-spacing:-2px;pointer-events:none}
 
-  .game-header{
-    font-size:clamp(14px,4.5vw,22px);font-weight:900;
-    text-shadow:0 2px 8px rgba(0,0,0,0.8);
-  }
+#scr-set .lbl,#scr-match .lbl{font-size:clamp(15px,5.5vw,22px);font-weight:700;color:#8A8378}
+#scr-set .big-score{font-size:clamp(40px,16vw,64px);font-weight:900;margin:clamp(4px,2vw,10px) 0}
+#scr-set .btn,#scr-match .btn{padding:clamp(10px,3.5vw,16px) clamp(22px,9vw,38px);border-radius:10px;font-size:clamp(14px,5vw,20px);font-weight:800;color:#0d0d0d;margin-top:clamp(8px,3vw,14px)}
 
-  /* ── GAME TOP (header + scoreboard stacked at top center) ── */
-  .game-top{
-    position:absolute;top:clamp(4px,2%,12px);left:50%;transform:translateX(-50%);
-    z-index:12;pointer-events:none;
-    display:flex;flex-direction:column;align-items:center;gap:1px;
-  }
-  .game-footer{
-    text-align:center;
-    background:rgba(0,0,0,0.55);
-    padding:clamp(3px,1.2vw,8px) clamp(10px,5vw,24px);
-    border-radius:6px;
-    display:flex;flex-direction:column;align-items:center;gap:0;
-  }
-  .game-footer-serve{
-    font-size:clamp(10px,4.5vw,15px);font-weight:700;
-    padding:0 5px;border-radius:3px;display:inline-block;line-height:1.3;
-  }
-  .game-footer-score{
-    font-size:clamp(24px,10vw,40px);font-weight:900;color:#E5E0D8;
-    font-variant-numeric:tabular-nums;line-height:1.1;
-  }
-  .game-footer-sets{
-    font-size:clamp(9px,3.5vw,13px);font-weight:600;
-    color:rgba(255,255,255,0.5);line-height:1.2;
-  }
+#scr-stats .bar,#scr-settings .bar{display:flex;gap:4px;padding:clamp(16px,7vw,26px) clamp(34px,15%,52px) 4px;flex-shrink:0;justify-content:center}
+#scr-stats .bar-btn,#scr-settings .bar-btn{padding:clamp(6px,2.2vw,10px) clamp(10px,3.5vw,16px);border-radius:8px;background:#1A1713;color:#8A8378;font-size:clamp(11px,3.8vw,15px);font-weight:700;white-space:nowrap}
+#scr-stats .wrap{flex:1;overflow-y:auto;padding:0 clamp(26px,13%,44px) clamp(50px,20%,90px)}
+#scr-stats .pgrow{display:flex;align-items:center;justify-content:center;gap:clamp(10px,4vw,18px);padding:2px 0 clamp(16px,7vw,26px);flex-shrink:0}
+#scr-stats .pg-btn{width:clamp(38px,14vw,52px);height:clamp(34px,12vw,46px);border-radius:10px;background:#1A1713;color:#B3B792;font-size:clamp(18px,7vw,26px);font-weight:900;display:flex;align-items:center;justify-content:center}
+#scr-stats .pg-lbl{font-size:clamp(12px,4vw,16px);font-weight:700;color:#5A5247;min-width:5ch;text-align:center}
+#scr-stats .hdr{font-size:clamp(13px,4.5vw,17px);font-weight:800;color:#8A8378;text-transform:uppercase;letter-spacing:1px;margin:clamp(8px,3vw,14px) 0 clamp(4px,1.5vw,8px);text-align:center}
+#scr-stats .row{display:flex;justify-content:space-between;align-items:baseline;padding:clamp(3px,1.2vw,6px) 0;font-size:clamp(14px,5vw,19px)}
+#scr-stats .row .l{color:#8A8378;font-weight:600}
+#scr-stats .row .v{font-weight:800}
+#scr-stats .pill-row{display:flex;gap:4px;justify-content:center;margin:clamp(6px,2vw,10px) 0}
+#scr-stats .pill{padding:clamp(5px,1.8vw,8px) clamp(10px,3.5vw,15px);border-radius:14px;background:#1A1713;color:#8A8378;font-size:clamp(12px,4.2vw,16px);font-weight:700}
+#scr-stats .pill.on{background:rgba(155,181,110,0.25);color:#9BB56E}
+#scr-stats .pcard{margin-bottom:clamp(10px,3.5vw,16px)}
+#scr-stats .pname{font-size:clamp(16px,6vw,24px);font-weight:900;text-align:center}
+#scr-stats .pso{font-size:clamp(30px,12vw,48px);font-weight:900;text-align:center;line-height:1.1}
 
-  /* ── ZONES (vertical columns on game screen) ── */
-  .zones{flex:1;display:flex;flex-direction:row;gap:1px;z-index:2;min-height:0}
-  .zone{
-    flex:1;cursor:pointer;outline:none;
-    display:flex;align-items:center;justify-content:center;
-    flex-direction:column;color:#E5E0D8;
-    transition:background 0.15s ease;
-  }
-  .zone-label{
-    font-size:clamp(28px,9vw,52px);font-weight:900;color:#E5E0D8;
-    text-shadow:0 2px 8px rgba(0,0,0,0.7);
-    pointer-events:none;line-height:1;
-  }
-  .zone-sub{
-    font-size:clamp(11px,3vw,16px);font-weight:700;
-    color:rgba(255,255,255,0.55);pointer-events:none;margin-top:clamp(2px,0.5vw,4px);
-    text-shadow:0 1px 4px rgba(0,0,0,0.6);
-  }
+#scr-settings .wrap{flex:1;overflow-y:auto;padding:0 clamp(26px,13%,44px) clamp(50px,20%,90px)}
+#scr-settings .hdr{font-size:clamp(12px,4vw,15px);font-weight:800;color:#8A8378;text-transform:uppercase;letter-spacing:1px;margin:clamp(10px,3.5vw,16px) 0 clamp(4px,1.5vw,7px)}
+#scr-settings .row{display:flex;justify-content:space-between;align-items:center;padding:clamp(8px,3vw,13px) clamp(8px,3vw,12px);background:#15120E;border-radius:8px;margin-bottom:4px;font-size:clamp(13px,4.6vw,17px)}
+#scr-settings .row .l{font-weight:700}
+#scr-settings .row .v{color:#5A5247;font-weight:700}
+#scr-settings .mode-btn{flex:1;padding:clamp(8px,3vw,13px) 4px;border-radius:8px;background:#1A1713;color:#8A8378;font-size:clamp(12px,4.2vw,16px);font-weight:800}
+#scr-settings .mode-btn.active{background:rgba(155,181,110,0.25);color:#9BB56E}
+#scr-settings .name-input{flex:1;min-width:0;background:#15120E;border:none;border-radius:6px;padding:clamp(8px,3vw,12px);color:#E5E0D8;font-size:clamp(13px,4.6vw,17px);font-weight:700}
+#scr-settings .ver{text-align:center;color:#3E372F;font-size:clamp(10px,3.4vw,13px);font-weight:700;margin-top:clamp(12px,4vw,20px)}
 
-  /* ── GAME BOTTOM (undo + menu, centered) ── */
-  .game-bottom{
-    position:absolute;bottom:clamp(8px,4%,18px);left:50%;transform:translateX(-50%);
-    z-index:12;display:flex;align-items:center;
-    justify-content:center;
-    gap:clamp(12px,5vw,24px);
-    pointer-events:auto;
-  }
-  .ctrl-btn{
-    background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);
-    font-size:clamp(16px,6vw,22px);
-    width:clamp(36px,13vw,48px);height:clamp(36px,13vw,48px);
-    border-radius:50%;cursor:pointer;
-    display:flex;align-items:center;justify-content:center;
-    pointer-events:auto;flex-shrink:0;
-  }
-
-  /* ── SCORE MODE (dead-simple livestream score keeper) ── */
-  #score-screen{flex-direction:column!important;position:relative}
-  .score-half{
-    flex:1;display:flex;align-items:center;justify-content:center;
-    cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;
-  }
-  .score-half.opp{background:rgba(255,145,0,0.12);color:#FF9100}
-  .score-half.us{background:rgba(68,138,255,0.12);color:#448AFF}
-  .score-big{
-    font-size:clamp(58px,22vw,108px);font-weight:900;line-height:1;
-    letter-spacing:-2px;pointer-events:none;
-  }
-  .score-undo-btn{
-    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-    width:clamp(40px,14vw,52px);height:clamp(40px,14vw,52px);
-    border-radius:50%;border:2px solid rgba(255,255,255,0.2);
-    background:rgba(20,20,20,0.94);color:#E5E0D8;
-    font-size:clamp(18px,7vw,24px);font-weight:700;cursor:pointer;z-index:5;
-    display:flex;align-items:center;justify-content:center;
-  }
-
-  /* ── SUB-TYPE SCREENS (stacked rows) ── */
-  .sub-zones{
-    position:absolute;top:0;left:0;right:0;bottom:0;
-    display:flex;flex-direction:column;gap:1px;z-index:2;
-  }
-  .sub-btn{
-    flex:1;cursor:pointer;outline:none;
-    display:flex;align-items:center;justify-content:center;
-    flex-direction:column;color:#E5E0D8;
-    -webkit-tap-highlight-color:transparent;transition:background 0.15s;
-  }
-  .sub-label{
-    font-size:clamp(18px,5.5vw,26px);font-weight:900;color:#E5E0D8;
-    pointer-events:none;text-shadow:0 2px 6px rgba(0,0,0,0.6);
-  }
-  .sub-detail{
-    font-size:clamp(9px,2.2vw,12px);font-weight:600;
-    color:rgba(255,255,255,0.4);pointer-events:none;margin-top:2px;
-  }
-
-  /* ── SERVICE MISS labels ── */
-  .sm-label{
-    font-size:clamp(22px,7vw,32px);font-weight:900;
-    pointer-events:none;text-shadow:0 2px 6px rgba(0,0,0,0.6);
-  }
-  .sm-sub{
-    font-size:clamp(10px,2.5vw,13px);font-weight:600;pointer-events:none;
-  }
-  .opp-miss-btn{
-    width:100%;padding:clamp(18px,8vw,32px) 0;
-    background:#2a2218;cursor:pointer;
-    display:flex;align-items:center;justify-content:center;
-    border-top:1px solid rgba(200,160,80,0.15);
-    -webkit-tap-highlight-color:transparent;
-    transition:background 0.15s;flex-shrink:0;
-  }
-
-  /* ── SET/MATCH SCREENS ── */
-  .s-center{align-items:center;justify-content:center;gap:12px;background:#1B1810}
-  .set-result-label{font-size:clamp(10px,3vw,14px);font-weight:700;color:#5A5247}
-  .set-result-score{font-size:clamp(32px,10vw,48px);font-weight:900;color:#E5E0D8;font-variant-numeric:tabular-nums}
-  .set-result-sets{font-size:clamp(13px,3.5vw,17px);font-weight:700;color:#8A8378;margin-top:2px}
-  .set-result-btn{padding:14px 28px;border-radius:8px;font-size:clamp(12px,3.5vw,15px);font-weight:900;cursor:pointer;color:#E5E0D8;margin-top:8px}
-  .match-winner{font-size:clamp(14px,4vw,20px);font-weight:900}
-  .match-sets{font-size:clamp(22px,7vw,32px);font-weight:900;color:#E5E0D8;font-variant-numeric:tabular-nums}
-  .match-scores{font-size:clamp(11px,3vw,14px);color:#6A6258;margin-top:4px}
-
-  /* ── OVERLAYS ── */
-  .overlay{
-    position:fixed;top:0;left:0;right:0;bottom:0;background:#1B1810;
-    display:none;flex-direction:column;align-items:center;
-    justify-content:flex-start;padding:0;
-    z-index:50;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  }
-  .overlay.active{display:flex}
-
-  /* Stats top bar — scrolls with content, padded for round safe zone */
-  .stats-top-bar{
-    width:100%;
-    display:flex;gap:2px;
-    padding:clamp(4px,1.5vw,8px) clamp(30px,14%,50px);
-    flex-shrink:0;
-    margin-top:clamp(20px,14%,50px);
-  }
-  .stats-bar-btn{
-    flex:1;padding:clamp(10px,4vw,14px) 0;
-    background:#252017;color:#B8AFA0;border-radius:clamp(6px,2vw,8px);
-    font-size:clamp(11px,4.2vw,15px);font-weight:700;
-    cursor:pointer;text-align:center;
-  }
-
-  /* Stats content area — generous horizontal padding for round screen */
-  #stats-content{
-    width:100%;
-    padding:0 clamp(24px,12%,40px) clamp(60px,25%,100px);
-  }
-
-  /* Stats section headers */
-  .st-hdr{
-    font-size:clamp(11px,4.2vw,14px);font-weight:800;color:#6A6258;
-    letter-spacing:0.3px;
-    margin:clamp(12px,5vw,18px) 0 clamp(4px,1.5vw,6px);
-    text-align:center;
-  }
-  .st-hdr:first-child{margin-top:clamp(6px,2vw,10px)}
-
-  /* Score block */
-  .score-block{
-    width:100%;padding:clamp(10px,4vw,16px);margin-bottom:clamp(4px,1.5vw,8px);
-    background:#252017;border-radius:clamp(6px,2vw,10px);text-align:center;
-  }
-  .score-block-val{
-    font-size:clamp(28px,10vw,40px);font-weight:900;color:#E5E0D8;
-    font-variant-numeric:tabular-nums;
-  }
-  .score-block-label{
-    font-size:clamp(10px,3.5vw,13px);color:#5A5247;font-weight:700;
-  }
-
-  /* Stat rows */
-  .st-row{
-    display:flex;justify-content:space-between;align-items:center;
-    padding:clamp(6px,2.5vw,10px) clamp(10px,4vw,14px);
-    background:#252017;border-radius:clamp(4px,1.5vw,6px);
-    margin-bottom:2px;
-  }
-  .st-row-label{
-    font-size:clamp(11px,4vw,14px);font-weight:600;color:#8A8378;
-  }
-  .st-row-val{
-    font-size:clamp(13px,5vw,18px);font-weight:900;color:#E5E0D8;
-    font-variant-numeric:tabular-nums;
-  }
-
-  /* Player stat blocks */
-  .player-stat-block{
-    width:100%;padding:clamp(6px,2.2vw,10px) clamp(8px,3vw,12px);
-    margin-bottom:clamp(2px,0.8vw,4px);background:#252017;
-    border-radius:clamp(3px,1vw,5px);
-  }
-  .player-stat-row{display:flex;justify-content:space-between;align-items:center}
-  .player-stat-name{font-size:clamp(10px,3.8vw,13px);font-weight:900}
-  .player-stat-eff{
-    font-size:clamp(15px,5.5vw,20px);font-weight:900;color:#E5E0D8;
-    font-variant-numeric:tabular-nums;
-  }
-  .player-stat-counts{
-    font-size:clamp(10px,3.8vw,13px);font-weight:700;margin-top:1px;
-    font-variant-numeric:tabular-nums;
-  }
-  .p-header{
-    font-size:clamp(11px,4vw,14px);font-weight:700;
-    margin:clamp(6px,2.5vw,10px) 0 clamp(3px,1vw,5px);
-  }
-  .tr-detail{font-size:clamp(9px,3.2vw,11px);color:#6A6258;margin-top:2px}
-
-  /* Set history rows */
-  .set-history-row{
-    width:100%;padding:clamp(5px,2vw,8px) clamp(8px,3vw,12px);
-    background:#252017;border-radius:clamp(3px,1vw,5px);
-    margin-bottom:2px;display:flex;justify-content:space-between;
-    font-size:clamp(11px,4vw,14px);font-weight:700;
-    font-variant-numeric:tabular-nums;
-  }
-
-  .stats-btn-row{display:flex;gap:5px;margin-top:5px;width:100%;padding:0 clamp(24px,12%,40px)}
-  .stats-btn{flex:1;padding:clamp(8px,3vw,12px) 4px;background:#2A2218;color:#B8AFA0;border-radius:clamp(4px,1.5vw,6px);font-size:clamp(10px,3.5vw,13px);font-weight:700;cursor:pointer}
-  .stats-title{font-size:clamp(11px,4vw,14px);font-weight:700;color:#5A5247;margin-bottom:8px;margin-top:clamp(10px,4vw,16px)}
-  .qr-container{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:8px}
-  .qr-hint{font-size:clamp(9px,2.5vw,11px);color:#5A5247;text-align:center;max-width:240px;line-height:1.4}
-  .sheets-input{width:100%;max-width:300px;padding:clamp(8px,2.5vw,12px);background:#252017;border:1px solid #2D2620;border-radius:6px;color:#E5E0D8;font-size:clamp(10px,3vw,13px);font-family:inherit;margin-bottom:8px;text-align:center}
-  .sheets-input::placeholder{color:#3E372F}
-  .sheets-status{font-size:clamp(9px,2.5vw,12px);margin-top:6px;font-weight:600;text-align:center}
-  .confirm-text{font-size:clamp(18px,5vw,24px);font-weight:900;color:#E5E0D8;margin-top:clamp(16px,5vw,30px)}
-  .confirm-sub{font-size:clamp(10px,3vw,13px);color:#6A6258;margin-top:6px}
-  .confirm-btns{display:flex;gap:clamp(8px,3vw,14px);margin-top:clamp(12px,4vw,18px)}
-  .confirm-btn{padding:clamp(10px,3vw,14px) clamp(16px,5vw,24px);border-radius:clamp(5px,1.5vw,8px);color:#E5E0D8;font-size:clamp(12px,3.5vw,15px);font-weight:800;cursor:pointer}
-  .name-input{
-    flex:1;padding:clamp(6px,2vw,10px);
-    background:#252017;border:1px solid #2D2620;border-radius:clamp(4px,1vw,6px);
-    color:#E5E0D8;font-size:clamp(12px,4vw,16px);font-weight:800;
-    font-family:inherit;text-align:center;
-    width:0;min-width:0;
-  }
-  .name-input::placeholder{color:#3E372F;font-weight:600}
-  .name-input:focus{outline:none;border-color:#5A5247}
-  .mode-btn{
-    flex:1;padding:clamp(6px,2vw,10px) 0;
-    background:#252017;color:#5A5247;
-    border-radius:clamp(4px,1vw,6px);
-    font-size:clamp(10px,3.5vw,13px);font-weight:700;
-    cursor:pointer;text-align:center;
-    transition:background 0.2s,color 0.2s;
-  }
-  .mode-btn.active{background:rgba(128,150,113,0.2);color:#B3B792}
-
-  /* ── POST-MATCH MODE (rich spatial capture, phone/laptop) ── */
-  #post-match-screen{background:#1B1810;color:#E5E0D8}
-  .pm-statusbar{flex-shrink:0;padding:8px 10px;background:#252017;display:flex;flex-direction:column;align-items:center;gap:4px;border-bottom:1px solid #2D2620}
-  .pm-statusbar-row{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:600px;gap:8px}
-  .pm-statusbar-score{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums;color:#E5E0D8}
-  .pm-statusbar-score .us{color:#809671}.pm-statusbar-score .them{color:#B58860}
-  .pm-statusbar-info{font-size:11px;color:#8A8378}
-  .pm-statusbar-prompt{font-size:14px;font-weight:800;color:#9BB56E;text-align:center;min-height:18px;letter-spacing:0.3px}
-
-  .pm-court-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:6px;min-height:0;overflow:hidden;position:relative}
-  /* In-court outcome buttons — vertical bars in the sideline space, centered at net level. Shown only at attack_outcome. */
-  .pm-icb{position:absolute;top:50%;transform:translateY(-50%);display:none;padding:0;
-    width:clamp(56px,12vw,84px);height:clamp(180px,38vw,320px);
-    border-radius:12px;border:3px solid #E5E0D8;
-    font-size:clamp(34px,7vw,52px);font-weight:900;cursor:pointer;
-    color:#1B1810;box-shadow:0 3px 14px rgba(27,24,16,0.5);z-index:5}
-  .pm-icb-plus{left:6px;background:#9BB56E}
-  .pm-icb-zero{right:6px;background:#C8A050}
-  .pm-icb-minus{right:6px;background:#A04938;color:#E5E0D8}
-  .pm-icb-ace{left:6px;background:#9BB56E;font-size:clamp(30px,6.5vw,46px);
-    writing-mode:vertical-rl;text-orientation:upright;letter-spacing:2px}
-  /* Block-touch 0: bottom-center, wider but shorter so it sits visually distinct from the side
-     bars (+1 / -1 = terminal outcomes vs. 0-block = rally continues). Shown only at the net-error
-     variant of attack_outcome. */
-  .pm-icb-bzero{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
-    display:none;padding:6px 14px;
-    width:clamp(140px,32vw,220px);height:clamp(48px,9vw,70px);
-    border-radius:12px;border:3px solid #E5E0D8;
-    font-size:clamp(13px,2.6vw,18px);font-weight:800;cursor:pointer;
-    background:#C8A050;color:#1B1810;
-    box-shadow:0 3px 14px rgba(27,24,16,0.5);z-index:5}
-  .pm-court{width:100%;max-width:min(70vh,92vw);height:auto;max-height:100%;display:block}
-  .pm-valid-zone{fill:rgba(155,181,110,0.38);stroke:#9BB56E;stroke-width:3;stroke-dasharray:14,7;pointer-events:none;rx:6}
-  .pm-error-zone{fill:rgba(160,73,56,0.36);stroke:#A04938;stroke-width:2.5;stroke-dasharray:10,6;pointer-events:none}
-  .pm-service-zone{stroke:rgba(94,82,71,0.6);stroke-width:1;stroke-dasharray:7,5;pointer-events:none}
-  /* Heatmap-only cells (discrete bins). The capture court is grid-less; tap markers are drawn on the fly. */
-  .pm-cell{fill:#1d2418;stroke:#3E372F;stroke-width:1;transition:fill 0.12s}
-  .pm-cell.opp-side{fill:#241d15}
-  .pm-court-label{font-size:22px;font-weight:800;pointer-events:none;stroke:#1B1810;stroke-width:3;paint-order:stroke;stroke-linejoin:round}
-  .pm-net{stroke:#E5E0D8;stroke-width:8;fill:none}
-  .pm-centerline{stroke:#C8A050;stroke-width:2.5;stroke-dasharray:8,6;fill:none;opacity:0.8}
-  .pm-outline{stroke:#4A6F8A;stroke-width:5;fill:none}
-  .pm-gridline{stroke:rgba(74,111,138,0.22);stroke-width:0.5;stroke-dasharray:4,5;fill:none;pointer-events:none}
-
-  .pm-controls{flex-shrink:0;padding:6px 8px 8px;background:#252017;border-top:1px solid #2D2620;display:flex;flex-direction:column;gap:6px}
-  .pm-outcome-row,.pm-attack-row{display:flex;gap:6px;justify-content:center}
-  /* Reserved slot for the outcome / ace rows so the court doesn't resize when they appear */
-  .pm-outcome-slot{min-height:58px;display:flex;flex-direction:column;justify-content:center}
-  .pm-outcome-btn{flex:1;max-width:140px;padding:14px 0;border-radius:8px;cursor:pointer;font-size:18px;font-weight:900;border:1px solid #2D2620;background:#252017;color:#8A8378}
-  .pm-outcome-btn.plus{background:rgba(155,181,110,0.18);color:#9BB56E;border-color:#9BB56E}
-  .pm-outcome-btn.zero{background:rgba(200,160,80,0.18);color:#C8A050;border-color:#C8A050}
-  .pm-outcome-btn.minus{background:rgba(160,73,56,0.18);color:#A04938;border-color:#A04938}
-  .pm-attack-btn{flex:1;max-width:110px;padding:10px 0;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;background:#2A2218;color:#8A8378;border:1px solid #2D2620}
-  .pm-attack-btn.active{background:rgba(181,136,96,0.25);color:#D2AB80;border-color:#B58860}
-  .pm-bottom-row{display:flex;gap:4px;justify-content:space-between;align-items:center;flex-wrap:wrap}
-  .pm-bottom-btn{flex:1;min-width:54px;padding:9px 4px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;background:#252017;color:#8A8378;border:1px solid #2D2620;text-align:center;white-space:nowrap}
-  .pm-bottom-btn.danger{color:#A04938;border-color:rgba(160,73,56,0.4)}
-  .pm-bottom-btn.skip{color:#B58860;border-color:rgba(181,136,96,0.4)}
-  .pm-bottom-btn:disabled{opacity:0.3;cursor:not-allowed}
-
-  /* Heatmap overlay */
-  .hm-filter-row{display:flex;gap:3px;margin-bottom:4px;flex-wrap:wrap}
-  .hm-filter-label{flex-shrink:0;font-size:10px;font-weight:700;color:#5A5247;align-self:center;min-width:48px;text-transform:uppercase;letter-spacing:0.5px}
-  .hm-filter-btn{flex:1;min-width:36px;padding:6px 4px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;background:#252017;color:#8A8378;border:1px solid #2D2620;text-align:center;white-space:nowrap}
-  .hm-filter-btn.active{background:rgba(155,181,110,0.22);color:#9BB56E;border-color:#9BB56E}
-  .hm-counter{font-size:13px;color:#B8AFA0;text-align:center;margin-top:6px;font-weight:600}
-  .hm-cell{stroke:#3E372F;stroke-width:0.5}
+#ovl-confirm .box{display:flex;flex-direction:column;align-items:center;gap:clamp(10px,4vw,18px);padding:24px}
+#ovl-confirm .txt{font-size:clamp(18px,7vw,28px);font-weight:900}
+#ovl-confirm .sub{font-size:clamp(12px,4.2vw,16px);color:#8A8378}
+#ovl-confirm .btns{display:flex;gap:clamp(10px,4vw,18px)}
+#ovl-confirm .cbtn{padding:clamp(10px,3.5vw,15px) clamp(24px,10vw,40px);border-radius:10px;font-size:clamp(14px,5vw,20px);font-weight:800;color:#E5E0D8}
 </style>
 </head>
 <body>
 
 <!-- START: Who serves first? -->
-<div class="screen split active" id="start-screen" style="position:relative">
-  <div class="float-label" id="start-label">Who serves first?</div>
-  <button class="split-btn" style="background:#1f2c1d" id="start-left-btn" onclick="startServe(0)">
-    <div class="split-label" style="color:#809671" id="start-left-text">Us</div>
+<div class="screen active" id="scr-start" style="position:relative">
+  <div style="position:absolute;top:clamp(14px,7%,26px);left:50%;transform:translateX(-50%);z-index:14;font-size:clamp(13px,4.6vw,18px);font-weight:700;color:#8A8378;white-space:nowrap;pointer-events:none">Who serves first?</div>
+  <button class="split" style="background:#1f2c1d" onclick="startServe(0)">
+    <span class="split-label" style="color:#809671">Us</span>
   </button>
-  <button class="split-btn" style="background:#2c1f15" id="start-right-btn" onclick="startServe(1)">
-    <div class="split-label" style="color:#B58860" id="start-right-text">Them</div>
+  <button class="split" style="background:#2c1f15" onclick="startServe(1)">
+    <span class="split-label" style="color:#B58860">Them</span>
   </button>
-  <button id="start-postmatch-btn" onclick="startPostMatchShortcut()" style="position:absolute;bottom:clamp(10px,4%,18px);left:50%;transform:translateX(-50%);background:#252017;color:#9BB56E;border:1px solid rgba(155,181,110,0.5);padding:clamp(7px,2vw,10px) clamp(12px,4vw,20px);border-radius:8px;font-size:clamp(10px,2.8vw,13px);font-weight:700;cursor:pointer;z-index:14;white-space:nowrap">▶ Post-match review</button>
+  <button class="ctrl-btn" onclick="openSettings('scr-start')" style="position:absolute;bottom:clamp(10px,4%,18px);left:50%;transform:translateX(-50%);width:clamp(32px,12vw,42px);height:clamp(32px,12vw,42px);font-size:clamp(14px,5vw,19px);z-index:14">☰</button>
 </div>
 
-<!-- SCREEN 1: Who received? (full-size zones, scoreboard overlay) -->
-<div class="screen" id="recv-screen" style="position:relative;flex-direction:column!important">
-  <!-- Phase label at top -->
+<!-- GAME SCREEN 1: who received? -->
+<div class="screen" id="scr-recv" style="position:relative">
   <div style="position:absolute;top:clamp(6px,4%,14px);left:50%;transform:translateX(-50%);z-index:15;pointer-events:none">
-    <span id="game-mode-title" style="font-size:clamp(16px,6vw,24px);font-weight:800;color:#809671">Sideout</span>
+    <span id="rs-phase" style="font-size:clamp(16px,6vw,24px);font-weight:800;color:#809671">Sideout</span>
   </div>
-  <!-- Compact scoreboard overlay — between title and player names -->
   <div style="position:absolute;top:28%;left:50%;transform:translate(-50%,-50%);z-index:12;pointer-events:none;text-align:center">
-    <div id="game-score-serve" style="font-size:clamp(14px,5.5vw,22px);font-weight:700;color:#809671">O1 serving</div>
+    <div id="rs-serve" style="font-size:clamp(14px,5.5vw,22px);font-weight:700;color:#809671"></div>
     <div style="display:flex;align-items:baseline;justify-content:center;gap:2px">
-      <span id="score-us" style="font-size:clamp(34px,14vw,52px);font-weight:900;color:#809671">0</span>
+      <span id="rs-us" style="font-size:clamp(34px,14vw,52px);font-weight:900;color:#809671">0</span>
       <span style="font-size:clamp(22px,8vw,32px);color:rgba(255,255,255,0.2);font-weight:400">:</span>
-      <span id="score-them" style="font-size:clamp(34px,14vw,52px);font-weight:900;color:#B58860">0</span>
+      <span id="rs-them" style="font-size:clamp(34px,14vw,52px);font-weight:900;color:#B58860">0</span>
     </div>
     <div style="font-size:clamp(9px,3vw,12px);font-weight:600;display:flex;justify-content:center;align-items:center;gap:clamp(6px,2vw,10px);white-space:nowrap;margin-top:2px">
-      <span id="off-left"></span>
-      <span id="game-score-sets" style="color:#5A5247">S 0-0</span>
-      <span id="off-right"></span>
+      <span id="rs-off-left"></span>
+      <span id="rs-sets" style="color:#5A5247">S 0-0</span>
+      <span id="rs-off-right"></span>
     </div>
   </div>
-  <!-- Full-size tap zones — names pushed lower -->
-  <div style="flex:1;display:flex;flex-direction:row;gap:1px;min-height:0;z-index:2">
-    <button class="zone" id="recv-left" onclick="pickRecv(0)" style="flex:1;flex-direction:column;justify-content:center;padding-top:clamp(60px,32%,90px)">
-      <span style="font-size:clamp(10px,3.5vw,14px);font-weight:600;color:rgba(255,255,255,0.35)">Receiver</span>
-      <span class="zone-label" id="recv-left-name" style="font-size:clamp(26px,10vw,40px)">P1</span>
-      <span class="zone-sub" id="recv-left-stat" style="font-size:clamp(12px,4.5vw,18px);font-weight:700;color:rgba(255,255,255,0.6)"></span>
+  <div style="flex:1;display:flex;flex-direction:row;gap:1px;min-height:0">
+    <button class="zone" id="rs-left" onclick="pickRecv(0)">
+      <span class="zone-hint">Receiver</span>
+      <span class="zone-name" id="rs-left-name">P1</span>
+      <span class="zone-stat" id="rs-left-stat"></span>
     </button>
-    <button class="zone" id="recv-right" onclick="pickRecv(1)" style="flex:1;flex-direction:column;justify-content:center;padding-top:clamp(60px,32%,90px)">
-      <span style="font-size:clamp(10px,3.5vw,14px);font-weight:600;color:rgba(255,255,255,0.35)">Receiver</span>
-      <span class="zone-label" id="recv-right-name" style="font-size:clamp(26px,10vw,40px)">P2</span>
-      <span class="zone-sub" id="recv-right-stat" style="font-size:clamp(12px,4.5vw,18px);font-weight:700;color:rgba(255,255,255,0.6)"></span>
+    <button class="zone" id="rs-right" onclick="pickRecv(1)">
+      <span class="zone-hint">Receiver</span>
+      <span class="zone-name" id="rs-right-name">P2</span>
+      <span class="zone-stat" id="rs-right-stat"></span>
     </button>
   </div>
-  <!-- Undo/menu positioned under player names -->
-  <button class="ctrl-btn" id="g-undo" onclick="event.stopPropagation();undoLast()" style="position:absolute;left:clamp(14px,8%,24px);top:68%;width:clamp(30px,11vw,38px);height:clamp(30px,11vw,38px);font-size:clamp(13px,4.5vw,18px);opacity:0.5;z-index:14">↩</button>
-  <button class="ctrl-btn" onclick="event.stopPropagation();showStats()" style="position:absolute;right:clamp(14px,8%,24px);top:68%;width:clamp(30px,11vw,38px);height:clamp(30px,11vw,38px);font-size:clamp(13px,4.5vw,18px);opacity:0.5;z-index:14">☰</button>
-  <!-- Serve error fills bottom -->
-  <button class="opp-miss-btn" id="svc-err-btn" onclick="svcError()" style="flex-shrink:0;padding:clamp(26px,12vw,44px) 0;width:100%;z-index:2">
-    <span style="font-size:clamp(16px,6vw,24px);font-weight:800;color:#C8A050" id="svc-err-text">Serve error</span>
+  <button class="ctrl-btn" id="rs-undo" onclick="event.stopPropagation();undoLast()" style="position:absolute;left:clamp(14px,8%,24px);top:56%;width:clamp(30px,11vw,38px);height:clamp(30px,11vw,38px);font-size:clamp(13px,4.5vw,18px);opacity:0.5;z-index:14">↩</button>
+  <button class="ctrl-btn" onclick="event.stopPropagation();openStats()" style="position:absolute;right:clamp(14px,8%,24px);top:56%;width:clamp(30px,11vw,38px);height:clamp(30px,11vw,38px);font-size:clamp(13px,4.5vw,18px);opacity:0.5;z-index:14">☰</button>
+  <button id="rs-svc-btn" onclick="svcError()" style="flex-shrink:0;padding:clamp(26px,12vw,44px) 0;width:100%;z-index:2;background:rgba(60,40,0,0.35)">
+    <span style="font-size:clamp(16px,6vw,24px);font-weight:800;color:#C8A050" id="rs-svc-text">Serve error</span>
   </button>
 </div>
 
-<!-- SCREEN 2: What happened? (3 rows: +1 / 0 / -1) -->
-<div class="screen" id="outcome-screen" style="position:relative;flex-direction:column!important">
-  <div style="flex:1;display:flex;flex-direction:column;gap:1px;min-height:0;z-index:2">
-    <!-- Top: Clean SO (+1) — smaller -->
-    <button class="zone" onclick="pickOutcome('clean_so')" style="flex:2;flex-direction:column;justify-content:center;background:rgba(50,70,35,0.55)">
-      <span style="font-size:clamp(18px,7vw,28px);font-weight:900;color:#9BB56E">Clean SO</span>
+<!-- GAME SCREEN 2: what happened? -->
+<div class="screen" id="scr-outcome">
+  <div style="flex:1;display:flex;flex-direction:column;gap:1px;min-height:0">
+    <button class="zone" onclick="pickOutcome('clean_so')" style="flex:2;background:rgba(50,70,35,0.55)">
+      <span class="zone-label" style="font-size:clamp(18px,7vw,28px);color:#9BB56E">Clean SO</span>
     </button>
-    <!-- Middle: 0 Won / 0 Lost -->
     <div style="flex:3;display:flex;flex-direction:row;gap:1px;min-height:0">
-      <button class="zone" onclick="pickOutcome('zero_won')" style="flex:1;flex-direction:column;justify-content:center;background:rgba(75,55,25,0.45)">
-        <span style="font-size:clamp(16px,6vw,24px);font-weight:900;color:rgba(200,160,80,0.8)">0 Won</span>
+      <button class="zone" onclick="pickOutcome('zero_won')" style="flex:1;background:rgba(75,55,25,0.45)">
+        <span class="zone-label" style="font-size:clamp(16px,6vw,24px);color:rgba(200,160,80,0.8)">0 Won</span>
       </button>
-      <button class="zone" onclick="pickOutcome('zero_lost')" style="flex:1;flex-direction:column;justify-content:center;background:rgba(75,55,25,0.45)">
-        <span style="font-size:clamp(16px,6vw,24px);font-weight:900;color:rgba(200,160,80,0.8)">0 Lost</span>
+      <button class="zone" onclick="pickOutcome('zero_lost')" style="flex:1;background:rgba(75,55,25,0.45)">
+        <span class="zone-label" style="font-size:clamp(16px,6vw,24px);color:rgba(200,160,80,0.8)">0 Lost</span>
       </button>
     </div>
-    <!-- Bottom: Aced / Blocked / Error (-1) — larger -->
     <div style="flex:3;display:flex;flex-direction:row;gap:1px;min-height:0">
-      <button class="zone" onclick="pickOutcome('aced')" style="flex:1;flex-direction:column;justify-content:center;background:rgba(61,24,21,0.85)">
-        <span style="font-size:clamp(14px,5.5vw,22px);font-weight:900;color:rgba(180,100,90,0.8)">Aced</span>
+      <button class="zone" onclick="pickOutcome('aced')" style="flex:1;background:rgba(61,24,21,0.85)">
+        <span class="zone-label" style="font-size:clamp(14px,5.5vw,22px);color:rgba(180,100,90,0.8)">Aced</span>
       </button>
-      <button class="zone" onclick="pickOutcome('blocked')" style="flex:1;flex-direction:column;justify-content:center;background:rgba(61,24,21,0.85)">
-        <span style="font-size:clamp(14px,5.5vw,22px);font-weight:900;color:rgba(180,100,90,0.8)">Blocked</span>
+      <button class="zone" onclick="pickOutcome('blocked')" style="flex:1;background:rgba(61,24,21,0.85)">
+        <span class="zone-label" style="font-size:clamp(14px,5.5vw,22px);color:rgba(180,100,90,0.8)">Blocked</span>
       </button>
-      <button class="zone" onclick="pickOutcome('error')" style="flex:1;flex-direction:column;justify-content:center;background:rgba(61,24,21,0.85)">
-        <span style="font-size:clamp(14px,5.5vw,22px);font-weight:900;color:rgba(180,100,90,0.8)">Error</span>
+      <button class="zone" onclick="pickOutcome('error')" style="flex:1;background:rgba(61,24,21,0.85)">
+        <span class="zone-label" style="font-size:clamp(14px,5.5vw,22px);color:rgba(180,100,90,0.8)">Error</span>
       </button>
     </div>
   </div>
 </div>
 
 <!-- SET COMPLETE -->
-<div class="screen s-center" id="set-screen">
-  <div class="set-result-label" id="set-result-label"></div>
-  <div class="set-result-score" id="set-result-score"></div>
-  <div class="set-result-sets" id="set-result-sets"></div>
-  <button class="set-result-btn" style="background:#809671" id="set-next-btn" onclick="startNextSet()">Next set</button>
+<div class="screen" id="scr-set" style="align-items:center;justify-content:center">
+  <div class="lbl" id="set-label"></div>
+  <div class="big-score" id="set-score"></div>
+  <div class="lbl" id="set-sets" style="font-size:clamp(13px,4.6vw,18px)"></div>
+  <button class="btn" style="background:#809671" onclick="startNextSet()">Next set</button>
 </div>
 
 <!-- MATCH OVER -->
-<div class="screen s-center" id="match-screen">
-  <div class="set-result-label">Match over</div>
-  <div class="match-winner" id="match-winner"></div>
-  <div class="match-sets" id="match-sets"></div>
-  <div class="match-scores" id="match-scores"></div>
-  <button class="set-result-btn" style="background:#2A2218;margin-top:12px" onclick="showStats()">Stats</button>
-  <button class="set-result-btn" style="background:#2D2620" onclick="resetAll()">New match</button>
+<div class="screen" id="scr-match" style="align-items:center;justify-content:center">
+  <div class="lbl">Match over</div>
+  <div id="match-winner" style="font-size:clamp(26px,10vw,42px);font-weight:900;margin:clamp(4px,2vw,8px) 0"></div>
+  <div id="match-sets" style="font-size:clamp(20px,8vw,32px);font-weight:800;color:#8A8378"></div>
+  <div id="match-scores" style="font-size:clamp(12px,4.2vw,16px);color:#5A5247;margin-top:2px"></div>
+  <button class="btn" style="background:#2A2218;color:#B3B792" onclick="openStats()">Stats</button>
+  <button class="btn" style="background:#2D2620;color:#8A8378" onclick="resetAll()">New match</button>
 </div>
 
-<!-- SCORE (dead-simple livestream score keeper — one screen, two halves, +1 per half, undo in middle) -->
-<div class="screen" id="score-screen">
-  <div class="score-half opp" onclick="scoreTap('them')">
-    <div class="score-big" id="score-them">0</div>
-  </div>
-  <div class="score-half us" onclick="scoreTap('us')">
-    <div class="score-big" id="score-us">0</div>
-  </div>
-  <button class="score-undo-btn" onclick="scoreUndoOne(event)" aria-label="Undo">↩</button>
+<!-- SCORE MODE (livestream score keeper) -->
+<div class="screen" id="scr-score" style="position:relative">
+  <button class="half" style="background:rgba(255,145,0,0.12)" onclick="scoreTap('them')">
+    <span class="big" style="color:#FF9100" id="sc-them">0</span>
+  </button>
+  <button class="half" style="background:rgba(68,138,255,0.12)" onclick="scoreTap('us')">
+    <span class="big" style="color:#448AFF" id="sc-us">0</span>
+  </button>
+  <button class="ctrl-btn" onclick="event.stopPropagation();scoreUndoOne()" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:clamp(40px,14vw,52px);height:clamp(40px,14vw,52px);font-size:clamp(18px,7vw,24px);background:rgba(20,20,20,0.94);border:2px solid rgba(255,255,255,0.2);z-index:14">↩</button>
+  <button class="ctrl-btn" onclick="event.stopPropagation();openSettings('scr-score')" style="position:absolute;left:50%;bottom:clamp(6px,2.5%,12px);transform:translateX(-50%);width:clamp(28px,10vw,36px);height:clamp(28px,10vw,36px);font-size:clamp(12px,4.2vw,16px);opacity:0.6;z-index:14">☰</button>
 </div>
 
-<!-- POST-MATCH (rich spatial capture; phone/laptop) -->
-<div class="screen" id="post-match-screen" style="position:relative;flex-direction:column!important">
-  <div class="pm-statusbar">
-    <div class="pm-statusbar-row">
-      <span class="pm-statusbar-info" id="pm-phase">—</span>
-      <span class="pm-statusbar-score">
-        <span class="us" id="pm-score-us">0</span>
-        <span style="color:#3E372F"> : </span>
-        <span class="them" id="pm-score-them">0</span>
-        <span style="font-size:11px;color:#5A5247;margin-left:8px" id="pm-set-info">S1</span>
-      </span>
-      <span class="pm-statusbar-info" id="pm-server">—</span>
-    </div>
-    <div class="pm-statusbar-prompt" id="pm-prompt">Tap serve origin</div>
+<!-- STATS (paged, readable at 272px) -->
+<div class="screen" id="scr-stats">
+  <div class="bar">
+    <button class="bar-btn" onclick="closeStats()">← Back</button>
+    <button class="bar-btn" style="color:#B3B792" onclick="openSettings('scr-stats')">Config</button>
   </div>
-  <div class="pm-court-wrap">
-    <svg id="pm-court" class="pm-court" viewBox="0 0 720 1340" preserveAspectRatio="xMidYMid meet"></svg>
-    <button class="pm-icb pm-icb-plus" id="pm-icb-plus" onclick="pmOutcome('plus')">+1</button>
-    <button class="pm-icb pm-icb-zero" id="pm-icb-zero" onclick="pmOutcome('zero')">0</button>
-    <button class="pm-icb pm-icb-minus" id="pm-icb-minus" onclick="pmOutcome('minus')">−1</button>
-    <button class="pm-icb-bzero" id="pm-icb-bzero" onclick="pmBlockTouchZero()">0 — Block touch</button>
-    <button class="pm-icb pm-icb-ace" id="pm-icb-ace" onclick="pmAce()">ACE</button>
-  </div>
-  <div class="pm-controls">
-    <div class="pm-attack-row" id="pm-attack-row" style="display:none">
-      <button class="pm-attack-btn" id="pm-atk-soft" onclick="pmAttackType('soft')">Soft</button>
-      <button class="pm-attack-btn" id="pm-atk-hard" onclick="pmAttackType('hard')">Hard</button>
-    </div>
-    <div class="pm-bottom-row">
-      <button class="pm-bottom-btn skip" id="pm-skip" onclick="pmSkip()">Skip</button>
-      <button class="pm-bottom-btn" id="pm-undo" onclick="pmUndoContact()">↩ Undo</button>
-      <button class="pm-bottom-btn danger" id="pm-reset-rally" onclick="pmResetRally()">Cancel</button>
-      <button class="pm-bottom-btn" id="pm-switch-sides" onclick="pmSwitchSides()" style="display:none">↻ Switch</button>
-      <button class="pm-bottom-btn" onclick="showHeatmap()">Heatmap</button>
-      <button class="pm-bottom-btn" onclick="showStats()">Stats</button>
-      <button class="pm-bottom-btn" onclick="showSettings()">☰</button>
-    </div>
+  <div class="wrap" id="stp-content"></div>
+  <div class="pgrow">
+    <button class="pg-btn" onclick="statsNav(-1)">‹</button>
+    <span class="pg-lbl" id="stp-page">1/4</span>
+    <button class="pg-btn" onclick="statsNav(1)">›</button>
   </div>
 </div>
 
-<!-- OVERLAYS -->
-<div class="overlay" id="stats-view">
-  <div class="stats-top-bar">
-    <button class="stats-bar-btn" onclick="hideStats()">← Back</button>
-    <button class="stats-bar-btn" style="color:#B3B792" onclick="showExport()">Export</button>
-    <button class="stats-bar-btn" onclick="showSettings()">Config</button>
-    <button class="stats-bar-btn" style="color:#A04938" onclick="showConfirm()">Reset</button>
+<!-- SETTINGS -->
+<div class="screen" id="scr-settings">
+  <div class="bar">
+    <button class="bar-btn" onclick="closeSettings()">← Back</button>
   </div>
-  <div id="stats-content"></div>
-</div>
-<div class="overlay" id="settings-view">
-  <div class="stats-top-bar">
-    <button class="stats-bar-btn" onclick="hideSettings()">← Back</button>
-  </div>
-  <div style="width:100%;padding:0 clamp(24px,12%,40px) clamp(60px,25%,100px)">
-    <div class="st-hdr">Game mode</div>
-    <div style="display:flex;gap:2px;margin-bottom:6px;flex-wrap:wrap">
+  <div class="wrap">
+    <div class="hdr">Game mode</div>
+    <div style="display:flex;gap:4px;margin-bottom:4px">
       <button class="mode-btn" id="mode-match" onclick="setMode('match')">Match</button>
-      <button class="mode-btn" id="mode-so_drill" onclick="setMode('so_drill')">SO drill</button>
-      <button class="mode-btn" id="mode-tr_drill" onclick="setMode('tr_drill')">TR drill</button>
-      <button class="mode-btn" id="mode-post_match" onclick="setMode('post_match')" style="flex:0 0 100%">Post-match (phone/laptop)</button>
-      <button class="mode-btn" id="mode-score" onclick="setMode('score')" style="flex:0 0 100%">Score (livestream)</button>
+      <button class="mode-btn" id="mode-score" onclick="setMode('score')">Score</button>
     </div>
-    <div class="st-hdr" style="color:#809671">Our team</div>
-    <div style="display:flex;gap:clamp(4px,1.5vw,8px);margin-bottom:4px">
+    <div class="hdr" style="color:#809671">Our team</div>
+    <div style="display:flex;gap:4px;margin-bottom:4px">
       <input id="name-p1" class="name-input" style="border-left:3px solid #809671" placeholder="P1" maxlength="12" oninput="saveNames()">
       <input id="name-p2" class="name-input" style="border-left:3px solid #B3B792" placeholder="P2" maxlength="12" oninput="saveNames()">
     </div>
-    <div class="st-hdr" style="color:#B58860">Opponents</div>
-    <div style="display:flex;gap:clamp(4px,1.5vw,8px);margin-bottom:4px">
+    <div class="hdr" style="color:#B58860">Opponents</div>
+    <div style="display:flex;gap:4px;margin-bottom:4px">
       <input id="name-ta1" class="name-input" style="border-left:3px solid #B58860" placeholder="O1" maxlength="12" oninput="saveNames()">
       <input id="name-ta2" class="name-input" style="border-left:3px solid #D2AB80" placeholder="O2" maxlength="12" oninput="saveNames()">
     </div>
-    <div class="st-hdr">Player sides</div>
-    <div class="st-row" style="cursor:pointer" onclick="toggleLayout()">
-      <span class="st-row-label">Tap to swap</span>
-      <span class="st-row-val" id="layout-val"></span>
+    <div class="hdr">Player sides</div>
+    <div class="row" onclick="toggleLayout()">
+      <span class="l">Tap to swap</span>
+      <span class="v" id="layout-val"></span>
     </div>
-    <div class="st-hdr">Side switching</div>
-    <div class="st-row" style="cursor:pointer" onclick="toggleAutoSwitchSides()">
-      <span class="st-row-label">Auto-switch every 7 pts</span>
-      <span class="st-row-val" id="auto-switch-val"></span>
+    <div class="hdr">Google Sheets</div>
+    <div class="row" onclick="toggleLivePush()">
+      <span class="l">Live push</span>
+      <span class="v" id="live-val">ON</span>
+    </div>
+    <div class="row" onclick="sendTestPing()">
+      <span class="l" style="color:#9BB56E">Send test ping</span>
+      <span class="v" id="ping-status">→</span>
+    </div>
+    <div class="row" style="flex-direction:column;align-items:stretch;gap:6px">
+      <span class="l" style="font-size:clamp(11px,3.8vw,14px);color:#8A8378">Apps Script URL (runtime override)</span>
+      <input id="sheets-url-input" class="name-input" type="url" placeholder="https://script.google.com/...">
+      <button class="bar-btn" style="background:#1f2e1c;color:#9BB56E" onclick="saveSheetsUrl()">Save URL</button>
+    </div>
+    <div class="hdr">Export</div>
+    <div class="row" onclick="downloadCSV()">
+      <span class="l">CSV download</span><span class="v">→</span>
+    </div>
+    <div class="row" onclick="downloadVLCChapters()">
+      <span class="l" style="color:#B58860">VLC chapters</span><span class="v">→</span>
     </div>
     <div style="margin-top:clamp(12px,4vw,20px)">
-      <div class="st-row" style="cursor:pointer;background:#1f2e1c;border-left:3px solid #9BB56E" onclick="startGame()">
-        <span class="st-row-label" style="color:#9BB56E;font-weight:800">Start game</span>
-        <span class="st-row-val" style="color:#9BB56E">→</span>
+      <div class="row" style="background:#1f2e1c;border-left:3px solid #9BB56E" onclick="startGame()">
+        <span class="l" style="color:#9BB56E;font-weight:800">Start game</span>
+        <span class="v" style="color:#9BB56E">→</span>
+      </div>
+      <div class="row" style="border-left:3px solid #A04938" onclick="openConfirm()">
+        <span class="l" style="color:#A04938">Reset match</span>
+        <span class="v" style="color:#A04938">→</span>
       </div>
     </div>
-  </div>
-</div>
-<div class="overlay" id="export-view">
-  <div class="stats-top-bar">
-    <button class="stats-bar-btn" onclick="hideExport()">← Back</button>
-  </div>
-  <div style="width:100%;padding:0 clamp(24px,12%,40px) clamp(60px,25%,100px)">
-    <div class="st-hdr">Export data</div>
-    <div class="st-row" style="cursor:pointer" onclick="showQR()">
-      <span class="st-row-label" style="color:#B3B792">QR code</span>
-      <span class="st-row-val" style="color:#5A5247">→</span>
-    </div>
-    <div class="st-row" style="cursor:pointer" onclick="downloadCSV()">
-      <span class="st-row-label">CSV download</span>
-      <span class="st-row-val" style="color:#5A5247">→</span>
-    </div>
-    <div class="st-row" style="cursor:pointer" onclick="downloadVLCChapters()">
-      <span class="st-row-label" style="color:#B58860">VLC chapters</span>
-      <span class="st-row-val" style="color:#5A5247" id="vlc-status"></span>
-    </div>
-    <div class="st-hdr">Google Sheets</div>
-    <div class="st-row" style="cursor:pointer" onclick="showSheetsSetup()">
-      <span class="st-row-label" style="color:#9BB56E">Setup / send</span>
-      <span class="st-row-val" id="sheets-quick-status" style="color:#5A5247">→</span>
-    </div>
-    <div class="st-hdr" style="color:#3E372F">Status</div>
-    <div class="st-row"><span class="st-row-label">Live push</span><span class="st-row-val" id="export-live-status" style="color:#5A5247">off</span></div>
-    <div class="st-row"><span class="st-row-label">Video sync</span><span class="st-row-val" id="export-sync-status" style="color:#5A5247">--</span></div>
-  </div>
-</div>
-<div class="overlay" id="qr-view">
-  <div class="stats-top-bar">
-    <button class="stats-bar-btn" onclick="hideQR()">← Back</button>
-  </div>
-  <div style="width:100%;padding:0 clamp(24px,12%,40px) clamp(60px,25%,100px);display:flex;flex-direction:column;align-items:center;flex:1;justify-content:center;gap:12px">
-    <div class="st-hdr" style="text-align:center;width:100%">Scan with phone</div>
-    <div id="qr-display"></div>
-    <div style="font-size:clamp(9px,3vw,12px);color:#5A5247;text-align:center;max-width:240px;line-height:1.4" id="qr-hint"></div>
-  </div>
-</div>
-<div class="overlay" id="sheets-view">
-  <div class="stats-top-bar">
-    <button class="stats-bar-btn" onclick="hideSheets()">← Back</button>
-  </div>
-  <div style="width:100%;padding:0 clamp(24px,12%,40px) clamp(60px,25%,100px)">
-    <div class="st-hdr">Google Sheets</div>
-    <div id="sheets-content"></div>
-  </div>
-</div>
-<div class="overlay" id="confirm-view" style="justify-content:center;align-items:center">
-  <div style="width:100%;max-width:400px;padding:clamp(30px,15%,80px) clamp(12px,8%,40px);display:flex;flex-direction:column;align-items:center">
-    <div class="confirm-text">Reset?</div>
-    <div class="confirm-sub" id="confirm-sub"></div>
-    <div class="confirm-btns">
-      <button class="confirm-btn" style="background:#A04938" onclick="resetAll()">Yes</button>
-      <button class="confirm-btn" style="background:#3E372F" onclick="hideConfirm()">No</button>
-    </div>
+    <div class="ver" id="ver-stamp"></div>
   </div>
 </div>
 
-<!-- HEATMAP VIEWER (post-match mode) -->
-<div class="overlay" id="heatmap-view">
-  <div class="stats-top-bar">
-    <button class="stats-bar-btn" onclick="hideHeatmap()">← Back</button>
-    <button class="stats-bar-btn" style="color:#B3B792" onclick="pmRenderHeatmap()">↻ Refresh</button>
-  </div>
-  <div style="width:100%;padding:0 clamp(10px,4%,24px) clamp(40px,12%,80px)">
-    <div class="hm-filter-row"><span class="hm-filter-label">Player</span>
-      <button class="hm-filter-btn active" data-filter="player" data-value="all" onclick="pmHmFilter('player','all')">All</button>
-      <button class="hm-filter-btn" data-filter="player" data-value="0" onclick="pmHmFilter('player','0')">P1</button>
-      <button class="hm-filter-btn" data-filter="player" data-value="1" onclick="pmHmFilter('player','1')">P2</button>
-      <button class="hm-filter-btn" data-filter="player" data-value="2" onclick="pmHmFilter('player','2')">O1</button>
-      <button class="hm-filter-btn" data-filter="player" data-value="3" onclick="pmHmFilter('player','3')">O2</button>
+<!-- CONFIRM RESET (modal) -->
+<div class="overlay" id="ovl-confirm">
+  <div class="box">
+    <div class="txt">Reset?</div>
+    <div class="sub">All match data will be cleared</div>
+    <div class="btns">
+      <button class="cbtn" style="background:#A04938" onclick="resetAll()">Yes</button>
+      <button class="cbtn" style="background:#3E372F" onclick="closeConfirm()">No</button>
     </div>
-    <div class="hm-filter-row"><span class="hm-filter-label">Type</span>
-      <button class="hm-filter-btn active" data-filter="type" data-value="all" onclick="pmHmFilter('type','all')">All</button>
-      <button class="hm-filter-btn" data-filter="type" data-value="serve" onclick="pmHmFilter('type','serve')">Serve</button>
-      <button class="hm-filter-btn" data-filter="type" data-value="reception" onclick="pmHmFilter('type','reception')">Recv</button>
-      <button class="hm-filter-btn" data-filter="type" data-value="attack" onclick="pmHmFilter('type','attack')">Atk</button>
-    </div>
-    <div class="hm-filter-row"><span class="hm-filter-label">Outcome</span>
-      <button class="hm-filter-btn active" data-filter="outcome" data-value="all" onclick="pmHmFilter('outcome','all')">All</button>
-      <button class="hm-filter-btn" data-filter="outcome" data-value="plus" onclick="pmHmFilter('outcome','plus')">+1</button>
-      <button class="hm-filter-btn" data-filter="outcome" data-value="zero" onclick="pmHmFilter('outcome','zero')">0</button>
-      <button class="hm-filter-btn" data-filter="outcome" data-value="minus" onclick="pmHmFilter('outcome','minus')">−1</button>
-    </div>
-    <div class="hm-filter-row"><span class="hm-filter-label">Square</span>
-      <button class="hm-filter-btn active" data-filter="dir" data-value="to" onclick="pmHmFilter('dir','to')">Destination</button>
-      <button class="hm-filter-btn" data-filter="dir" data-value="from" onclick="pmHmFilter('dir','from')">Origin</button>
-    </div>
-    <div class="pm-court-wrap" style="padding:8px 0;flex:none">
-      <svg id="hm-court" class="pm-court" viewBox="0 0 720 1340" preserveAspectRatio="xMidYMid meet"></svg>
-    </div>
-    <div class="hm-counter" id="hm-counter">0 contacts</div>
   </div>
 </div>
 
 <script>
+"use strict";
+var APP_VERSION="watch 3.0.0 (2026-06-11)";
+
 /* ═══════════════════════════════════
    CONFIG
    ═══════════════════════════════════ */
-// Players: 0=P1, 1=P2 (our team), 2=Opp1, 3=Opp2
+// Players: 0=P1, 1=P2 (our team), 2=O1, 3=O2
 var PL=[
   {name:"P1",color:"#809671"},
   {name:"P2",color:"#B3B792"},
@@ -709,31 +283,281 @@ var PL=[
   {name:"O2",color:"#D2AB80"}
 ];
 var gameMode="match";
+var sheetsUrl="https://script.google.com/macros/s/AKfycbzSXy7P7jQcSq7yviCcxZS3hYbwCrrm0LrlDPpQWqjrwwF3Cn6h_c127eSX5aELIgbf/exec";
+var layout="p2left";
 
-/* ═══════════════════════════════════
-   PLAYER NAME + MODE INIT
-   ═══════════════════════════════════ */
 (function initNames(){
   var params=new URLSearchParams(location.search);
   var p1=params.get("p1"),p2=params.get("p2"),o1=params.get("o1"),o2=params.get("o2");
   var mode=params.get("mode");
   if(p1)PL[0].name=p1;if(p2)PL[1].name=p2;
   if(o1)PL[2].name=o1;if(o2)PL[3].name=o2;
-  if(mode&&["match","so_drill","tr_drill","post_match"].indexOf(mode)>=0)gameMode=mode;
+  if(mode&&["match","score"].indexOf(mode)>=0)gameMode=mode;
   try{
     var s=localStorage.getItem("bv_players");
     if(s){var d=JSON.parse(s);
       if(!p1&&d.p1)PL[0].name=d.p1;if(!p2&&d.p2)PL[1].name=d.p2;
       if(!o1&&d.o1)PL[2].name=d.o1;if(!o2&&d.o2)PL[3].name=d.o2;
-      if(!mode&&d.mode)gameMode=d.mode;
-      if(typeof d.autoSwitchSides==="boolean")autoSwitchSides=d.autoSwitchSides;
+      if(!mode&&d.mode&&["match","score"].indexOf(d.mode)>=0)gameMode=d.mode;
     }
   }catch(e){}
 })();
 
-var sheetsUrl="https://script.google.com/macros/s/AKfycbzSXy7P7jQcSq7yviCcxZS3hYbwCrrm0LrlDPpQWqjrwwF3Cn6h_c127eSX5aELIgbf/exec";
-var layout="p2left";
-var autoSwitchSides=true; // when true (default), post-match auto-switches sides every 7 pts (5 in set 3)
+/* @core-start v3 — edit in watch.html, copy whole block to review.html, run node test.js */
+var Core=(function(){
+  // Outcome vocabulary — CONTRACT.md §1. recvStat=0 ⇒ excluded from reception stats.
+  var OUTCOMES={
+    clean_so:  {recvStat:1,wins:1,zeros:0,losses:0,blocked:0,aced:0,errors:0,sum: 1},
+    zero_won:  {recvStat:1,wins:1,zeros:1,losses:0,blocked:0,aced:0,errors:0,sum: 0},
+    zero_lost: {recvStat:1,wins:0,zeros:1,losses:1,blocked:0,aced:0,errors:0,sum: 0},
+    aced:      {recvStat:1,wins:0,zeros:0,losses:1,blocked:0,aced:1,errors:0,sum:-1},
+    blocked:   {recvStat:1,wins:0,zeros:0,losses:1,blocked:1,aced:0,errors:0,sum:-1},
+    recv_error:{recvStat:1,wins:0,zeros:0,losses:1,blocked:0,aced:0,errors:1,sum:-1},
+    svc_error: {recvStat:0,wins:0,zeros:0,losses:0,blocked:0,aced:0,errors:0,sum: 0},
+    score_tap: {recvStat:0,wins:0,zeros:0,losses:0,blocked:0,aced:0,errors:0,sum: 0}
+  };
+  // Live tab — FROZEN 65-column contract (CONTRACT.md §4)
+  var LIVE_COLUMNS=[
+    "timestamp","scoreUs","scoreThem","setsUs","setsThem","setNum",
+    "phase","server","lastAction","soTeam",
+    "p1Name","p1SO","p1Recv","p1Wins","p1Zeros","p1Lost",
+    "p1Blocked","p1Aced","p1Errors","p1SvAces","p1SvcErr",
+    "p2Name","p2SO","p2Recv","p2Wins","p2Zeros","p2Lost",
+    "p2Blocked","p2Aced","p2Errors","p2SvAces","p2SvcErr",
+    "o1Name","o1SO","o1Recv","o1Wins","o1Zeros","o1Lost",
+    "o1Blocked","o1Aced","o1Errors","o1SvAces","o1SvcErr",
+    "o2Name","o2SO","o2Recv","o2Wins","o2Zeros","o2Lost",
+    "o2Blocked","o2Aced","o2Errors","o2SvAces","o2SvcErr",
+    "bestRunUs","bestRunThem","pointPace",
+    "last8","matchOver",
+    "overlay_sideout","overlay_momentum","overlay_ticker",
+    "overlay_players","overlay_serve","overlay_autoShow"
+  ];
+  // Actions tab v2 — 14-column contract (CONTRACT.md §5). videoTC computed server-side.
+  var ACTIONS_COLUMNS=[
+    "pointNum","timestamp","videoMs","videoTC","setNum","scoreUs","scoreThem","phase",
+    "receiver","server","outcome","detail","winnerTeam","src"
+  ];
+
+  function allActions(state){
+    var a=[];
+    state.sets.forEach(function(s){a=a.concat(s.actions)});
+    // After match over, state.actions duplicates the final archived set — skip it.
+    if(state.matchOver)return a;
+    return a.concat(state.actions);
+  }
+  function totalActionCount(state){
+    var n=state.actions.length;
+    state.sets.forEach(function(s){n+=s.actions.length});
+    return n;
+  }
+  function serverGI(state){
+    var side=state.recvSide===0?1:0;
+    return side*2+state.servers[side];
+  }
+  // Scoring + rotation reducer. Rotation rule: when the receiving team wins a rally,
+  // the losing (old serving) team's pointer advances and roles flip. score_tap never rotates.
+  function applyAction(state,action){
+    state.actions.push(action);
+    if(action.winnerTeam==="us")state.sU++;else state.sT++;
+    if(action.outcome!=="score_tap"){
+      var recvWon=(state.recvSide===0&&action.winnerTeam==="us")||(state.recvSide===1&&action.winnerTeam==="them");
+      if(recvWon){
+        var oldServ=state.recvSide===0?1:0;
+        state.servers[oldServ]=state.servers[oldServ]===0?1:0;
+        state.recvSide=oldServ;
+      }
+    }
+  }
+  // Undo reducer. Restores score by winnerTeam AND the recvSide + servers snapshots —
+  // both are required or the wrong player shows as server after undo.
+  function applyUndo(state){
+    if(!state.actions.length)return;
+    var last=state.actions.pop();
+    if(last.winnerTeam==="us"){if(state.sU>0)state.sU--}
+    else{if(state.sT>0)state.sT--}
+    if(last.recvSide!==undefined&&last.recvSide!==null)state.recvSide=last.recvSide;
+    if(last.servers){state.servers[0]=last.servers[0];state.servers[1]=last.servers[1]}
+  }
+  function statsForPlayer(acts,gi){
+    var s={recv:0,wins:0,zeros:0,losses:0,blocked:0,aced:0,errors:0,sum:0,kills:0,so:0};
+    acts.forEach(function(a){
+      var o=OUTCOMES[a.outcome];
+      if(!o)return;
+      if(a.winner===gi&&a.outcome==="clean_so")s.kills++;
+      if(!o.recvStat)return;
+      if(a.receiver!==gi)return;
+      s.recv++;s.wins+=o.wins;s.zeros+=o.zeros;s.losses+=o.losses;
+      s.blocked+=o.blocked;s.aced+=o.aced;s.errors+=o.errors;s.sum+=o.sum;
+    });
+    s.so=s.recv?(s.sum/s.recv)*100:0;
+    return s;
+  }
+  function serveStats(acts,gi){
+    var r={aces:0,errs:0,total:0};
+    acts.forEach(function(a){
+      if(a.outcome==="score_tap")return;
+      if(a.server!==gi)return;
+      r.total++;
+      if(a.outcome==="aced")r.aces++;
+      if(a.outcome==="svc_error")r.errs++;
+    });
+    return r;
+  }
+  function scoringRuns(acts){
+    var bestUs=0,bestThem=0,curUs=0,curThem=0;
+    acts.forEach(function(a){
+      if(a.winnerTeam==="us"){curUs++;curThem=0;if(curUs>bestUs)bestUs=curUs}
+      else{curThem++;curUs=0;if(curThem>bestThem)bestThem=curThem}
+    });
+    return{us:bestUs,them:bestThem};
+  }
+  function last8(acts){
+    var r=[];
+    for(var i=Math.max(0,acts.length-8);i<acts.length;i++)r.push(acts[i].winnerTeam==="us"?1:-1);
+    return r;
+  }
+  function pointPace(acts){
+    if(acts.length<2)return{avg:0};
+    var sum=0;
+    for(var i=1;i<acts.length;i++)sum+=acts[i].t-acts[i-1].t;
+    return{avg:Math.round(sum/(acts.length-1)/1000)};
+  }
+  function lastActionLabel(acts,P){
+    if(!acts.length)return"";
+    var a=acts[acts.length-1];
+    if(a.outcome==="score_tap")return"+1 "+a.winnerTeam;
+    if(a.outcome==="svc_error")return"svc err "+(a.server>=0?P[a.server].name:"");
+    if(a.outcome==="aced")return"ace "+(a.server>=0?P[a.server].name:"");
+    var recv=a.receiver>=0?P[a.receiver].name:"";
+    var win=(a.winner!==null&&a.winner!==undefined&&a.winner>=0)?P[a.winner].name:"";
+    return a.outcome+" "+recv+(win?" > "+win:"");
+  }
+  function msToTC(ms){
+    if(ms<0)ms=0;
+    var h=Math.floor(ms/3600000);ms%=3600000;
+    var m=Math.floor(ms/60000);ms%=60000;
+    var s=Math.floor(ms/1000);var fr=ms%1000;
+    return(h<10?"0":"")+h+":"+(m<10?"0":"")+m+":"+(s<10?"0":"")+s+"."+(fr<100?"0":"")+(fr<10?"0":"")+fr;
+  }
+  // lastActionFull for the Actions tab — 13 fields (ACTIONS_COLUMNS minus videoTC).
+  // action must be the just-committed action object; strings ("undo"/"overlay"/"test") → null.
+  function buildActionRecord(state,action){
+    if(!action||typeof action!=="object")return null;
+    var ref=state.videoSync||state.t0;
+    return{
+      pointNum:totalActionCount(state),
+      timestamp:new Date(action.t).toISOString(),
+      videoMs:Math.max(0,action.t-ref),
+      setNum:state.setNum,
+      scoreUs:state.sU,
+      scoreThem:state.sT,
+      phase:action.outcome==="score_tap"?"":(action.recvSide===0?"sideout":"transition"),
+      receiver:action.receiver>=0?state.players[action.receiver].name:"",
+      server:action.server>=0?state.players[action.server].name:"",
+      outcome:action.outcome,
+      detail:action.detail||"",
+      winnerTeam:action.winnerTeam,
+      src:action.src||"live"
+    };
+  }
+  // Live payload — every scalar LIVE_COLUMNS key present, plus overlay {6 flags} and
+  // lastActionFull. Safe for receiver:-1 / server:-1 (score mode, svc errors).
+  function buildLivePayload(state,action){
+    var acts=allActions(state);
+    var P=state.players;
+    var s=[statsForPlayer(acts,0),statsForPlayer(acts,1),statsForPlayer(acts,2),statsForPlayer(acts,3)];
+    var v=[serveStats(acts,0),serveStats(acts,1),serveStats(acts,2),serveStats(acts,3)];
+    var runs=scoringRuns(acts),pace=pointPace(acts);
+    var tRecv=s[0].recv+s[1].recv,tWins=s[0].wins+s[1].wins;
+    var isScore=(action&&typeof action==="object"&&action.src==="score")||
+      (acts.length&&acts[acts.length-1].src==="score");
+    var label=action==="undo"?"undo":lastActionLabel(acts,P);
+    var payload={
+      timestamp:new Date().toISOString(),
+      scoreUs:state.sU,scoreThem:state.sT,
+      setsUs:state.setsU,setsThem:state.setsT,setNum:state.setNum,
+      phase:isScore?"":(state.recvSide===0?"sideout":"transition"),
+      server:isScore?"":P[serverGI(state)].name,
+      lastAction:label,
+      soTeam:tRecv?Math.round((tWins/tRecv)*100):0,
+      bestRunUs:runs.us,bestRunThem:runs.them,pointPace:pace.avg,
+      last8:last8(acts),matchOver:state.matchOver,
+      overlay:state.overlayFlags,
+      lastActionFull:buildActionRecord(state,action)
+    };
+    var prefixes=["p1","p2","o1","o2"];
+    for(var i=0;i<4;i++){
+      var pf=prefixes[i];
+      payload[pf+"Name"]=P[i].name;
+      payload[pf+"SO"]=Math.round(s[i].so);
+      payload[pf+"Recv"]=s[i].recv;
+      payload[pf+"Wins"]=s[i].wins;
+      payload[pf+"Zeros"]=s[i].zeros;
+      payload[pf+"Lost"]=s[i].losses;
+      payload[pf+"Blocked"]=s[i].blocked;
+      payload[pf+"Aced"]=s[i].aced;
+      payload[pf+"Errors"]=s[i].errors;
+      payload[pf+"SvAces"]=v[i].aces;
+      payload[pf+"SvcErr"]=v[i].errs;
+    }
+    return payload;
+  }
+  function buildCSV(state){
+    var P=state.players;
+    var r=[];
+    r.push("--- RAW ACTIONS ---");
+    r.push("Set,Receiver,Winner,Outcome,Detail,Server,WinnerTeam,Src,Timestamp,Elapsed_ms");
+    function add(sn,acts){
+      acts.forEach(function(a){
+        var recv=a.receiver>=0?P[a.receiver].name:"";
+        var win=(a.winner!==null&&a.winner!==undefined&&a.winner>=0)?P[a.winner].name:"";
+        var srv=a.server>=0?P[a.server].name:"";
+        r.push(sn+","+recv+","+win+","+a.outcome+","+(a.detail||"")+","+srv+","+a.winnerTeam+","+(a.src||"live")+","+new Date(a.t).toISOString()+","+a.e);
+      });
+    }
+    state.sets.forEach(function(st){add(st.setNum,st.actions)});
+    if(!state.matchOver)add(state.setNum,state.actions);
+    r.push("");r.push("--- SET SCORES ---");
+    r.push("Set,Us,Them,Winner");
+    state.sets.forEach(function(st){r.push(st.setNum+","+st.sU+","+st.sT+","+st.winner)});
+    if(!state.matchOver)r.push(state.setNum+","+state.sU+","+state.sT+",live");
+    r.push("");r.push("--- PLAYER STATS ---");
+    r.push("Player,Team,SO_Eff,Recv,Wins,Zeros,Losses,Blocked,Aced,Errors,SvAces,SvcErr");
+    var acts=allActions(state);
+    for(var i=0;i<4;i++){
+      var so=statsForPlayer(acts,i),sv=serveStats(acts,i);
+      var team=i<2?"us":"them";
+      r.push(P[i].name+","+team+","+Math.round(so.so)+","+so.recv+","+so.wins+","+so.zeros+","+so.losses+","+so.blocked+","+so.aced+","+so.errors+","+sv.aces+","+sv.errs);
+    }
+    return r.join("\n");
+  }
+  function buildVLCChapters(state){
+    var P=state.players;
+    var ref=state.videoSync||state.t0;
+    var acts=allActions(state);
+    var lines=[];
+    acts.forEach(function(a,i){
+      var recv=a.receiver>=0?P[a.receiver].name:"?";
+      var win=(a.winner!==null&&a.winner!==undefined&&a.winner>=0)?P[a.winner].name:"";
+      var n=i+1;var pad=n<10?"0":"";
+      lines.push("CHAPTER"+pad+n+"="+msToTC(a.t-ref));
+      lines.push("CHAPTER"+pad+n+"NAME="+a.outcome+" recv:"+recv+(win?" win:"+win:""));
+    });
+    return lines.join("\n");
+  }
+  return{
+    OUTCOMES:OUTCOMES,LIVE_COLUMNS:LIVE_COLUMNS,ACTIONS_COLUMNS:ACTIONS_COLUMNS,
+    allActions:allActions,totalActionCount:totalActionCount,serverGI:serverGI,
+    applyAction:applyAction,applyUndo:applyUndo,
+    statsForPlayer:statsForPlayer,serveStats:serveStats,
+    scoringRuns:scoringRuns,last8:last8,pointPace:pointPace,
+    lastActionLabel:lastActionLabel,msToTC:msToTC,
+    buildActionRecord:buildActionRecord,buildLivePayload:buildLivePayload,
+    buildCSV:buildCSV,buildVLCChapters:buildVLCChapters
+  };
+})();
+/* @core-end */
 
 /* ═══════════════════════════════════
    STATE
@@ -743,378 +567,259 @@ function freshState(){
   return{
     sU:0,sT:0,setNum:1,setsU:0,setsT:0,
     target:21,matchOver:false,
-    // Who receives: 0=us, 1=them. Flips on sideout.
     recvSide:0,
-    // Server index within each side: [ourServerIdx, theirServerIdx]
     servers:[0,0],
-    // Actions: one entry per rally
     actions:[],
-    // Per-set archives
     sets:[],
     t0:Date.now(),
     pending:null,
     videoSync:null,
     livePush:true,
-    overlay:{sideout:false,momentum:false,ticker:false,players:false,serve:false,autoShow:true},
-    // Post-match (rich spatial capture) state — only used when gameMode==="post_match"
-    richActions:[],
-    currentRally:null,
-    postMatchStep:"idle",
-    courtSwapped:false  // true after an odd number of side-switches (us team renders on top)
+    overlay:{sideout:false,momentum:false,ticker:false,players:false,serve:false,autoShow:true}
   };
 }
 G=freshState();
-var fT=null;
-var statsSetFilter=null; // null = all sets; 1-3 = single set view in stats overlay
+var statsSetFilter=null;
+var statsPage=0;
+var statsReturn="scr-recv";
+var settingsReturn="scr-start";
+
+// Core's payload/stats functions take a state object with players + overlayFlags attached.
+function pState(){
+  return{
+    sU:G.sU,sT:G.sT,setsU:G.setsU,setsT:G.setsT,setNum:G.setNum,
+    recvSide:G.recvSide,servers:G.servers,matchOver:G.matchOver,
+    actions:G.actions,sets:G.sets,t0:G.t0,videoSync:G.videoSync,
+    players:PL,overlayFlags:G.overlay
+  };
+}
 
 /* ═══════════════════════════════════
-   HELPERS
+   HELPERS — strict $ (ghost ids fail loudly; test.js cross-checks literals)
    ═══════════════════════════════════ */
-function $(id){return document.getElementById(id)||document.createElement("div")}
+function $(id){
+  var el=document.getElementById(id);
+  if(!el&&window.console)console.error("missing #"+id);
+  return el;
+}
 function vib(ms){try{if(navigator.vibrate)navigator.vibrate(ms)}catch(e){}}
-
-/* ═══════════════════════════════════
-   SWIPE-BACK PROTECTION
-   Uses History API so swiping back navigates
-   within the app instead of leaving the page.
-   ═══════════════════════════════════ */
-var screenStack=["start-screen"];
-var handlingPop=false;
-
-function show(id){
-  var s=document.querySelectorAll(".screen");
-  for(var i=0;i<s.length;i++)s[i].classList.remove("active");
-  $(id).classList.add("active");
-  // Push to stack and browser history
-  if(!handlingPop){
-    screenStack.push(id);
-    try{history.pushState({screen:id},"","")}catch(e){}
-  }
-}
-
-function showOverlay(id){
-  $(id).classList.add("active");
-  if(!handlingPop){
-    screenStack.push("overlay:"+id);
-    try{history.pushState({overlay:id},"","")}catch(e){}
-  }
-}
-
-function hideOverlayById(id){
-  $(id).classList.remove("active");
-}
-
-window.addEventListener("popstate",function(e){
-  handlingPop=true;
-  if(screenStack.length>1){
-    var prev=screenStack.pop();
-    // If it was an overlay, just close it
-    if(prev.indexOf("overlay:")===0){
-      var ovId=prev.substring(8);
-      $(ovId).classList.remove("active");
-    }else{
-      // Go back to previous screen
-      var target=screenStack[screenStack.length-1];
-      if(target.indexOf("overlay:")===0) target="game-screen";
-      var s=document.querySelectorAll(".screen");
-      for(var i=0;i<s.length;i++)s[i].classList.remove("active");
-      $(target).classList.add("active");
-    }
-  }
-  // Always keep at least 2 history entries so we never leave
-  try{history.pushState({guard:true},"","")}catch(e){}
-  handlingPop=false;
-});
-
-// Seed initial history entries to prevent leaving on first swipe
-try{
-  history.replaceState({screen:"start-screen"},"","");
-  history.pushState({guard:true},"","");
-}catch(e){}
-
-// Also warn on actual page unload during active match
-window.addEventListener("beforeunload",function(e){
-  if(G&&(G.sU>0||G.sT>0||G.actions.length>0)){
-    e.preventDefault();e.returnValue="";
-  }
-});
 function hexDk(h,f){
   var r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);
   return"#"+((1<<24)+(Math.round(r*f)<<16)+(Math.round(g*f)<<8)+Math.round(b*f)).toString(16).slice(1);
 }
 
 /* ═══════════════════════════════════
-   STATS CALCULATIONS
+   SCREEN ROUTING + SWIPE-BACK PROTECTION
    ═══════════════════════════════════ */
-function ef(v){return typeof v==="number"?(v>=0?"+":"")+Math.round(v)+"%":"--"}
+var screenStack=["scr-start"];
+var currentScreen="scr-start";
+var handlingPop=false;
+
+function show(id){
+  var s=document.querySelectorAll(".screen");
+  for(var i=0;i<s.length;i++)s[i].classList.remove("active");
+  var el=$(id);
+  if(el)el.classList.add("active");
+  currentScreen=id;
+  if(!handlingPop){
+    screenStack.push(id);
+    try{history.pushState({screen:id},"","")}catch(e){}
+  }
+}
+window.addEventListener("popstate",function(){
+  handlingPop=true;
+  if(screenStack.length>1){
+    screenStack.pop();
+    var target=screenStack[screenStack.length-1];
+    var s=document.querySelectorAll(".screen");
+    for(var i=0;i<s.length;i++)s[i].classList.remove("active");
+    var el=$(target);
+    if(el)el.classList.add("active");
+    currentScreen=target;
+  }
+  try{history.pushState({guard:true},"","")}catch(e){}
+  handlingPop=false;
+});
+try{
+  history.replaceState({screen:"scr-start"},"","");
+  history.pushState({guard:true},"","");
+}catch(e){}
+window.addEventListener("beforeunload",function(e){
+  if(G&&(G.sU>0||G.sT>0||G.actions.length>0)){
+    e.preventDefault();e.returnValue="";
+  }
+});
 
 /* ═══════════════════════════════════
-   SERVE HELPERS
+   SERVE / LAYOUT HELPERS
    ═══════════════════════════════════ */
-// Server global player index: side 0=us (P1/P2), side 1=them (Opp1/Opp2)
-function serverGI(){
-  var side=G.recvSide===0?1:0; // serving side is opposite of receiving
-  return side*2+G.servers[side];
-}
+function serverGI(){return Core.serverGI(G)}
 function serverName(){return PL[serverGI()].name}
-// The two receivers for current phase
 function recvPair(){return G.recvSide===0?[0,1]:[2,3]}
-function servRotate(){
-  // Called when receiving team wins (sideout): teams swap roles, server advances
-  var oldServ=G.recvSide===0?1:0;
-  G.servers[oldServ]=(G.servers[oldServ]===0)?1:0; // advance their rotation
-  G.recvSide=oldServ; // they now receive
-}
-
-/* ═══════════════════════════════════
-   LAYOUT
-   ═══════════════════════════════════ */
 function getLP(){return layout==="p2left"?1:0}
 function getRP(){return layout==="p2left"?0:1}
 function toggleLayout(){
   layout=layout==="p2left"?"p1left":"p2left";
-  updLayoutLabel();
-  // Refresh post-match courts (labels + cell ownership are layout-dependent)
-  if(pmCourtBuilt){pmBuildCourt($("pm-court"),"capture");pmHighlightCourt()}
-  if(pmHmCourtBuilt){pmBuildCourt($("hm-court"),"heatmap");pmRenderHeatmap()}
+  updLayoutLabel();vib(30);
 }
-function toggleAutoSwitchSides(){
-  autoSwitchSides=!autoSwitchSides;
-  persistConfig();
-  updAutoSwitchLabel();
-  vib(30);
+function updLayoutLabel(){
+  var el=$("layout-val");
+  if(el)el.textContent="< "+PL[getLP()].name+" | "+PL[getRP()].name+" >";
 }
-function updAutoSwitchLabel(){
-  var el=$("auto-switch-val");
-  if(el){
-    el.textContent=autoSwitchSides?"ON":"OFF";
-    el.style.color=autoSwitchSides?"#9BB56E":"#5A5247";
-  }
-  // The manual "Switch" button on the post-match screen appears only when auto is off.
-  var btn=$("pm-switch-sides");
-  if(btn)btn.style.display=autoSwitchSides?"none":"";
-}
-function updLayoutLabel(){$("layout-val").textContent="< "+PL[getLP()].name+" | "+PL[getRP()].name+" >"}
 
 /* ═══════════════════════════════════
-   PLAYER NAMES
+   NAMES / MODE / CONFIG PERSISTENCE
    ═══════════════════════════════════ */
 function saveNames(){
   var n1=($("name-p1").value||"").trim();
   var n2=($("name-p2").value||"").trim();
   var o1=($("name-ta1").value||"").trim();
   var o2=($("name-ta2").value||"").trim();
-  if(n1)PL[0].name=n1;else PL[0].name="P1";
-  if(n2)PL[1].name=n2;else PL[1].name="P2";
-  if(o1)PL[2].name=o1;else PL[2].name="O1";
-  if(o2)PL[3].name=o2;else PL[3].name="O2";
+  PL[0].name=n1||"P1";PL[1].name=n2||"P2";
+  PL[2].name=o1||"O1";PL[3].name=o2||"O2";
   persistConfig();
 }
 function persistConfig(){
   try{localStorage.setItem("bv_players",JSON.stringify({
-    p1:PL[0].name,p2:PL[1].name,o1:PL[2].name,o2:PL[3].name,mode:gameMode,autoSwitchSides:autoSwitchSides
+    p1:PL[0].name,p2:PL[1].name,o1:PL[2].name,o2:PL[3].name,mode:gameMode
   }))}catch(e){}
 }
-function saveMode(){persistConfig()}
-function setMode(m){gameMode=m;saveMode();updModeBtns();updStartLabel();vib(30)}
-function updStartLabel(){
-  var lbl=$("start-label");
-  if(lbl)lbl.textContent=gameMode==="post_match"?"Post-match · Who serves first?":"Who serves first?";
-  var btn=$("start-postmatch-btn");
-  if(btn){
-    var midMatch=(G.sets&&G.sets.length>0)||G.setsU>0||G.setsT>0||G.sU>0||G.sT>0;
-    btn.style.display=midMatch?"none":"";
-    if(gameMode==="post_match"){
-      btn.textContent="● Post-match active";
-      btn.style.background="rgba(155,181,110,0.22)";
-      btn.style.borderColor="#9BB56E";
-    }else{
-      btn.textContent="▶ Post-match review";
-      btn.style.background="#252017";
-      btn.style.borderColor="rgba(155,181,110,0.5)";
-    }
-  }
-}
-function startPostMatchShortcut(){
-  if(gameMode!=="post_match"){
-    gameMode="post_match";
-    persistConfig();
-    updModeBtns();
-  }
-  updStartLabel();
-  vib(40);
-}
+function setMode(m){gameMode=m;persistConfig();updModeBtns();vib(30)}
 function updModeBtns(){
-  ["match","so_drill","tr_drill","post_match","score"].forEach(function(m){
+  ["match","score"].forEach(function(m){
     var el=$("mode-"+m);
     if(el){if(m===gameMode)el.classList.add("active");else el.classList.remove("active")}
   });
 }
-updModeBtns();
+function initSettingsInputs(){
+  var f=[["name-p1",0,"P1"],["name-p2",1,"P2"],["name-ta1",2,"O1"],["name-ta2",3,"O2"]];
+  f.forEach(function(x){
+    var el=$(x[0]);
+    if(el)el.value=PL[x[1]].name===x[2]?"":PL[x[1]].name;
+  });
+  var v=$("ver-stamp");if(v)v.textContent=APP_VERSION;
+  var u=$("sheets-url-input");if(u)u.placeholder=sheetsUrl?sheetsUrl.slice(0,40)+"...":"https://script.google.com/...";
+  updModeBtns();updLayoutLabel();updLiveVal();
+}
 
 /* ═══════════════════════════════════
-   START FLOW
+   GAME FLOW (match mode)
    ═══════════════════════════════════ */
 function startServe(side){
-  // side: 0=us serves first, 1=them serves first
-  // Only fresh-state on a true match start (set 1, no sets archived).
-  // For set 2+ transitions, preserve accumulated state.
-  if(G.setNum===1 && G.sets.length===0){
+  // Only fresh-state on a true match start (set 1, no sets archived) —
+  // set 2+ comes back through this screen and must NOT wipe the match.
+  if(G.setNum===1&&G.sets.length===0){
     G=freshState();
     G.videoSync=Date.now();
   }
   G.recvSide=side===0?1:0;
   G.pending=null;
-  G.currentRally=null;
-  G.postMatchStep="idle";
   vib(50);
-  if(gameMode==="post_match"){pmBegin();show("post-match-screen");return}
-  show("recv-screen");upd();
+  show("scr-recv");upd();
 }
 function startNextSet(){
   G.setNum++;G.sU=0;G.sT=0;
   G.target=(G.setNum===3)?15:21;
   G.actions=[];
-  show("start-screen");updStartLabel();
+  show("scr-start");
 }
 function resetAll(){
   G=freshState();
   statsSetFilter=null;
-  try{localStorage.removeItem("bv_postmatch");localStorage.removeItem("bv_postmatch_v2")}catch(e){}
-  document.querySelectorAll(".overlay").forEach(function(o){o.classList.remove("active")});
-  screenStack=["start-screen"];show("start-screen");updStartLabel();
+  closeConfirm();
+  vib([40,20,40]);
+  if(gameMode==="score")enterScoreMode();
+  else show("scr-start");
 }
 function startGame(){
   G=freshState();
-  document.querySelectorAll(".overlay").forEach(function(o){o.classList.remove("active")});
   vib([50,30,50]);
-  if(gameMode==="score"){
-    // Score mode skips the "who serves first?" prompt entirely — no rallies, no serve rotation,
-    // just two scores + undo. videoSync still gets set so per-tap timestamps align to recorded video.
-    G.videoSync=Date.now();
-    show("score-screen");
-    updScoreScreen();
-  }else if(gameMode==="so_drill"){
-    G.recvSide=0; // we always receive
-    G.videoSync=Date.now();
-    show("recv-screen");upd();
-  }else if(gameMode==="tr_drill"){
-    G.recvSide=1; // they always receive
-    G.videoSync=Date.now();
-    show("recv-screen");upd();
-  }else if(gameMode==="post_match"){
-    // Try restoring an in-progress post-match session from localStorage; otherwise go to "who serves first?"
-    if(!pmLoad()){
-      screenStack=["start-screen"];show("start-screen");updStartLabel();
-    }
-  }else{
-    screenStack=["start-screen"];show("start-screen");updStartLabel();
-  }
+  if(gameMode==="score")enterScoreMode();
+  else show("scr-start");
 }
-
-/* ═══════════════════════════════════
-   UPDATE GAME UI (Screen 1: receiver select)
-   ═══════════════════════════════════ */
 function upd(){
   var weRecv=G.recvSide===0;
   var pair=recvPair();
-  // Apply layout swap
   var swapped=layout==="p2left";
-  var pL=swapped?pair[1]:pair[0];
-  var pR=swapped?pair[0]:pair[1];
-  $("game-mode-title").textContent=weRecv?"Sideout":"Transition";
-  $("game-mode-title").style.color=weRecv?"#809671":"#B58860";
-  var sv=$("game-score-serve");
+  var pLft=swapped?pair[1]:pair[0];
+  var pRgt=swapped?pair[0]:pair[1];
+  $("rs-phase").textContent=weRecv?"Sideout":"Transition";
+  $("rs-phase").style.color=weRecv?"#809671":"#B58860";
+  var sv=$("rs-serve");
   sv.textContent=serverName()+" serving";
   sv.style.color=PL[serverGI()].color;
-  $("score-us").textContent=G.sU;
-  $("score-them").textContent=G.sT;
-  $("game-score-sets").textContent="S "+G.setsU+"-"+G.setsT;
-  $("recv-left").style.background=hexDk(PL[pL].color,0.2);
-  $("recv-right").style.background=hexDk(PL[pR].color,0.2);
-  $("recv-left-name").textContent=PL[pL].name;
-  $("recv-left-name").style.color=PL[pL].color;
-  $("recv-right-name").textContent=PL[pR].name;
-  $("recv-right-name").style.color=PL[pR].color;
-  var sL=playerSO(pL),sR=playerSO(pR);
-  $("recv-left-stat").textContent=sL.recv?Math.round(sL.eff)+"%  "+sL.wins+"/"+sL.recv:"-  0/0";
-  $("recv-right-stat").textContent=sR.recv?Math.round(sR.eff)+"%  "+sR.wins+"/"+sR.recv:"-  0/0";
-  // Off-team SO% (the 2 non-receivers) — shown in the strip below the scoreboard
-  // Same side-swap as receivers, so each player is in the same slot whether on or off team.
+  $("rs-us").textContent=G.sU;
+  $("rs-them").textContent=G.sT;
+  $("rs-sets").textContent="S "+G.setsU+"-"+G.setsT;
+  $("rs-left").style.background=hexDk(PL[pLft].color,0.2);
+  $("rs-right").style.background=hexDk(PL[pRgt].color,0.2);
+  $("rs-left-name").textContent=PL[pLft].name;
+  $("rs-left-name").style.color=PL[pLft].color;
+  $("rs-right-name").textContent=PL[pRgt].name;
+  $("rs-right-name").style.color=PL[pRgt].color;
+  var acts=Core.allActions(pState());
+  var sL=Core.statsForPlayer(acts,pLft),sR=Core.statsForPlayer(acts,pRgt);
+  $("rs-left-stat").textContent=sL.recv?Math.round(sL.so)+"%  "+sL.wins+"/"+sL.recv:"-  0/0";
+  $("rs-right-stat").textContent=sR.recv?Math.round(sR.so)+"%  "+sR.wins+"/"+sR.recv:"-  0/0";
   var offPair=weRecv?[2,3]:[0,1];
   var offL=swapped?offPair[1]:offPair[0];
   var offR=swapped?offPair[0]:offPair[1];
-  var oL=playerSO(offL),oR=playerSO(offR);
-  var vL=oL.recv?Math.round(oL.eff)+"%":"-";
-  var vR=oR.recv?Math.round(oR.eff)+"%":"-";
-  $("off-left").innerHTML='<span style="color:'+PL[offL].color+'">'+PL[offL].name+'</span> <span style="color:#8A8378">'+vL+'</span>';
-  $("off-right").innerHTML='<span style="color:'+PL[offR].color+'">'+PL[offR].name+'</span> <span style="color:#8A8378">'+vR+'</span>';
-  $("svc-err-text").textContent=weRecv?"Opp serve error":"Our serve error";
-  $("g-undo").style.opacity=G.actions.length?"0.7":"0.2";
+  var oL=Core.statsForPlayer(acts,offL),oR=Core.statsForPlayer(acts,offR);
+  $("rs-off-left").innerHTML='<span style="color:'+PL[offL].color+'">'+PL[offL].name+'</span> <span style="color:#8A8378">'+(oL.recv?Math.round(oL.so)+"%":"-")+'</span>';
+  $("rs-off-right").innerHTML='<span style="color:'+PL[offR].color+'">'+PL[offR].name+'</span> <span style="color:#8A8378">'+(oR.recv?Math.round(oR.so)+"%":"-")+'</span>';
+  $("rs-svc-text").textContent=weRecv?"Opp serve error":"Our serve error";
+  $("rs-undo").style.opacity=G.actions.length?"0.7":"0.2";
 }
-
-/* ═══════════════════════════════════
-   SCREEN 2/3 SETUP
-   ═══════════════════════════════════ */
-function showOutcome(){
-  show("outcome-screen");
-}
-
-/* ═══════════════════════════════════
-   GAME FLOW
-   ═══════════════════════════════════ */
 function pickRecv(idx){
   var pair=recvPair();
   var swapped=layout==="p2left";
-  var pL=swapped?pair[1]:pair[0];
-  var pR=swapped?pair[0]:pair[1];
-  var recvGI=idx===0?pL:pR;
+  var pLft=swapped?pair[1]:pair[0];
+  var pRgt=swapped?pair[0]:pair[1];
+  var recvGI=idx===0?pLft:pRgt;
   G.pending={receiver:recvGI,server:serverGI(),recvSide:G.recvSide};
-  vib(40);showOutcome();
+  vib(40);show("scr-outcome");
 }
+// UI outcome buttons → canonical action codes (CONTRACT.md §1)
 function pickOutcome(code){
   if(!G.pending)return;
-  vib(40);var p=G.pending;
-  if(code==="aced")commitAction(p.receiver,"ace",null,"aced");
-  else if(code==="blocked")commitAction(p.receiver,"minus",null,"blocked");
-  else if(code==="error")commitAction(p.receiver,"error",null,"error");
-  else if(code==="zero_lost")commitAction(p.receiver,"zero_lost",null,null);
-  else if(code==="zero_won")commitAction(p.receiver,"zero_won",null,null);
-  else if(code==="clean_so")commitAction(p.receiver,"plus",p.receiver,null);
+  vib(40);
+  var p=G.pending;G.pending=null;
+  var recvTeam=p.recvSide===0?"us":"them";
+  var servTeam=p.recvSide===0?"them":"us";
+  var map={
+    clean_so:{outcome:"clean_so",winner:p.receiver,winnerTeam:recvTeam},
+    zero_won:{outcome:"zero_won",winner:null,winnerTeam:recvTeam},
+    zero_lost:{outcome:"zero_lost",winner:null,winnerTeam:servTeam},
+    aced:{outcome:"aced",winner:null,winnerTeam:servTeam},
+    blocked:{outcome:"blocked",winner:null,winnerTeam:servTeam},
+    error:{outcome:"recv_error",winner:null,winnerTeam:servTeam}
+  };
+  var m=map[code];
+  if(!m)return;
+  commitAction({
+    outcome:m.outcome,detail:null,
+    receiver:p.receiver,server:p.server,winner:m.winner,winnerTeam:m.winnerTeam,
+    recvSide:p.recvSide,servers:[G.servers[0],G.servers[1]],
+    t:Date.now(),e:Date.now()-G.t0,src:"live"
+  });
 }
 function svcError(){
-  var sgi=serverGI();
-  var act={receiver:-1,winner:null,server:sgi,outcome:"svc_error",detail:null,recvSide:G.recvSide,servers:[G.servers[0],G.servers[1]],t:Date.now(),e:Date.now()-G.t0};
-  G.actions.push(act);vib([40,20,40]);
-  awardPoint(G.recvSide===0?"us":"them");
+  vib([40,20,40]);
+  commitAction({
+    outcome:"svc_error",detail:null,
+    receiver:-1,server:serverGI(),winner:null,
+    winnerTeam:G.recvSide===0?"us":"them",
+    recvSide:G.recvSide,servers:[G.servers[0],G.servers[1]],
+    t:Date.now(),e:Date.now()-G.t0,src:"live"
+  });
 }
-function commitAction(receiver,outcome,winner,detail){
-  var act={receiver:receiver,winner:winner,server:G.pending.server,outcome:outcome,detail:detail,recvSide:G.pending.recvSide,servers:[G.servers[0],G.servers[1]],t:Date.now(),e:Date.now()-G.t0};
-  G.actions.push(act);G.pending=null;
-  var recvTeam=receiver<2?0:1;var usRecv=recvTeam===0;
-  if(outcome==="plus")awardPoint(usRecv?"us":"them");
-  else if(outcome==="minus")awardPoint(usRecv?"them":"us");
-  else if(outcome==="ace")awardPoint(usRecv?"them":"us");
-  else if(outcome==="error")awardPoint(usRecv?"them":"us");
-  else if(outcome==="zero_won")awardPoint(usRecv?"us":"them");
-  else if(outcome==="zero_lost")awardPoint(usRecv?"them":"us");
-}
-function awardPoint(to){
-  if(to==="us")G.sU++;else G.sT++;
-  var isDrill=gameMode==="so_drill"||gameMode==="tr_drill";
-  var isPostMatch=gameMode==="post_match";
-  if(!isDrill){
-    var recvWon=(G.recvSide===0&&to==="us")||(G.recvSide===1&&to==="them");
-    if(recvWon)servRotate();
+function commitAction(act){
+  Core.applyAction(G,act);
+  // Set-end screen must win over the recv screen — never show recv after a set-ending point.
+  if(!checkSetEnd()){
+    show("scr-recv");upd();
   }
-  // For post-match, pmEndRally handles re-rendering and next-rally setup;
-  // we still call checkSetEnd so set-complete / match-over screens trigger.
-  if(isPostMatch){
-    checkSetEnd();
-  }else if(isDrill||!checkSetEnd()){
-    show("recv-screen");upd();
-  }
-  livePush(to==="us"?"+1":"-1");
+  livePush(act);
 }
 function checkSetEnd(){
   var t=G.target;
@@ -1130,59 +835,15 @@ function checkSetEnd(){
 }
 function undoLast(){
   if(!G.actions.length)return;
-  var last=G.actions.pop();
-  var recvTeam=last.receiver<2?0:1;var usRecv=recvTeam===0;
-  var usScored=false;
-  if(last.outcome==="plus"||last.outcome==="zero_won")usScored=usRecv;
-  else if(last.outcome==="minus"||last.outcome==="ace"||last.outcome==="error"||last.outcome==="zero_lost")usScored=!usRecv;
-  else if(last.outcome==="svc_error")usScored=last.recvSide===0;
-  if(usScored&&G.sU>0)G.sU--;
-  if(!usScored&&G.sT>0)G.sT--;
-  // Restore full serve state
-  G.recvSide=last.recvSide;
-  if(last.servers){G.servers[0]=last.servers[0];G.servers[1]=last.servers[1]}
-  vib(20);show("recv-screen");upd();
+  Core.applyUndo(G);
+  vib(20);show("scr-recv");upd();
   livePush("undo");
 }
-
-/* ═══════════════════════════════════
-   SCORE MODE handlers — pure score keeping (no rally context, no serve rotation)
-   ═══════════════════════════════════ */
-function scoreTap(side){
-  if(gameMode!=="score")return;
-  vib(20);
-  var t=Date.now();
-  var act={
-    scorer:side, // 'us' | 'them' — primary score-mode field used by scoreUndoOne
-    t:t,e:t-G.t0,
-    // Legacy-compatible dummy fields so buildLivePayload doesn't choke on missing keys.
-    receiver:-1,server:-1,outcome:null,detail:null,
-    recvSide:G.recvSide,servers:[G.servers[0],G.servers[1]]
-  };
-  G.actions.push(act);
-  if(side==="us")G.sU++; else G.sT++;
-  updScoreScreen();
-  livePush(act);
-}
-function scoreUndoOne(e){
-  if(e&&e.stopPropagation)e.stopPropagation();
-  if(gameMode!=="score"||!G.actions.length)return;
-  vib(30);
-  var last=G.actions.pop();
-  if(last.scorer==="us")G.sU=Math.max(0,G.sU-1);
-  else if(last.scorer==="them")G.sT=Math.max(0,G.sT-1);
-  updScoreScreen();
-  livePush({receiver:-1,server:-1,outcome:"undo",detail:null,recvSide:G.recvSide,servers:[G.servers[0],G.servers[1]],t:Date.now(),e:Date.now()-G.t0});
-}
-function updScoreScreen(){
-  var sU=$("score-us");if(sU)sU.textContent=G.sU;
-  var sT=$("score-them");if(sT)sT.textContent=G.sT;
-}
 function showSetComplete(){
-  $("set-result-label").textContent="Set "+G.setNum+" complete";
-  $("set-result-score").textContent=G.sU+" : "+G.sT;
-  $("set-result-sets").textContent="Sets: "+G.setsU+" - "+G.setsT;
-  show("set-screen");
+  $("set-label").textContent="Set "+G.setNum+" complete";
+  $("set-score").textContent=G.sU+" : "+G.sT;
+  $("set-sets").textContent="Sets: "+G.setsU+" - "+G.setsT;
+  show("scr-set");
 }
 function showMatchOver(){
   $("match-winner").textContent=G.setsU>G.setsT?"We win":"They win";
@@ -1190,219 +851,52 @@ function showMatchOver(){
   $("match-sets").textContent=G.setsU+" - "+G.setsT;
   var sc=[];G.sets.forEach(function(s){sc.push(s.sU+"-"+s.sT)});
   $("match-scores").textContent="("+sc.join(", ")+")";
-  show("match-screen");
+  show("scr-match");
 }
 
 /* ═══════════════════════════════════
-   STATS HELPERS
+   SCORE MODE
    ═══════════════════════════════════ */
-function allActions(){
-  var a=[];G.sets.forEach(function(s){a=a.concat(s.actions)});
-  // After match over, G.actions is a duplicate of the final archived set — skip it.
-  if(G.matchOver)return a;
-  return a.concat(G.actions);
+function enterScoreMode(){
+  G.videoSync=Date.now();
+  show("scr-score");
+  updScore();
 }
-function actionsForFilter(){
-  if(statsSetFilter===null)return allActions();
-  for(var i=0;i<G.sets.length;i++){
-    if(G.sets[i].setNum===statsSetFilter)return G.sets[i].actions.slice();
-  }
-  if(G.setNum===statsSetFilter)return G.actions.slice();
-  return [];
+function scoreTap(side){
+  if(currentScreen!=="scr-score")return;
+  vib(20);
+  var t=Date.now();
+  var act={
+    outcome:"score_tap",detail:null,
+    receiver:-1,server:-1,winner:null,
+    winnerTeam:side,
+    recvSide:G.recvSide,servers:[G.servers[0],G.servers[1]],
+    t:t,e:t-G.t0,src:"score"
+  };
+  Core.applyAction(G,act);
+  updScore();
+  livePush(act);
 }
-function setStatsFilter(f){statsSetFilter=f;showStats()}
-function playerSO(gi,acts){
-  acts=acts||allActions();
-  var recv=0,wins=0,losses=0,zeros=0,aced=0,sum=0;
-  acts.forEach(function(a){
-    if(a.receiver!==gi)return;
-    if(a.outcome==="svc_error")return;
-    recv++;
-    if(a.outcome==="plus"){wins++;sum+=1}
-    else if(a.outcome==="minus"||a.outcome==="error"){losses++;sum-=1}
-    else if(a.outcome==="ace"){aced++;losses++;sum-=1}
-    else if(a.outcome==="zero_won"){zeros++;wins++}
-    else if(a.outcome==="zero_lost"){zeros++;losses++}
-  });
-  return{recv:recv,wins:wins,losses:losses,zeros:zeros,aced:aced,eff:recv?(sum/recv)*100:0};
+function scoreUndoOne(){
+  if(!G.actions.length)return;
+  vib(30);
+  Core.applyUndo(G);
+  updScore();
+  livePush("undo");
 }
-function playerKills(gi,acts){
-  // Clean SO count (only outcome where winner is set to receiver)
-  acts=acts||allActions();
-  var k=0;
-  acts.forEach(function(a){if(a.winner===gi)k++});
-  return k;
-}
-function playerDetail(gi,acts){
-  // Breakdown of -1 outcomes for this receiver
-  acts=acts||allActions();
-  var blocked=0,aced=0,errors=0;
-  acts.forEach(function(a){
-    if(a.receiver!==gi)return;
-    if(a.outcome==="minus"&&a.detail==="blocked")blocked++;
-    else if(a.outcome==="ace")aced++;
-    else if(a.outcome==="error")errors++;
-  });
-  return{blocked:blocked,aced:aced,errors:errors};
-}
-function playerServe(gi,acts){
-  acts=acts||allActions();
-  var aces=0,errs=0,total=0;
-  acts.forEach(function(a){
-    if(a.server!==gi)return;total++;
-    if(a.outcome==="ace")aces++;
-    if(a.outcome==="svc_error")errs++;
-  });
-  return{aces:aces,errs:errs,total:total};
-}
-function scoringRuns(acts){
-  acts=acts||allActions();
-  var bestUs=0,bestThem=0,curUs=0,curThem=0;
-  acts.forEach(function(a){
-    var recvTeam=a.receiver>=0?(a.receiver<2?0:1):(a.recvSide===0?0:1);
-    var usScored=false;
-    if(a.outcome==="plus"||a.outcome==="zero_won")usScored=recvTeam===0;
-    else if(a.outcome==="svc_error")usScored=a.recvSide===0;
-    else usScored=recvTeam!==0;
-    if(usScored){curUs++;curThem=0;if(curUs>bestUs)bestUs=curUs}
-    else{curThem++;curUs=0;if(curThem>bestThem)bestThem=curThem}
-  });
-  return{us:bestUs,them:bestThem};
-}
-function pointPace(acts){
-  acts=acts||allActions();
-  if(acts.length<2)return{avg:0};
-  var gaps=[];
-  for(var i=1;i<acts.length;i++)gaps.push(acts[i].t-acts[i-1].t);
-  var sum=0;gaps.forEach(function(g){sum+=g});
-  return{avg:Math.round(sum/gaps.length/1000)};
-}
-function getLast8(){
-  var acts=allActions(),r=[];
-  for(var i=acts.length-1;i>=0&&r.length<8;i--){
-    var a=acts[i],recvTeam=a.receiver>=0?(a.receiver<2?0:1):(a.recvSide===0?0:1);
-    var us=false;
-    if(a.outcome==="plus"||a.outcome==="zero_won")us=recvTeam===0;
-    else if(a.outcome==="svc_error")us=a.recvSide===0;
-    else us=recvTeam!==0;
-    r.unshift(us?1:-1);
-  }
-  return r;
+function updScore(){
+  $("sc-us").textContent=G.sU;
+  $("sc-them").textContent=G.sT;
 }
 
 /* ═══════════════════════════════════
-   VIDEO SYNC & VLC CHAPTERS
+   LIVE PUSH
    ═══════════════════════════════════ */
-function msToTC(ms){
-  if(ms<0)ms=0;
-  var h=Math.floor(ms/3600000);ms%=3600000;
-  var m=Math.floor(ms/60000);ms%=60000;
-  var s=Math.floor(ms/1000);var fr=ms%1000;
-  return(h<10?"0":"")+h+":"+(m<10?"0":"")+m+":"+(s<10?"0":"")+s+"."+(fr<100?"0":"")+(fr<10?"0":"")+fr;
-}
-function buildVLCChapters(){
-  var ref=G.videoSync||G.t0;
-  var acts=allActions();
-  var entries=[];
-  acts.forEach(function(a){
-    var recv=a.receiver>=0?PL[a.receiver].name:"?";
-    var win=a.winner!=null?PL[a.winner].name:"";
-    var desc=a.outcome+" recv:"+recv+(win?" win:"+win:"");
-    entries.push({t:a.t,desc:desc});
-  });
-  entries.sort(function(a,b){return a.t-b.t});
-  var lines=[];
-  entries.forEach(function(e,i){
-    var n=i+1;var pad=n<10?"0":"";
-    var tc=msToTC(e.t-ref);
-    lines.push("CHAPTER"+pad+n+"="+tc);
-    lines.push("CHAPTER"+pad+n+"NAME="+e.desc);
-  });
-  return lines.join("\n");
-}
-function downloadVLCChapters(){
-  var ch=buildVLCChapters();
-  if(!ch)return;
-  var b=new Blob([ch],{type:"text/plain"});
-  var u=URL.createObjectURL(b);
-  var l=document.createElement("a");
-  l.href=u;l.download="bv_"+new Date().toISOString().slice(0,10)+".chapters.txt";
-  l.click();URL.revokeObjectURL(u);
-}
-function getLastAction(){
-  var acts=allActions();
-  if(!acts.length)return"";
-  var a=acts[acts.length-1];
-  var recv=a.receiver>=0?PL[a.receiver].name:"";
-  var win=a.winner!=null?PL[a.winner].name:"";
-  if(a.outcome==="svc_error")return"svc err "+PL[a.server].name;
-  if(a.outcome==="ace")return"ace "+PL[a.server].name;
-  return a.outcome+" "+recv+(win?" > "+win:"");
-}
-function buildLivePayload(action){
-  var p1so=playerSO(0),p2so=playerSO(1),o1so=playerSO(2),o2so=playerSO(3);
-  var p1sv=playerServe(0),p2sv=playerServe(1),o1sv=playerServe(2),o2sv=playerServe(3);
-  var p1d=playerDetail(0),p2d=playerDetail(1),o1d=playerDetail(2),o2d=playerDetail(3);
-  var runs=scoringRuns(),pace=pointPace();
-  var weRecv=G.recvSide===0;
-  var tRecv=p1so.recv+p2so.recv,tWins=p1so.wins+p2so.wins;
-  var teamSO=tRecv?Math.round((tWins/tRecv)*100):0;
-  return{
-    timestamp:new Date().toISOString(),
-    scoreUs:G.sU,scoreThem:G.sT,
-    setsUs:G.setsU,setsThem:G.setsT,setNum:G.setNum,
-    phase:weRecv?"sideout":"transition",
-    server:serverName(),
-    lastAction:action==="undo"?"undo":getLastAction(),
-    soTeam:teamSO,
-    p1Name:PL[0].name,p1SO:Math.round(p1so.eff),p1Recv:p1so.recv,p1Wins:p1so.wins,p1Zeros:p1so.zeros,p1Lost:p1so.losses,
-    p1Blocked:p1d.blocked,p1Aced:p1d.aced,p1Errors:p1d.errors,
-    p1SvAces:p1sv.aces,p1SvcErr:p1sv.errs,
-    p2Name:PL[1].name,p2SO:Math.round(p2so.eff),p2Recv:p2so.recv,p2Wins:p2so.wins,p2Zeros:p2so.zeros,p2Lost:p2so.losses,
-    p2Blocked:p2d.blocked,p2Aced:p2d.aced,p2Errors:p2d.errors,
-    p2SvAces:p2sv.aces,p2SvcErr:p2sv.errs,
-    o1Name:PL[2].name,o1SO:Math.round(o1so.eff),o1Recv:o1so.recv,o1Wins:o1so.wins,o1Zeros:o1so.zeros,o1Lost:o1so.losses,
-    o1Blocked:o1d.blocked,o1Aced:o1d.aced,o1Errors:o1d.errors,
-    o1SvAces:o1sv.aces,o1SvcErr:o1sv.errs,
-    o2Name:PL[3].name,o2SO:Math.round(o2so.eff),o2Recv:o2so.recv,o2Wins:o2so.wins,o2Zeros:o2so.zeros,o2Lost:o2so.losses,
-    o2Blocked:o2d.blocked,o2Aced:o2d.aced,o2Errors:o2d.errors,
-    o2SvAces:o2sv.aces,o2SvcErr:o2sv.errs,
-    bestRunUs:runs.us,bestRunThem:runs.them,pointPace:pace.avg,
-    last8:getLast8(),matchOver:G.matchOver,
-    overlay:G.overlay,
-    lastActionFull:buildActionRecord(action)
-  };
-}
-function buildActionRecord(action){
-  if(action==="undo"||action==="overlay")return null;
-  var acts=G.actions;
-  if(!acts.length)return null;
-  var a=acts[acts.length-1];
-  var ref=G.videoSync||G.t0;
-  return{
-    pointNum:totalActionCount(),
-    timestamp:new Date(a.t).toISOString(),
-    videoMs:Math.max(0,a.t-ref),
-    setNum:G.setNum,
-    scoreUs:G.sU,
-    scoreThem:G.sT,
-    receiver:a.receiver>=0?PL[a.receiver].name:"",
-    receiverIdx:a.receiver,
-    server:a.server>=0?PL[a.server].name:"",
-    serverIdx:a.server,
-    outcome:a.outcome,
-    detail:a.detail||"",
-    phase:a.recvSide===0?"sideout":"transition"
-  };
-}
-function totalActionCount(){
-  var n=G.actions.length;
-  G.sets.forEach(function(s){n+=s.actions.length});
-  return n;
-}
 function livePush(action){
   if(!G.livePush||!sheetsUrl)return;
-  var payload=buildLivePayload(action);
+  var payload;
+  try{payload=Core.buildLivePayload(pState(),action)}
+  catch(e){if(window.console)console.error("payload build failed",e);return}
   try{
     fetch(sheetsUrl,{
       method:"POST",mode:"no-cors",
@@ -1411,1661 +905,170 @@ function livePush(action){
     }).catch(function(){});
   }catch(e){}
 }
-function toggleOverlay(key){
-  G.overlay[key]=!G.overlay[key];
-  updStreamToggles();
-  // Push overlay state change immediately
-  if(G.livePush&&sheetsUrl){
-    livePush("overlay");
-  }
-  vib(30);
-}
-function toggleAutoShow(){
-  G.overlay.autoShow=!G.overlay.autoShow;
-  updStreamToggles();
-  if(G.livePush&&sheetsUrl)livePush("overlay");
-  vib(30);
-}
 function toggleLivePush(){
   G.livePush=!G.livePush;
-  updStreamToggles();
-  if(G.livePush&&sheetsUrl){
-    // Send test ping
-    livePush("connect");
-  }
+  updLiveVal();
+  if(G.livePush&&sheetsUrl)livePush("connect");
   vib(G.livePush?[50,30,50]:30);
 }
-function updStreamToggles(){
-  var mods=["sideout","momentum","ticker","players","serve"];
-  mods.forEach(function(m){
-    var el=$("stog-"+m);
-    if(el){
-      el.style.background=G.overlay[m]?"rgba(128,150,113,0.3)":"#252017";
-      el.style.color=G.overlay[m]?"#B3B792":"#5A5247";
-    }
-  });
-  var ab=$("stog-auto");
-  if(ab){
-    ab.style.background=G.overlay.autoShow?"rgba(181,136,96,0.2)":"#252017";
-    ab.style.color=G.overlay.autoShow?"#B58860":"#5A5247";
-  }
-  var lp=$("stog-live");
-  if(lp){
-    lp.style.background=G.livePush?"rgba(155,181,110,0.2)":"#252017";
-    lp.style.color=G.livePush?"#9BB56E":"#5A5247";
-    lp.textContent=G.livePush?"Live ON":"Live OFF";
+function updLiveVal(){
+  var el=$("live-val");
+  if(el){
+    el.textContent=G.livePush?"ON":"OFF";
+    el.style.color=G.livePush?"#9BB56E":"#5A5247";
   }
 }
-
-/* ═══════════════════════════════════
-   STATS VIEW (4-player model)
-   ═══════════════════════════════════ */
-function showStats(){
-  hideOverlayById("confirm-view");
-  var c=$("stats-content");c.innerHTML="";
-  var h="";
-
-  // Filtered action list (null = all sets, 1-3 = single set)
-  var acts=actionsForFilter();
-
-  // ── SCORE ── (reflects the filter — compact labels for watch)
-  var lbl,sU,sT;
-  if(statsSetFilter===null){
-    lbl=G.matchOver?"Final":"Set "+G.setNum+" (to "+G.target+")";
-    sU=G.sU;sT=G.sT;
-  }else{
-    var setData=null;
-    for(var si0=0;si0<G.sets.length;si0++){if(G.sets[si0].setNum===statsSetFilter){setData=G.sets[si0];break}}
-    if(setData){lbl="Final";sU=setData.sU;sT=setData.sT}
-    else if(statsSetFilter===G.setNum){lbl="Live (to "+G.target+")";sU=G.sU;sT=G.sT}
-    else{lbl="Not played";sU=0;sT=0}
-  }
-  h+='<div class="score-block"><div class="score-block-label">'+lbl+'</div><div class="score-block-val">'+sU+' : '+sT+'</div>';
-  h+='<div class="score-block-label">Sets: '+G.setsU+' - '+G.setsT+'</div></div>';
-
-  // ── SET FILTER PILLS (set-history is baked into each pill: completed sets show their score, the current set shows its live score in ochre) ──
-  var fpills=[{f:null,t:"ALL"},{f:1,t:"S1"},{f:2,t:"S2"},{f:3,t:"S3"}];
-  h+='<div style="display:flex;gap:3px;margin:4px 0 10px">';
-  for(var fi=0;fi<fpills.length;fi++){
-    var fp=fpills[fi],fact=statsSetFilter===fp.f;
-    var pillLabel=fp.t,scoreColor=null;
-    if(fp.f!==null){
-      var setHist=null;
-      for(var hi=0;hi<G.sets.length;hi++){if(G.sets[hi].setNum===fp.f){setHist=G.sets[hi];break}}
-      if(setHist){pillLabel=setHist.sU+"-"+setHist.sT;scoreColor=setHist.winner==="us"?"#9BB56E":"#B58860"}
-      else if(fp.f===G.setNum){pillLabel=G.sU+"-"+G.sT;scoreColor="#C8A050"}
-    }
-    var bg=fact?"rgba(155,181,110,0.22)":"#252017";
-    var fg=fact?"#E5E0D8":(scoreColor||"#8A8378");
-    h+='<button onclick="setStatsFilter('+(fp.f===null?"null":fp.f)+')" style="flex:1;padding:clamp(7px,2.4vw,10px) 2px;border-radius:clamp(3px,1vw,5px);font-size:clamp(9px,2.8vw,11px);font-weight:800;cursor:pointer;background:'+bg+';color:'+fg+';white-space:nowrap;font-variant-numeric:tabular-nums">'+pillLabel+'</button>';
-  }
-  h+='</div>';
-
-  // ── OUR TEAM SIDEOUT ──
-  var p1so=playerSO(0,acts),p2so=playerSO(1,acts);
-  var tRecv=p1so.recv+p2so.recv,tWins=p1so.wins+p2so.wins;
-  var teamSO=tRecv?Math.round((tWins/tRecv)*100):0;
-  h+='<div class="st-hdr" style="color:#809671">Our sideout</div>';
-  h+='<div class="st-row" style="border-left:3px solid #809671"><span class="st-row-label" style="color:#E5E0D8">Team</span><span class="st-row-val" style="color:#809671">'+teamSO+'% <span style="color:#5A5247">('+tWins+'/'+tRecv+')</span></span></div>';
-  h+='<div class="st-row" style="border-left:3px solid '+PL[0].color+'"><span class="st-row-label" style="color:'+PL[0].color+'">'+PL[0].name+'</span><span class="st-row-val">'+ef(p1so.eff)+' <span style="color:#5A5247">('+p1so.wins+'/'+p1so.recv+')</span></span></div>';
-  h+='<div class="st-row" style="border-left:3px solid '+PL[1].color+'"><span class="st-row-label" style="color:'+PL[1].color+'">'+PL[1].name+'</span><span class="st-row-val">'+ef(p2so.eff)+' <span style="color:#5A5247">('+p2so.wins+'/'+p2so.recv+')</span></span></div>';
-
-  // ── OPPONENT SIDEOUT (their weakness) ──
-  var o1so=playerSO(2,acts),o2so=playerSO(3,acts);
-  var oRecv=o1so.recv+o2so.recv,oWins=o1so.wins+o2so.wins;
-  var oppTeamSO=oRecv?Math.round((oWins/oRecv)*100):0;
-  h+='<div class="st-hdr" style="color:#B58860">Opponent sideout</div>';
-  h+='<div class="st-row" style="border-left:3px solid #B58860"><span class="st-row-label" style="color:#E5E0D8">Team</span><span class="st-row-val" style="color:#B58860">'+oppTeamSO+'% <span style="color:#5A5247">('+oWins+'/'+oRecv+')</span></span></div>';
-  h+='<div class="st-row" style="border-left:3px solid '+PL[2].color+'"><span class="st-row-label" style="color:'+PL[2].color+'">'+PL[2].name+'</span><span class="st-row-val">'+ef(o1so.eff)+' <span style="color:#5A5247">('+o1so.wins+'/'+o1so.recv+')</span></span></div>';
-  h+='<div class="st-row" style="border-left:3px solid '+PL[3].color+'"><span class="st-row-label" style="color:'+PL[3].color+'">'+PL[3].name+'</span><span class="st-row-val">'+ef(o2so.eff)+' <span style="color:#5A5247">('+o2so.wins+'/'+o2so.recv+')</span></span></div>';
-
-  // ── SERVE STATS ──
-  h+='<div class="st-hdr">Serve</div>';
-  for(var pi=0;pi<2;pi++){
-    var sv=playerServe(pi,acts);
-    if(sv.total){
-      h+='<div class="st-row" style="border-left:3px solid '+PL[pi].color+'"><span class="st-row-label" style="color:'+PL[pi].color+'">'+PL[pi].name+'</span><span class="st-row-val"><span style="color:#9BB56E">'+sv.aces+' ace</span> <span style="color:#A04938">'+sv.errs+' err</span> <span style="color:#5A5247">/'+sv.total+'</span></span></div>';
-    }
-  }
-
-  // ── PLAYER DETAIL: OUR TEAM ──
-  h+='<div class="st-hdr" style="color:#809671">Player detail</div>';
-  for(var pi=0;pi<2;pi++){
-    var so=playerSO(pi,acts),d=playerDetail(pi,acts),sv=playerServe(pi,acts);
-    h+='<div class="st-row" style="background:#1c2218;border-left:3px solid '+PL[pi].color+'"><span class="st-row-label" style="color:'+PL[pi].color+';font-weight:800">'+PL[pi].name+'</span><span class="st-row-val"></span></div>';
-    h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">SO%</span><span class="st-row-val">'+ef(so.eff)+' <span style="color:#5A5247">('+so.recv+' recv)</span></span></div>';
-    h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">Won / 0 / lost</span><span class="st-row-val"><span style="color:#9BB56E">'+so.wins+'</span> / <span style="color:#C8A050">'+so.zeros+'</span> / <span style="color:#A04938">'+so.losses+'</span></span></div>';
-    if(d.blocked||d.aced||d.errors) h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">-1 detail</span><span class="st-row-val"><span style="color:#A04938">'+d.blocked+' blk · '+d.aced+' aced · '+d.errors+' err</span></span></div>';
-    h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">Aces / svc errors</span><span class="st-row-val"><span style="color:#9BB56E">'+sv.aces+'</span> / <span style="color:#A04938">'+sv.errs+'</span></span></div>';
-  }
-
-  // ── OPPONENT DETAIL ──
-  h+='<div class="st-hdr" style="color:#B58860">Opponent detail</div>';
-  for(var pi=2;pi<4;pi++){
-    var so=playerSO(pi,acts),d=playerDetail(pi,acts);
-    h+='<div class="st-row" style="background:#241d15;border-left:3px solid '+PL[pi].color+'"><span class="st-row-label" style="color:'+PL[pi].color+';font-weight:800">'+PL[pi].name+'</span><span class="st-row-val"></span></div>';
-    h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">SO%</span><span class="st-row-val">'+ef(so.eff)+' <span style="color:#5A5247">('+so.recv+' recv)</span></span></div>';
-    h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">Won / 0 / lost</span><span class="st-row-val"><span style="color:#9BB56E">'+so.wins+'</span> / <span style="color:#C8A050">'+so.zeros+'</span> / <span style="color:#A04938">'+so.losses+'</span></span></div>';
-    if(d.blocked||d.aced||d.errors) h+='<div class="st-row" style="padding-left:12px"><span class="st-row-label">-1 detail</span><span class="st-row-val"><span style="color:#A04938">'+d.blocked+' blk · '+d.aced+' aced · '+d.errors+' err</span></span></div>';
-  }
-
-  // ── MOMENTUM ──
-  h+='<div class="st-hdr">Momentum</div>';
-  var runs=scoringRuns(acts);
-  h+='<div class="st-row"><span class="st-row-label">Best run (us)</span><span class="st-row-val" style="color:#9BB56E">'+runs.us+'</span></div>';
-  h+='<div class="st-row"><span class="st-row-label">Best run (them)</span><span class="st-row-val" style="color:#A04938">'+runs.them+'</span></div>';
-  var pace=pointPace(acts);
-  if(pace.avg)h+='<div class="st-row"><span class="st-row-label">Avg point pace</span><span class="st-row-val">'+pace.avg+'s</span></div>';
-
-  // Match elapsed
-  var elapsed=Math.round((Date.now()-G.t0)/60000);
-  if(elapsed>0) h+='<div style="text-align:center;color:#2D2620;font-size:clamp(8px,2vw,10px);margin-top:clamp(8px,2vw,12px)">'+elapsed+' min elapsed</div>';
-
-  // ── STREAM CONTROLS ──
-  if(sheetsUrl){
-    h+='<div class="st-hdr">Stream overlay</div>';
-    h+='<div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:4px">';
-    var mods=[{k:"sideout",l:"SO%"},{k:"momentum",l:"Mom"},{k:"ticker",l:"Ticker"},{k:"players",l:"Players"},{k:"serve",l:"Serve"}];
-    mods.forEach(function(m){
-      var on=G.overlay[m.k];
-      h+='<button id="stog-'+m.k+'" onclick="toggleOverlay(\''+m.k+'\')" style="padding:clamp(5px,1.5vw,8px) clamp(6px,2vw,10px);border-radius:clamp(3px,1vw,5px);font-size:clamp(8px,2.2vw,11px);font-weight:700;cursor:pointer;background:'+(on?"rgba(128,150,113,0.3)":"#252017")+';color:'+(on?"#B3B792":"#5A5247")+'">'+m.l+'</button>';
-    });
-    h+='</div>';
-    h+='<div style="display:flex;gap:3px">';
-    h+='<button id="stog-auto" onclick="toggleAutoShow()" style="flex:1;padding:clamp(5px,1.5vw,8px);border-radius:clamp(3px,1vw,5px);font-size:clamp(8px,2.2vw,11px);font-weight:700;cursor:pointer;background:'+(G.overlay.autoShow?"rgba(181,136,96,0.2)":"#252017")+';color:'+(G.overlay.autoShow?"#B58860":"#5A5247")+'">Auto-show</button>';
-    h+='<button id="stog-live" onclick="toggleLivePush()" style="flex:1;padding:clamp(5px,1.5vw,8px);border-radius:clamp(3px,1vw,5px);font-size:clamp(8px,2.2vw,11px);font-weight:700;cursor:pointer;background:'+(G.livePush?"rgba(155,181,110,0.2)":"#252017")+';color:'+(G.livePush?"#9BB56E":"#5A5247")+'">'+(G.livePush?"Live ON":"Live OFF")+'</button>';
-    h+='</div>';
-  }
-
-  c.innerHTML=h;
-  showOverlay("stats-view");
+function sendTestPing(){
+  var st=$("ping-status");
+  if(st){st.textContent="...";st.style.color="#C8A050"}
+  var payload;
+  try{payload=Core.buildLivePayload(pState(),"test")}
+  catch(e){if(st){st.textContent="ERR";st.style.color="#A04938"}return}
+  fetch(sheetsUrl,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(payload)})
+    .then(function(){if(st){st.textContent="Sent";st.style.color="#9BB56E"}vib(50)})
+    .catch(function(){if(st){st.textContent="Failed";st.style.color="#A04938"}});
 }
-function hideStats(){hideOverlayById("stats-view")}
-function showSettings(){
-  hideOverlayById("stats-view");
-  updLayoutLabel();
-  updModeBtns();
-  updAutoSwitchLabel();
-  $("name-p1").value=PL[0].name==="P1"?"":PL[0].name;
-  $("name-p2").value=PL[1].name==="P2"?"":PL[1].name;
-  $("name-ta1").value=PL[2].name==="O1"?"":PL[2].name;
-  $("name-ta2").value=PL[3].name==="O2"?"":PL[3].name;
-  showOverlay("settings-view");
-}
-function hideSettings(){hideOverlayById("settings-view");showStats()}
-
-/* ═══════════════════════════════════
-   EXPORT
-   ═══════════════════════════════════ */
-function showExport(){
-  hideOverlayById("stats-view");
-  // VLC status
-  if(G.videoSync){
-    var sec=Math.round((Date.now()-G.videoSync)/1000);
-    var m=Math.floor(sec/60);
-    $("vlc-status").textContent=m+"m";
-    $("vlc-status").style.color="#B58860";
-  }else{
-    $("vlc-status").textContent="→";
-    $("vlc-status").style.color="#5A5247";
-  }
-  // Sheets status
-  $("sheets-quick-status").textContent=sheetsUrl?"connected":"not set";
-  $("sheets-quick-status").style.color=sheetsUrl?"#9BB56E":"#5A5247";
-  // Live push
-  $("export-live-status").textContent=G.livePush?"on":"off";
-  $("export-live-status").style.color=G.livePush?"#9BB56E":"#5A5247";
-  // Sync
-  if(G.videoSync){
-    var sec2=Math.round((Date.now()-G.videoSync)/1000);
-    var m2=Math.floor(sec2/60);
-    $("export-sync-status").textContent=m2+" min";
-    $("export-sync-status").style.color="#B58860";
-  }else{
-    $("export-sync-status").textContent="--";
-    $("export-sync-status").style.color="#5A5247";
-  }
-  showOverlay("export-view");
-}
-function hideExport(){hideOverlayById("export-view");showStats()}
-function buildDataStr(){
-  var d=new Date().toISOString().slice(0,10),l=["BV "+d,"Sets:"+G.setsU+"-"+G.setsT];
-  G.sets.forEach(function(s){l.push("S"+s.setNum+":"+s.sU+"-"+s.sT)});
-  if(!G.matchOver&&(G.sU||G.sT))l.push("S"+G.setNum+":"+G.sU+"-"+G.sT);
-  l.push("");
-  for(var i=0;i<4;i++){
-    var so=playerSO(i),k=playerKills(i);
-    l.push(PL[i].name+" SO:"+ef(so.eff)+" ("+so.wins+"/"+so.recv+") K:"+k);
-  }
-  return l.join("\n");
-}
-function buildCSV(){
-  var r=[];
-  // Raw actions
-  r.push("--- RAW ACTIONS ---");
-  r.push("Set,Receiver,Winner,Outcome,Server,RecvSide,Timestamp,Elapsed_ms");
-  function add(sn,acts){
-    acts.forEach(function(a){
-      var recv=a.receiver>=0?PL[a.receiver].name:"";
-      var win=a.winner!=null?PL[a.winner].name:"";
-      var srv=PL[a.server].name;
-      r.push(sn+","+recv+","+win+","+a.outcome+","+srv+","+(a.recvSide===0?"us":"them")+","+new Date(a.t).toISOString()+","+a.e);
-    });
-  }
-  G.sets.forEach(function(s){add(s.setNum,s.actions)});
-  add(G.setNum,G.actions);
-  // Set scores
-  r.push("");r.push("--- SET SCORES ---");
-  r.push("Set,Us,Them,Winner");
-  G.sets.forEach(function(s){r.push(s.setNum+","+s.sU+","+s.sT+","+s.winner)});
-  if(!G.matchOver)r.push(G.setNum+","+G.sU+","+G.sT+",live");
-  // Player stats
-  r.push("");r.push("--- PLAYER STATS ---");
-  r.push("Player,Team,SO_Eff,Recv,Wins,Zeros,Losses,Blocked,Aced,Errors,SvAces,SvcErr");
-  for(var i=0;i<4;i++){
-    var so=playerSO(i),d=playerDetail(i),sv=playerServe(i);
-    var team=i<2?"us":"them";
-    r.push(PL[i].name+","+team+","+Math.round(so.eff)+","+so.recv+","+so.wins+","+so.zeros+","+so.losses+","+d.blocked+","+d.aced+","+d.errors+","+sv.aces+","+sv.errs);
-  }
-  return r.join("\n");
-}
-function showQR(){hideOverlayById("export-view");var d=buildDataStr(),u="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data="+encodeURIComponent(d);$("qr-display").innerHTML='<img style="border-radius:6px;background:#fff;padding:6px" src="'+u+'" width="160" height="160" onerror="qrFail()">';$("qr-hint").textContent="Scan with phone camera";showOverlay("qr-view")}
-function qrFail(){$("qr-display").innerHTML='<div style="color:#8A8378;font-size:9px;background:#252017;padding:6px;border-radius:4px;white-space:pre-wrap;max-height:120px;overflow-y:auto">'+buildDataStr()+'</div>'}
-function hideQR(){hideOverlayById("qr-view");showExport()}
-function showSheetsSetup(){hideOverlayById("export-view");var sc=$("sheets-content");if(sheetsUrl){sc.innerHTML='<div class="st-row"><span class="st-row-label">Status</span><span class="st-row-val" style="color:#9BB56E">Connected</span></div><div class="st-row"><span class="st-row-label">Live push</span><span class="st-row-val" style="color:'+(G.livePush?"#9BB56E":"#5A5247")+'">'+(G.livePush?"on":"off")+'</span></div><div class="st-row" style="cursor:pointer;margin-top:8px" onclick="sendTestPing()"><span class="st-row-label" style="color:#9BB56E">Send test</span><span class="st-row-val" style="color:#5A5247">→</span></div><div class="sheets-status" id="sheets-status" style="margin-top:6px"></div><div class="st-row" style="cursor:pointer;margin-top:8px" onclick="editSheetsUrl()"><span class="st-row-label" style="color:#8A8378">Change URL</span><span class="st-row-val" style="color:#5A5247">→</span></div>'}else{sc.innerHTML='<div class="st-row" style="flex-direction:column;align-items:stretch;gap:8px"><span class="st-row-label">Apps Script URL</span><input class="sheets-input" id="sheets-url-input" type="url" placeholder="https://script.google.com/..." style="margin:0"></div><div class="st-row" style="cursor:pointer;margin-top:4px" onclick="saveSheetsUrl()"><span class="st-row-label" style="color:#9BB56E">Save</span><span class="st-row-val" style="color:#5A5247">→</span></div><div class="sheets-status" id="sheets-status" style="margin-top:6px"></div>'};showOverlay("sheets-view")}
-function editSheetsUrl(){sheetsUrl="";G.livePush=false;showSheetsSetup()}
-function saveSheetsUrl(){var u=($("sheets-url-input")||{}).value||"";if(!u)return;sheetsUrl=u;var st=$("sheets-status");st.innerHTML='<span style="color:#9BB56E">URL saved! Enable Live Push in stats menu.</span>'}
-function sendTestPing(){var st=$("sheets-status");st.innerHTML='<span style="color:#C8A050">Sending...</span>';var payload=buildLivePayload("test");fetch(sheetsUrl,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(payload)}).then(function(){st.innerHTML='<span style="color:#9BB56E">Sent! Check your sheet.</span>';vib(50)}).catch(function(){st.innerHTML='<span style="color:#A04938">Failed — check URL</span>'})}
-function hideSheets(){hideOverlayById("sheets-view");showExport()}
-function downloadCSV(){var c=buildCSV(),b=new Blob([c],{type:"text/csv"}),u=URL.createObjectURL(b),l=document.createElement("a");l.href=u;l.download="bv_"+new Date().toISOString().slice(0,10)+".csv";l.click();URL.revokeObjectURL(u)}
-function showConfirm(){hideOverlayById("stats-view");$("confirm-sub").textContent="All data will be cleared";showOverlay("confirm-view")}
-function hideConfirm(){hideOverlayById("confirm-view");showStats()}
-
-/* ═══════════════════════════════════
-   POST-MATCH MODE (rich spatial capture)
-   ═══════════════════════════════════ */
-var pmRallyCounter=0;
-var pmCourtBuilt=false;
-var pmHmCourtBuilt=false;
-var pmHmFilters={player:"all",type:"all",outcome:"all",dir:"to"};
-
-// Layout constants — single source of truth. viewBox is 720×1440 with the court occupying
-// x=80..640, y=120..1280. Sideline margins (80 each side) are wide enough to tap as
-// "missed sideline" service errors. Service zones live BEHIND each baseline.
-var PM_VB_W=720,PM_VB_H=1340;
-var PM_OX=80,PM_OY=120,PM_W=560,PM_H=1120;            // court 560×1120 — true 2:1 (16m × 8m)
-var PM_CELLW=PM_W/6,PM_CELLH=PM_H/12;                 // square cells: 93.33 × 93.33
-var PM_SZTOP_Y=20,PM_SZBOT_Y=PM_OY+PM_H,PM_SZ_H=100;  // service zones (above & below court)
-var PM_NET_Y=PM_OY+PM_H/2;                            // y=680
-
-// Continuation tracking — the next attacker's side is whichever side currently has the ball, NOT
-// whichever side a "force flip per iteration" rule says. Normal valid 0 outcomes flip sides because
-// the ball physically goes to the defender; block-touch 0 outcomes can leave the ball on either
-// side, so we infer from where the user taps. The helpers walk back through touches to find the
-// latest "ball position" indicator: block.toSquare > defense.toSquare > attack(0).toSquare > reception.toSquare.
-function pmAttackerIsTop(){
-  var weServe=G.recvSide===1;
-  var cSwap=!!G.courtSwapped;
-  var recvIsTop=weServe!==cSwap;
-  if(!G.currentRally)return recvIsTop;
-  var touches=G.currentRally.touches;
-  var step=G.postMatchStep;
-  // At attack_to / attack_outcome, the current attack's fromSquare is the authoritative answer
-  // (the attacker is wherever they took off). Fall through if the latest attack has no fromSquare
-  // (Skip flow) so the general walk-back can find the ball position from a prior touch.
-  if(step==="attack_to"||step==="attack_outcome"){
-    for(var i=touches.length-1;i>=0;i--){
-      var ta=touches[i];
-      if(ta.type==="attack"){
-        if(ta.fromSquare)return ta.fromSquare[1]<PM_NET_Y;
-        break;
-      }
-    }
-  }
-  // General "where is the ball?" walk-back, used at attack_from / defense_to / block_to and as a
-  // fallback for skipped attacks.
-  for(var j=touches.length-1;j>=0;j--){
-    var t=touches[j];
-    if((t.type==="block"||t.type==="defense")&&t.toSquare)return t.toSquare[1]<PM_NET_Y;
-    if(t.type==="attack"&&t.outcome==="zero"&&t.toSquare)return t.toSquare[1]<PM_NET_Y;
-    if(t.type==="reception"&&t.toSquare)return t.toSquare[1]<PM_NET_Y;
-  }
-  return recvIsTop;
-}
-function pmAttackerOnReceiverSide(){
-  var weServe=G.recvSide===1;
-  var cSwap=!!G.courtSwapped;
-  var recvIsTop=weServe!==cSwap;
-  return pmAttackerIsTop()===recvIsTop;
-}
-
-// Where is the PRIMARY valid (sage-highlighted) tap zone for the current step? Returns {x,y,w,h} or null.
-function getValidZoneBounds(step){
-  var weServe=G.recvSide===1;
-  var cSwap=!!G.courtSwapped;
-  var halfH=PM_H/2;
-  var topHalf={x:PM_OX,y:PM_OY,w:PM_W,h:halfH};
-  var botHalf={x:PM_OX,y:PM_OY+halfH,w:PM_W,h:halfH};
-  var serviceTopZone={x:PM_OX,y:PM_SZTOP_Y,w:PM_W,h:PM_SZ_H};
-  var serviceBotZone={x:PM_OX,y:PM_SZBOT_Y,w:PM_W,h:PM_SZ_H};
-  // Physical position of each team — default: opp top, us bottom; swapped: opp bot, us top
-  var oppHalf=cSwap?botHalf:topHalf;
-  var usHalf=cSwap?topHalf:botHalf;
-  var oppService=cSwap?serviceBotZone:serviceTopZone;
-  var usService=cSwap?serviceTopZone:serviceBotZone;
-  if(step==="serve_from")return weServe?usService:oppService;
-  if(step==="serve_to"||step==="reception_to")return weServe?oppHalf:usHalf;
-  if(step==="block_to"){
-    // Block deflections can land on EITHER side — return the full court so both halves are tappable.
-    return {x:PM_OX,y:PM_OY,w:PM_W,h:PM_H};
-  }
-  if(step==="attack_from"||step==="attack_to"||step==="defense_to"){
-    // Side comes from pmAttackerIsTop (ball-position-driven). defense_to and attack_from sit on the
-    // upcoming attacker's side; attack_to is on the defender's side.
-    var attackerIsTopVB=pmAttackerIsTop();
-    var attackerHalfVB=attackerIsTopVB?topHalf:botHalf;
-    var defenderHalfVB=attackerIsTopVB?botHalf:topHalf;
-    return step==="attack_to"?defenderHalfVB:attackerHalfVB;
-  }
-  if(step==="serve_outcome"){
-    // Receptions can land anywhere on the receiver's side of the net — including beyond the
-    // baseline (long digs) and outside the sidelines (run-outs). Ball is still in play; we just
-    // care about the location for future heatmap stats.
-    var recvIsTop=weServe!==cSwap;
-    return recvIsTop?{x:0,y:0,w:PM_VB_W,h:PM_NET_Y}:{x:0,y:PM_NET_Y,w:PM_VB_W,h:PM_VB_H-PM_NET_Y};
-  }
-  return null;
-}
-
-// Attack-error tap zones (relevant during attack_to + attack_from-2nd-ball). Order matches the 4 overlay
-// rect ids. Defender's baseline becomes the "long" line; attacker's own front half becomes the "net"
-// miss zone (ball didn't clear the net). Iteration-aware: defender / attacker flip per continuation.
-function getAttackErrorZones(){
-  var attackerIsTop=pmAttackerIsTop();
-  var defenderIsTop=!attackerIsTop;
-  var netFrontH=PM_H/12;
-  return [
-    {x:0,y:0,w:PM_OX,h:PM_VB_H,kind:"sideline"},
-    {x:PM_OX+PM_W,y:0,w:PM_VB_W-PM_OX-PM_W,h:PM_VB_H,kind:"sideline"},
-    // Long miss — past the DEFENDER's baseline
-    defenderIsTop
-      ?{x:PM_OX,y:PM_SZTOP_Y,w:PM_W,h:PM_SZ_H,kind:"long"}
-      :{x:PM_OX,y:PM_SZBOT_Y,w:PM_W,h:PM_SZ_H,kind:"long"},
-    // Net miss — attacker's own front half (ball didn't make it over the net)
-    attackerIsTop
-      ?{x:PM_OX,y:PM_NET_Y-netFrontH,w:PM_W,h:netFrontH,kind:"net"}
-      :{x:PM_OX,y:PM_NET_Y,w:PM_W,h:netFrontH,kind:"net"}
-  ];
-}
-
-// Classify an attack_to tap — same vocabulary as serve classification.
-function pmClassifyAttackTap(x,y){
-  var zones=getAttackErrorZones();
-  for(var i=0;i<zones.length;i++){
-    var z=zones[i];
-    if(x>=z.x&&x<z.x+z.w&&y>=z.y&&y<z.y+z.h)return z.kind;
-  }
-  var valid=getValidZoneBounds("attack_to");
-  if(valid&&x>=valid.x&&x<valid.x+valid.w&&y>=valid.y&&y<valid.y+valid.h)return "valid";
-  return null;
-}
-
-// Attack-error landing — sideline / long are pure attacker errors and end the rally immediately
-// (-1, defender scores). The net zone is ambiguous (block stuff vs net miss vs block out) and routes
-// into attack_outcome so the user can pick +1 (block out) or -1 (blocked / in net).
-function pmAttackError(x,y,kind){
-  if(!G.currentRally)return;
-  var t=G.currentRally.touches[G.currentRally.touches.length-1];
-  if(!t||t.type!=="attack")return;
-  t.toSquare=[x,y];
-  t.detail=kind; // "sideline" | "long" | "net" — preserved through outcome selection for heatmap stats
-  vib([30,20,30]);
-  if(kind==="net"){
-    t.outcome=null;
-    G.postMatchStep="attack_outcome";
-    pmRender();
-    pmSave();
-  }else{
-    t.outcome="minus";
-    pmEndRallyFromTouch(t);
-  }
-}
-
-// Service-error tap zones (only relevant during serve_to step). Order matches the 4 overlay rect ids in pmBuildCourt.
-function getServeErrorZones(){
-  // serverIsTop: server is physically on the top half (us-on-top equals server-is-us)
-  var serverIsTop=(G.recvSide===1)===(!!G.courtSwapped);
-  var netFrontH=PM_H/12;
-  return [
-    {x:0,y:0,w:PM_OX,h:PM_VB_H,kind:"sideline"},
-    {x:PM_OX+PM_W,y:0,w:PM_VB_W-PM_OX-PM_W,h:PM_VB_H,kind:"sideline"},
-    // Long miss — past the receiver's baseline; receiver is opposite end from server.
-    serverIsTop
-      ?{x:PM_OX,y:PM_SZBOT_Y,w:PM_W,h:PM_SZ_H,kind:"long"}
-      :{x:PM_OX,y:PM_SZTOP_Y,w:PM_W,h:PM_SZ_H,kind:"long"},
-    // Net miss — server's own front half, on the server's physical side of the net.
-    serverIsTop
-      ?{x:PM_OX,y:PM_NET_Y-netFrontH,w:PM_W,h:netFrontH,kind:"net"}
-      :{x:PM_OX,y:PM_NET_Y,w:PM_W,h:netFrontH,kind:"net"}
-  ];
-}
-
-// All "live" (clickable) zones for the given step. Used to build the dim-overlay mask:
-// these rectangles are punched out of the dim so the rest of the court darkens behind them.
-function pmGetActiveZones(step){
-  var weServe=G.recvSide===1;
-  var cSwap=!!G.courtSwapped;
-  var halfH=PM_H/2;
-  var topHalf={x:PM_OX,y:PM_OY,w:PM_W,h:halfH};
-  var botHalf={x:PM_OX,y:PM_OY+halfH,w:PM_W,h:halfH};
-  var oppHalf=cSwap?botHalf:topHalf;
-  var usHalf=cSwap?topHalf:botHalf;
-  var serviceTopZone={x:PM_OX,y:PM_SZTOP_Y,w:PM_W,h:PM_SZ_H};
-  var serviceBotZone={x:PM_OX,y:PM_SZBOT_Y,w:PM_W,h:PM_SZ_H};
-  var oppService=cSwap?serviceBotZone:serviceTopZone;
-  var usService=cSwap?serviceTopZone:serviceBotZone;
-  if(step==="serve_from")return [weServe?usService:oppService];
-  if(step==="serve_to")return [weServe?oppHalf:usHalf].concat(getServeErrorZones());
-  if(step==="serve_outcome"){
-    // Whole receiver's side (court + beyond-baseline + sidelines on that side). Serving side stays dimmed.
-    var recvIsTop=weServe!==cSwap;
-    return [recvIsTop?{x:0,y:0,w:PM_VB_W,h:PM_NET_Y}:{x:0,y:PM_NET_Y,w:PM_VB_W,h:PM_VB_H-PM_NET_Y}];
-  }
-  if(step==="attack_from"){
-    var attackerIsTopAF=pmAttackerIsTop();
-    var attackerHalfAF=attackerIsTopAF?topHalf:botHalf;
-    var defenderHalfAF=attackerIsTopAF?botHalf:topHalf;
-    var zones=[attackerHalfAF];
-    // 2nd ball direct attack available when the previous touch is a first defensive contact with a
-    // known landing — reception (sideout), defense (transition's set origin), or block (block-touch
-    // transition's set origin). Any of these gives us an implicit fromSquare for cross-net direct.
-    var rallyAF=G.currentRally;
-    var prevAF=rallyAF&&rallyAF.touches[rallyAF.touches.length-1];
-    if(prevAF&&(prevAF.type==="reception"||prevAF.type==="defense"||prevAF.type==="block")&&prevAF.toSquare){
-      zones.push(defenderHalfAF);
-      zones=zones.concat(getAttackErrorZones().filter(function(z){return z.kind!=="net"}));
-    }
-    return zones;
-  }
-  if(step==="attack_to"){
-    var attackerIsTopAT=pmAttackerIsTop();
-    var defenderHalfAT=attackerIsTopAT?botHalf:topHalf;
-    return [defenderHalfAT].concat(getAttackErrorZones());
-  }
-  if(step==="defense_to"){
-    // Dig lands on the upcoming attacker's side (= set origin). No error zones — a dig error would
-    // have been the previous attack's +1 instead.
-    var attackerIsTopDT=pmAttackerIsTop();
-    return [attackerIsTopDT?topHalf:botHalf];
-  }
-  if(step==="block_to"){
-    // Block deflections can land on EITHER side — open both halves so the user can tap wherever
-    // the ball actually ended up. The next attacker's side is then inferred from the tap location.
-    return [topHalf,botHalf];
-  }
-  return [];
-}
-
-// Rebuild the dim-overlay mask so only the current step's active zones are punched out.
-function pmUpdateDimMask(step){
-  var mask=document.getElementById("pm-dim-mask");
-  if(!mask)return;
-  // Drop everything except the white base rect, then add a black rect for each active zone.
-  var kids=Array.prototype.slice.call(mask.childNodes);
-  for(var i=0;i<kids.length;i++){
-    if(kids[i].id!=="pm-dim-base")mask.removeChild(kids[i]);
-  }
-  var zones=pmGetActiveZones(step);
-  var ns="http://www.w3.org/2000/svg";
-  for(var j=0;j<zones.length;j++){
-    var z=zones[j];
-    var r=document.createElementNS(ns,"rect");
-    r.setAttribute("x",z.x);r.setAttribute("y",z.y);
-    r.setAttribute("width",z.w);r.setAttribute("height",z.h);
-    r.setAttribute("fill","black");
-    mask.appendChild(r);
-  }
-}
-
-// Classify a serve_to tap into "valid" / "sideline" / "long" / "net" / null (reject).
-function pmClassifyServeTap(x,y){
-  var zones=getServeErrorZones();
-  for(var i=0;i<zones.length;i++){
-    var z=zones[i];
-    if(x>=z.x&&x<z.x+z.w&&y>=z.y&&y<z.y+z.h)return z.kind;
-  }
-  var valid=getValidZoneBounds("serve_to");
-  if(valid&&x>=valid.x&&x<valid.x+valid.w&&y>=valid.y&&y<valid.y+valid.h)return "valid";
-  return null;
-}
-
-// Build (or rebuild) the court SVG into a given <svg> element.
-// mode: 'capture' = free-tap (single SVG click handler, service zones, valid-zone overlay)
-//       'heatmap' = discrete 6×12 cells for binned visualization
-function pmBuildCourt(svgEl,mode){
-  if(!svgEl)return;
-  while(svgEl.firstChild)svgEl.removeChild(svgEl.firstChild);
-  svgEl.onclick=null;
-  var ns="http://www.w3.org/2000/svg";
-
-  if(mode==="heatmap"){
-    // Discrete cells for binning visualization
-    for(var r=0;r<12;r++){
-      for(var c=0;c<6;c++){
-        var rect=document.createElementNS(ns,"rect");
-        rect.setAttribute("x",PM_OX+c*PM_CELLW);
-        rect.setAttribute("y",PM_OY+r*PM_CELLH);
-        rect.setAttribute("width",PM_CELLW);
-        rect.setAttribute("height",PM_CELLH);
-        rect.setAttribute("class","pm-cell "+(r<6?"opp-side":"us-side"));
-        rect.setAttribute("data-r",r);
-        rect.setAttribute("data-c",c);
-        svgEl.appendChild(rect);
-      }
-    }
-  }else{
-    // Capture mode: sandy-yellow court (single rect; both halves the same color, like real beach sand)
-    var bgCourt=document.createElementNS(ns,"rect");
-    bgCourt.setAttribute("x",PM_OX);bgCourt.setAttribute("y",PM_OY);
-    bgCourt.setAttribute("width",PM_W);bgCourt.setAttribute("height",PM_H);
-    bgCourt.setAttribute("fill","#DBB965");
-    bgCourt.setAttribute("pointer-events","none");
-    svgEl.appendChild(bgCourt);
-    // Service zones — slightly darker sand so the player labels overlaid on them stay readable
-    var szTop=document.createElementNS(ns,"rect");
-    szTop.setAttribute("x",PM_OX);szTop.setAttribute("y",PM_SZTOP_Y);
-    szTop.setAttribute("width",PM_W);szTop.setAttribute("height",PM_SZ_H);
-    szTop.setAttribute("fill","#A88C5C");
-    szTop.setAttribute("class","pm-service-zone");
-    szTop.setAttribute("pointer-events","none");
-    svgEl.appendChild(szTop);
-    var szBot=document.createElementNS(ns,"rect");
-    szBot.setAttribute("x",PM_OX);szBot.setAttribute("y",PM_SZBOT_Y);
-    szBot.setAttribute("width",PM_W);szBot.setAttribute("height",PM_SZ_H);
-    szBot.setAttribute("fill","#A88C5C");
-    szBot.setAttribute("class","pm-service-zone");
-    szBot.setAttribute("pointer-events","none");
-    svgEl.appendChild(szBot);
-    // Faint 6×12 grid lines as visual reference (not tap zones)
-    for(var i=1;i<6;i++){
-      var vl=document.createElementNS(ns,"line");
-      vl.setAttribute("x1",PM_OX+i*PM_CELLW);vl.setAttribute("y1",PM_OY);
-      vl.setAttribute("x2",PM_OX+i*PM_CELLW);vl.setAttribute("y2",PM_OY+PM_H);
-      vl.setAttribute("class","pm-gridline");
-      svgEl.appendChild(vl);
-    }
-    for(var j=1;j<12;j++){
-      if(j===6)continue;
-      var hl=document.createElementNS(ns,"line");
-      hl.setAttribute("x1",PM_OX);hl.setAttribute("y1",PM_OY+j*PM_CELLH);
-      hl.setAttribute("x2",PM_OX+PM_W);hl.setAttribute("y2",PM_OY+j*PM_CELLH);
-      hl.setAttribute("class","pm-gridline");
-      svgEl.appendChild(hl);
-    }
-    // Single click handler at the SVG level — coords are converted to viewBox in pmHandleSvgClick.
-    svgEl.onclick=pmHandleSvgClick;
-    svgEl.style.cursor="crosshair";
-  }
-
-  // Court outline
-  var outline=document.createElementNS(ns,"rect");
-  outline.setAttribute("x",PM_OX);outline.setAttribute("y",PM_OY);
-  outline.setAttribute("width",PM_W);outline.setAttribute("height",PM_H);
-  outline.setAttribute("class","pm-outline");
-  outline.setAttribute("pointer-events","none");
-  svgEl.appendChild(outline);
-  // Centerlines (P1/P2 dividers) — drawn FIRST so the white net paints on top of their tips
-  var cl1=document.createElementNS(ns,"line");
-  cl1.setAttribute("x1",PM_OX+PM_W/2);cl1.setAttribute("y1",PM_OY);
-  cl1.setAttribute("x2",PM_OX+PM_W/2);cl1.setAttribute("y2",PM_NET_Y);
-  cl1.setAttribute("class","pm-centerline");
-  cl1.setAttribute("pointer-events","none");
-  svgEl.appendChild(cl1);
-  var cl2=document.createElementNS(ns,"line");
-  cl2.setAttribute("x1",PM_OX+PM_W/2);cl2.setAttribute("y1",PM_NET_Y);
-  cl2.setAttribute("x2",PM_OX+PM_W/2);cl2.setAttribute("y2",PM_OY+PM_H);
-  cl2.setAttribute("class","pm-centerline");
-  cl2.setAttribute("pointer-events","none");
-  svgEl.appendChild(cl2);
-  // Net — painted AFTER the centerlines so it covers their endpoints, staying clean white
-  var net=document.createElementNS(ns,"line");
-  net.setAttribute("x1",PM_OX);net.setAttribute("y1",PM_NET_Y);
-  net.setAttribute("x2",PM_OX+PM_W);net.setAttribute("y2",PM_NET_Y);
-  net.setAttribute("class","pm-net");
-  net.setAttribute("pointer-events","none");
-  svgEl.appendChild(net);
-  // Player labels — receivers + the serving team's partner stand inside their court half; the
-  // active server is positioned at the serve_from tap (or service-zone center before tap).
-  // Heatmap court has no rally context, so fall back to the corner-style legacy positions there.
-  var servingGI=(mode==="capture")?serverGI():-1;
-  for(var pidx=0;pidx<4;pidx++){
-    var pos;
-    if(mode==="capture"){
-      pos=(pidx===servingGI)?pmServerPos():pmPlayerPos(pidx);
-    }else{
-      // Heatmap: place labels at corners outside the court (similar to the old layout)
-      var pSwapHm=layout==="p2left";
-      var topTeamHm=pidx<2?false:true; // default ordering for heatmap legend
-      var naturalLeftHm=pidx<2?(pidx===0?!pSwapHm:pSwapHm):(pidx===2?!pSwapHm:pSwapHm);
-      var cxHm=naturalLeftHm?(PM_OX+PM_W*0.25):(PM_OX+PM_W*0.75);
-      var cyHm=topTeamHm?PM_OY-8:PM_OY+PM_H+24;
-      pos=[cxHm,cyHm];
-    }
-    var t=document.createElementNS(ns,"text");
-    t.setAttribute("x",pos[0]);t.setAttribute("y",pos[1]);
-    t.setAttribute("text-anchor","middle");
-    t.setAttribute("class","pm-court-label");
-    t.setAttribute("fill",PL[pidx].color);
-    t.setAttribute("data-player",pidx);
-    t.setAttribute("pointer-events","none");
-    t.textContent=PL[pidx].name;
-    svgEl.appendChild(t);
-  }
-
-  // Capture-mode only: dim overlay + per-step highlight overlays (added LAST so they paint on top of the static court)
-  if(mode==="capture"){
-    // Defs + mask: white everywhere by default; pmUpdateDimMask appends black rects for active zones each render.
-    var defs=document.createElementNS(ns,"defs");
-    var dimMask=document.createElementNS(ns,"mask");
-    dimMask.setAttribute("id","pm-dim-mask");
-    dimMask.setAttribute("maskUnits","userSpaceOnUse");
-    dimMask.setAttribute("x","0");dimMask.setAttribute("y","0");
-    dimMask.setAttribute("width",PM_VB_W);dimMask.setAttribute("height",PM_VB_H);
-    var maskBase=document.createElementNS(ns,"rect");
-    maskBase.setAttribute("id","pm-dim-base");
-    maskBase.setAttribute("x","0");maskBase.setAttribute("y","0");
-    maskBase.setAttribute("width",PM_VB_W);maskBase.setAttribute("height",PM_VB_H);
-    maskBase.setAttribute("fill","white");
-    dimMask.appendChild(maskBase);
-    defs.appendChild(dimMask);
-    svgEl.appendChild(defs);
-    // Dim rect covering the whole viewBox — masked so only dead areas darken
-    var dimOverlay=document.createElementNS(ns,"rect");
-    dimOverlay.setAttribute("id","pm-dim-overlay");
-    dimOverlay.setAttribute("x","0");dimOverlay.setAttribute("y","0");
-    dimOverlay.setAttribute("width",PM_VB_W);dimOverlay.setAttribute("height",PM_VB_H);
-    dimOverlay.setAttribute("fill","#1B1810");
-    dimOverlay.setAttribute("opacity","0.62");
-    dimOverlay.setAttribute("mask","url(#pm-dim-mask)");
-    dimOverlay.setAttribute("pointer-events","none");
-    svgEl.appendChild(dimOverlay);
-    // Per-step valid-zone overlay (positioned by pmRender)
-    var validZone=document.createElementNS(ns,"rect");
-    validZone.setAttribute("id","pm-valid-zone");
-    validZone.setAttribute("class","pm-valid-zone");
-    validZone.setAttribute("fill","rgba(155,181,110,0.38)");
-    validZone.setAttribute("stroke","#9BB56E");
-    validZone.setAttribute("stroke-width","3");
-    validZone.setAttribute("stroke-dasharray","14,7");
-    validZone.setAttribute("pointer-events","none");
-    validZone.setAttribute("rx","6");
-    validZone.style.display="none";
-    svgEl.appendChild(validZone);
-    // Service-error overlays (visible during serve_to)
-    ["pm-err-sideline-left","pm-err-sideline-right","pm-err-long","pm-err-net"].forEach(function(id){
-      var er=document.createElementNS(ns,"rect");
-      er.setAttribute("id",id);
-      er.setAttribute("class","pm-error-zone");
-      er.setAttribute("fill","rgba(160,73,56,0.36)");
-      er.setAttribute("stroke","#A04938");
-      er.setAttribute("stroke-width","2.5");
-      er.setAttribute("stroke-dasharray","10,6");
-      er.setAttribute("pointer-events","none");
-      er.setAttribute("rx","4");
-      er.style.display="none";
-      svgEl.appendChild(er);
-    });
-  }
-}
-
-// Convert a client-coord click into SVG viewBox coords. Reject taps outside the step's valid zone.
-function pmHandleSvgClick(e){
-  var svg=$("pm-court");
-  if(!svg||!svg.createSVGPoint||!svg.getScreenCTM)return;
-  if(!G.currentRally)return;
-  var pt=svg.createSVGPoint();
-  pt.x=e.clientX;pt.y=e.clientY;
-  var ctm=svg.getScreenCTM();
-  if(!ctm)return;
-  var c=pt.matrixTransform(ctm.inverse());
-  var step=G.postMatchStep;
-  // serve_to has a richer tap classification (valid serve vs 3 service-error zones)
-  if(step==="serve_to"){
-    var kind=pmClassifyServeTap(c.x,c.y);
-    if(!kind)return; // reject taps in server's back half / dead zones
-    if(kind==="valid"){pmTapPoint(c.x,c.y);return}
-    pmServiceError(c.x,c.y,kind);
-    return;
-  }
-  // attack_to has the same valid + error classification (sideline / long / net)
-  if(step==="attack_to"){
-    var akind=pmClassifyAttackTap(c.x,c.y);
-    if(!akind)return;
-    if(akind==="valid"){pmTapPoint(c.x,c.y);return}
-    pmAttackError(c.x,c.y,akind);
-    return;
-  }
-  // attack_from: tap own side = normal attack origin; tap across the net = 2nd-ball direct attack.
-  // 2nd-ball requires a previous first-defensive-contact with a known landing — reception (sideout),
-  // defense (transition's set origin), or block (block-touch transition's set origin).
-  if(step==="attack_from"){
-    var ownB=getValidZoneBounds("attack_from");
-    var inOwn=ownB&&c.x>=ownB.x&&c.x<ownB.x+ownB.w&&c.y>=ownB.y&&c.y<ownB.y+ownB.h;
-    if(inOwn){pmTapPoint(c.x,c.y);return}
-    var prev=G.currentRally.touches[G.currentRally.touches.length-1];
-    if(!prev||!prev.toSquare||(prev.type!=="reception"&&prev.type!=="defense"&&prev.type!=="block"))return;
-    var attackerIsTopSb=pmAttackerIsTop();
-    var onOpposite=attackerIsTopSb?(c.y>=PM_NET_Y):(c.y<PM_NET_Y);
-    if(!onOpposite)return;
-    var sbKind=pmClassifyAttackTap(c.x,c.y);
-    if(!sbKind||sbKind==="net")return; // net zone is on attacker's own side — ambiguous with origin tap
-    pmSecondBall(c.x,c.y,sbKind==="valid"?null:sbKind);
-    return;
-  }
-  // All other steps: single valid rectangle
-  var bounds=getValidZoneBounds(step);
-  if(!bounds)return;
-  if(c.x<bounds.x||c.x>bounds.x+bounds.w)return;
-  if(c.y<bounds.y||c.y>bounds.y+bounds.h)return;
-  pmTapPoint(c.x,c.y);
-}
-
-// Service-error landing — auto-records outcome and ends the rally with the point to the receiving team.
-function pmServiceError(x,y,kind){
-  if(!G.currentRally)return;
-  var t=G.currentRally.touches[G.currentRally.touches.length-1];
-  if(!t||t.type!=="serve")return;
-  t.toSquare=[x,y];
-  t.outcome="minus";
-  t.detail=kind; // "sideline" | "long" | "net"
-  vib([30,20,30]);
-  pmEndRallyFromTouch(t);
-}
-
-// "0 — Block touch" button at attack_outcome with detail="net". The attack was deflected by a block
-// but the rally is still in play. We mark the attack's outcome as zero (and remember it was a block
-// touch via .blockTouch=true for downstream stats), then advance to block_to so the user can tap
-// the set origin (= where the deflected ball ends up).
-function pmBlockTouchZero(){
-  if(!G.currentRally)return;
-  if(G.postMatchStep!=="attack_outcome")return;
-  var t=G.currentRally.touches[G.currentRally.touches.length-1];
-  if(!t||t.type!=="attack"||t.detail!=="net")return;
-  vib(30);
-  t.outcome="zero";
-  t.blockTouch=true;
-  G.postMatchStep="block_to";
-  pmRender();
-  pmSave();
-}
-
-// Ace button at serve_outcome — server scores, rally ends.
-function pmAce(){
-  if(!G.currentRally)return;
-  var t=G.currentRally.touches[G.currentRally.touches.length-1];
-  if(!t||t.type!=="serve")return;
-  t.outcome="plus";
+function saveSheetsUrl(){
+  var el=$("sheets-url-input");
+  if(!el||!el.value)return;
+  sheetsUrl=el.value;
+  el.value="";
+  el.placeholder=sheetsUrl.slice(0,40)+"...";
   vib(40);
-  pmEndRallyFromTouch(t);
 }
 
-// Toggle which physical end of the court each team renders on. Rebuilds the SVG so labels
-// and dim-mask zones swap immediately, then re-renders markers and the current step's state.
-function pmSwitchSides(){
-  if(!G)return;
-  G.courtSwapped=!G.courtSwapped;
-  vib([30,40,30]);
-  if(pmCourtBuilt)pmBuildCourt($("pm-court"),"capture");
-  if(pmHmCourtBuilt)pmBuildCourt($("hm-court"),"heatmap");
-  pmRender();
-  if(pmHmCourtBuilt)pmRenderHeatmap();
-  pmSave();
+/* ═══════════════════════════════════
+   STATS SCREEN (paged)
+   ═══════════════════════════════════ */
+var STATS_PAGES=4;
+function openStats(){
+  statsReturn=currentScreen==="scr-stats"?statsReturn:currentScreen;
+  statsPage=0;
+  renderStats();
+  show("scr-stats");
 }
-
-// After each rally end (when continuing the same set), check whether the score total has hit
-// a side-switch boundary — 7 points in sets 1-2, 5 points in set 3 (standard FIVB rule).
-function pmCheckAutoSwitch(){
-  if(gameMode!=="post_match")return;
-  if(!autoSwitchSides)return;
-  if(G.matchOver)return;
-  var total=G.sU+G.sT;
-  var interval=(G.setNum===3)?5:7;
-  if(total>0&&total%interval===0)pmSwitchSides();
+function closeStats(){show(statsReturn||"scr-recv");if(statsReturn==="scr-recv")upd()}
+function statsNav(d){
+  statsPage=(statsPage+d+STATS_PAGES)%STATS_PAGES;
+  vib(15);renderStats();
 }
-
-// Toggle the serve's type between float (default) and spin. Triggered by tapping the serve origin circle.
-function pmToggleServeType(touch){
-  if(!touch||touch.type!=="serve")return;
-  touch.serveType=(touch.serveType==="spin")?"float":"spin";
-  vib(15);
-  pmHighlightCourt();
-  pmSave();
-}
-
-// Default attack type from where the attacker hit: within a quarter-court of the net = soft, deeper = hard.
-function pmDefaultAttackType(x,y){
-  return Math.abs(y-PM_NET_Y)<=PM_H/4?"soft":"hard";
-}
-
-// Toggle the attack's type between soft and hard. Triggered by tapping the attack origin circle.
-function pmToggleAttackType(touch){
-  if(!touch||touch.type!=="attack")return;
-  touch.attackType=(touch.attackType==="hard")?"soft":"hard";
-  vib(15);
-  pmHighlightCourt();
-  pmSave();
-}
-
-// Natural in-court position for a player when they're NOT the active server.
-// Receivers and the server's partner stand in the back third of their team's half
-// (1/3 from the baseline into the half) at left/right positions per the layout swap —
-// matches typical beach volleyball receive positioning.
-function pmPlayerPos(playerIdx){
-  var pSwap=layout==="p2left";
-  var cSwap=!!G.courtSwapped;
-  var isUs=playerIdx<2;
-  var topTeam=isUs?cSwap:!cSwap;            // this team renders on top?
-  var halfMidY=topTeam?PM_OY+PM_H/6:PM_OY+PM_H*5/6;
-  var naturalLeft=isUs
-    ?(playerIdx===0?!pSwap:pSwap)
-    :(playerIdx===2?!pSwap:pSwap);
-  var cx=naturalLeft?(PM_OX+PM_W*0.25):(PM_OX+PM_W*0.75);
-  return [cx,halfMidY];
-}
-
-// Active server's position — where the user placed the serve origin (slightly offset toward the
-// net so the player label doesn't overlap the serve_from circle/float-spin badge), or service-zone
-// center if no rally is in progress yet.
-function pmServerPos(){
-  if(G.currentRally){
-    var serve=G.currentRally.touches[0];
-    if(serve&&serve.type==="serve"&&serve.fromSquare){
-      var towardsNet=serve.fromSquare[1]<PM_NET_Y?1:-1;
-      return [serve.fromSquare[0],serve.fromSquare[1]+towardsNet*55];
-    }
+function setStatsFilter(f){statsSetFilter=f;renderStats()}
+function actsForStats(){
+  if(statsSetFilter===null)return Core.allActions(pState());
+  for(var i=0;i<G.sets.length;i++){
+    if(G.sets[i].setNum===statsSetFilter)return G.sets[i].actions.slice();
   }
-  var serverIsTop=(G.recvSide===1)===(!!G.courtSwapped);
-  return [PM_OX+PM_W/2, serverIsTop?(PM_SZTOP_Y+PM_SZ_H/2):(PM_SZBOT_Y+PM_SZ_H/2)];
+  if(G.setNum===statsSetFilter)return G.actions.slice();
+  return[];
 }
-
-// Coordinate-based player ownership (uses the net y as the half-court boundary).
-// Honors both the layout swap (P2-on-left within a team) AND the court swap (us renders on top).
-function playerForPoint(x,y){
-  var pSwap=layout==="p2left";
-  var top=y<PM_NET_Y;
-  var inUsHalf=(top===!!G.courtSwapped); // if court swapped, top half belongs to us; otherwise bottom does
-  if(inUsHalf){
-    return x<PM_OX+PM_W/2?(pSwap?1:0):(pSwap?0:1);
-  }
-  return x<PM_OX+PM_W/2?(pSwap?3:2):(pSwap?2:3);
-}
-
-function pmBegin(){
-  G.currentRally={
-    rallyId:++pmRallyCounter,
-    t:Date.now(),
-    setNum:G.setNum,
-    scoreUs:G.sU,scoreThem:G.sT,
-    servingTeam:G.recvSide===0?1:0,
-    servers:[G.servers[0],G.servers[1]],
-    touches:[],
-    winner:null
-  };
-  G.postMatchStep="serve_from";
-  if(!pmCourtBuilt){
-    pmBuildCourt($("pm-court"),"capture");
-    pmCourtBuilt=true;
-  }
-  pmRender();
-  pmSave();
-}
-
-function pmReceiverOfRally(){
-  var rally=G.currentRally;
-  if(!rally||!rally.touches.length)return -1;
-  var serveTouch=rally.touches[0];
-  if(!serveTouch||!serveTouch.toSquare)return -1;
-  return playerForPoint(serveTouch.toSquare[0],serveTouch.toSquare[1]);
-}
-
-// Touch fields fromSquare/toSquare keep their names but now hold [x, y] in viewBox coords.
-function pmTapPoint(x,y){
-  if(!G.currentRally)return;
-  var step=G.postMatchStep;
-  var pt=[x,y];
-  vib(20);
-  if(step==="serve_from"){
-    G.currentRally.touches.push({type:"serve",player:serverGI(),fromSquare:pt,toSquare:null,outcome:null,attackType:null,serveType:"float"});
-    G.postMatchStep="serve_to";
-  }else if(step==="serve_to"){
-    // Only valid (in-court) serves reach this branch — error taps are handled in pmHandleSvgClick.
-    var t=G.currentRally.touches[G.currentRally.touches.length-1];
-    t.toSquare=pt;
-    G.postMatchStep="serve_outcome";
-  }else if(step==="serve_outcome"){
-    // Tap anywhere on the receiver's side — including beyond the baseline / outside the sidelines.
-    // The ball is in play; we record where the reception happens for future heatmap stats and continue
-    // the rally to the attack step. The click handler already restricted this to the receiver's side.
-    var ts=G.currentRally.touches[G.currentRally.touches.length-1];
-    if(ts&&ts.type==="serve")ts.outcome="zero";
-    var receiver=pmReceiverOfRally();
-    G.currentRally.touches.push({type:"reception",player:receiver>=0?receiver:0,fromSquare:null,toSquare:pt,outcome:"zero",attackType:null});
-    G.postMatchStep="attack_from";
-  }else if(step==="reception_to"){
-    var receiver2=pmReceiverOfRally();
-    G.currentRally.touches.push({type:"reception",player:receiver2>=0?receiver2:0,fromSquare:null,toSquare:pt,outcome:null,attackType:null});
-    G.postMatchStep="reception_outcome";
-  }else if(step==="defense_to"){
-    // Dig landing — also known as set origin (where the setter contacts the ball after the dig).
-    // Mirrors the reception capture at serve_outcome, just on the transitioning attacker's side.
-    var digger=playerForPoint(x,y);
-    G.currentRally.touches.push({type:"defense",player:digger,fromSquare:null,toSquare:pt,outcome:null,attackType:null});
-    G.postMatchStep="attack_from";
-  }else if(step==="block_to"){
-    // Block deflection landing — set origin after a block touched the ball. Same shape as defense
-    // but type="block" so analytics can distinguish "off block" continuations from "off dig" ones.
-    // fromSquare carries the original attack landing (= where the block touched the ball at the net)
-    // so the visualization can draw the block's deflection arc.
-    var blocker=playerForPoint(x,y);
-    var prevAttack=null;
-    for(var bi=G.currentRally.touches.length-1;bi>=0;bi--){
-      var bt=G.currentRally.touches[bi];
-      if(bt.type==="attack"){prevAttack=bt;break}
-    }
-    var bFrom=(prevAttack&&prevAttack.toSquare)?[prevAttack.toSquare[0],prevAttack.toSquare[1]]:null;
-    G.currentRally.touches.push({type:"block",player:blocker,fromSquare:bFrom,toSquare:pt,outcome:null,attackType:null});
-    G.postMatchStep="attack_from";
-  }else if(step==="attack_from"){
-    var attacker=playerForPoint(x,y);
-    G.currentRally.touches.push({type:"attack",player:attacker,fromSquare:pt,toSquare:null,outcome:null,attackType:pmDefaultAttackType(x,y)});
-    G.postMatchStep="attack_to";
-  }else if(step==="attack_to"){
-    var t2=G.currentRally.touches[G.currentRally.touches.length-1];
-    t2.toSquare=pt;
-    G.postMatchStep="attack_outcome";
-  }else{
-    return;
-  }
-  pmRender();
-  pmSave();
-}
-
-function pmOutcome(o){
-  if(!G.currentRally)return;
-  var step=G.postMatchStep;
-  var t=G.currentRally.touches[G.currentRally.touches.length-1];
-  if(!t)return;
-  t.outcome=o;
-  vib(30);
-  if(step==="serve_outcome"){
-    if(o==="zero"){G.postMatchStep="reception_to";pmRender();pmSave()}
-    else pmEndRallyFromTouch(t);
-  }else if(step==="reception_outcome"){
-    if(o==="zero"){G.postMatchStep="attack_from";pmRender();pmSave()}
-    else pmEndRallyFromTouch(t);
-  }else if(step==="attack_outcome"){
-    if(o==="zero"){
-      // 0 = ball still in play, rally continues. The dig contact is implicit (= this attack's
-      // toSquare), but the dig LANDING / set ORIGIN is captured by the next step, defense_to.
-      // Side-flip happens automatically via pmAttackerIsTop, which counts attacks pushed so far.
-      G.postMatchStep="defense_to";
-      pmRender();
-      pmSave();
-      return;
-    }
-    // +1 or -1 ends the rally.
-    pmEndRallyFromTouch(t);
-  }
-}
-
-// Legacy setter for attackType. The Soft/Hard buttons are no longer shown, so this is unused in
-// the normal flow — kept as a safe fallback if anything ever programmatically sets the type.
-function pmAttackType(type){
-  if(!G.currentRally)return;
-  var t=G.currentRally.touches[G.currentRally.touches.length-1];
-  if(!t||t.type!=="attack")return;
-  t.attackType=type;
-  vib(15);
-  pmRender();
-  pmSave();
-}
-
-// Second-ball (option) attack — the player who made the first defensive contact attacks directly
-// instead of routing through a setter. Triggered when the user taps across the net at attack_from:
-// the tap is the destination, fromSquare is reused from the first defensive contact's landing.
-// Works for sideout iterations (prev = reception) and transition iterations (prev = defense).
-// errorKind is null for valid taps or "sideline"|"long"|"net" — sideline/long auto-end with -1.
-function pmSecondBall(x,y,errorKind){
-  if(!G.currentRally)return;
-  var prev=G.currentRally.touches[G.currentRally.touches.length-1];
-  if(!prev||!prev.toSquare||(prev.type!=="reception"&&prev.type!=="defense"&&prev.type!=="block"))return;
-  vib(20);
-  var rx=prev.toSquare[0],ry=prev.toSquare[1];
-  var atk={
-    type:"attack",
-    player:prev.player,
-    fromSquare:[rx,ry],
-    toSquare:[x,y],
-    outcome:null,
-    attackType:pmDefaultAttackType(rx,ry),
-    secondBall:true,
-    detail:errorKind||null
-  };
-  G.currentRally.touches.push(atk);
-  if(errorKind==="sideline"||errorKind==="long"){
-    atk.outcome="minus";
-    pmEndRallyFromTouch(atk);
-    return;
-  }
-  // Valid landing or net error — user picks outcome at attack_outcome (+1/0 for valid, +1/-1 for net).
-  G.postMatchStep="attack_outcome";
-  pmRender();
-  pmSave();
-}
-
-function pmSkip(){
-  if(!G.currentRally)return;
-  var step=G.postMatchStep;
-  vib(20);
-  if(step==="serve_outcome"){
-    // Skip reception — mark serve as 0 and jump straight to attack
-    var t=G.currentRally.touches[G.currentRally.touches.length-1];
-    if(t&&t.type==="serve")t.outcome="zero";
-    G.postMatchStep="attack_from";
-  }else if(step==="reception_to"){
-    G.postMatchStep="attack_from";
-  }else if(step==="defense_to"||step==="block_to"){
-    // Skip set-origin capture — push an unknown-location defense / block touch so the 3-touch chain
-    // is still represented in the rally, then move on to the next attack_from.
-    var diggerOnRecv=pmAttackerOnReceiverSide();
-    var weServeSkD=G.recvSide===1;
-    var receiverIsOurTeamD=!weServeSkD;
-    var diggerIsOurTeam=diggerOnRecv?receiverIsOurTeamD:!receiverIsOurTeamD;
-    var defaultDigger=diggerIsOurTeam?0:2;
-    var skipType=step==="block_to"?"block":"defense";
-    G.currentRally.touches.push({type:skipType,player:defaultDigger,fromSquare:null,toSquare:null,outcome:null,attackType:null});
-    G.postMatchStep="attack_from";
-  }else if(step==="attack_from"){
-    // Iteration-aware attacker pick: iteration 0 uses the actual receiver (computed from serve.toSquare);
-    // continuation iterations pick the first player of the attacking team (player 0 = us, 2 = opp).
-    var attackerOnRecv=pmAttackerOnReceiverSide();
-    var receiver=pmReceiverOfRally();
-    var weServeSk=G.recvSide===1;
-    var receiverIsOurTeam=!weServeSk; // we receive when they serve
-    var attackerIsOurTeam=attackerOnRecv?receiverIsOurTeam:!receiverIsOurTeam;
-    var attackerPl=(attackerOnRecv&&receiver>=0)?receiver:(attackerIsOurTeam?0:2);
-    G.currentRally.touches.push({type:"attack",player:attackerPl,fromSquare:null,toSquare:null,outcome:null,attackType:null});
-    G.postMatchStep="attack_to";
-  }else if(step==="attack_to"){
-    G.postMatchStep="attack_outcome";
-  }else{
-    return;
-  }
-  pmRender();
-  pmSave();
-}
-
-function pmUndoContact(){
-  if(!G.currentRally||!G.currentRally.touches.length)return;
-  var step=G.postMatchStep;
-  var t=G.currentRally.touches[G.currentRally.touches.length-1];
-  vib(15);
-  if(step==="serve_to"){
-    G.currentRally.touches.pop();
-    G.postMatchStep="serve_from";
-  }else if(step==="serve_outcome"){
-    if(t&&t.type==="serve"){t.toSquare=null;t.outcome=null;t.detail=null}
-    G.postMatchStep="serve_to";
-  }else if(step==="reception_outcome"){
-    // Last touch is the reception captured during serve_outcome. Pop it and revert serve.outcome.
-    if(t&&t.type==="reception")G.currentRally.touches.pop();
-    var serve=G.currentRally.touches[G.currentRally.touches.length-1];
-    if(serve&&serve.type==="serve")serve.outcome=null;
-    G.postMatchStep="serve_outcome";
-  }else if(step==="attack_from"){
-    // Arrival paths into attack_from:
-    //  1. Right after the reception capture (last touch = reception). Undo pops it + rewinds serve.
-    //  2. Right after a Skip at serve_outcome (last touch = serve, outcome=zero). Undo clears that.
-    //  3. Transition iteration via defense_to (last touch = defense). Pop it, return to defense_to.
-    //  4. Block-touch transition via block_to (last touch = block). Pop it, return to block_to.
-    //  5. Legacy fallback: transition with no defense in between (last touch = attack, outcome=zero).
-    if(t&&t.type==="defense"){
-      G.currentRally.touches.pop();
-      G.postMatchStep="defense_to";
-    }else if(t&&t.type==="block"){
-      G.currentRally.touches.pop();
-      G.postMatchStep="block_to";
-    }else if(t&&t.type==="attack"&&t.outcome==="zero"){
-      t.outcome=null;
-      G.postMatchStep="attack_outcome";
-    }else if(t&&t.type==="reception"){
-      G.currentRally.touches.pop();
-      var serve1=G.currentRally.touches[G.currentRally.touches.length-1];
-      if(serve1&&serve1.type==="serve")serve1.outcome=null;
-      G.postMatchStep="serve_outcome";
-    }else if(t&&t.type==="serve"){
-      t.outcome=null;
-      G.postMatchStep="serve_outcome";
-    }
-  }else if(step==="defense_to"){
-    // At defense_to the previous touch is the prior attack with outcome="zero". Rewind that decision
-    // so the user can re-pick +1 / 0 / -1.
-    if(t&&t.type==="attack"&&t.outcome==="zero"){
-      t.outcome=null;
-      G.postMatchStep="attack_outcome";
-    }
-  }else if(step==="block_to"){
-    // Same as defense_to but the prior attack had detail="net" and was tagged blockTouch. Clear
-    // the block-touch marker so re-picking the outcome doesn't preserve stale state.
-    if(t&&t.type==="attack"&&t.outcome==="zero"){
-      t.outcome=null;
-      t.blockTouch=false;
-      G.postMatchStep="attack_outcome";
-    }
-  }else if(step==="attack_to"){
-    if(t&&t.type==="attack")G.currentRally.touches.pop();
-    G.postMatchStep="attack_from";
-  }else if(step==="attack_outcome"){
-    // Clear destination + any error detail / pending outcome so a re-tap starts clean. attackType
-    // stays — its default came from attack_from position and the user may have toggled it already.
-    if(t){t.toSquare=null;t.detail=null;t.outcome=null}
-    G.postMatchStep="attack_to";
-  }
-  pmRender();
-  pmSave();
-}
-
-function pmResetRally(){
-  if(!G.currentRally)return;
-  vib([20,20,20]);
-  G.currentRally=null;
-  pmBegin();
-}
-
-function pmEndRallyFromTouch(lastTouch){
-  if(!G.currentRally)return;
-  var rally=G.currentRally;
-  var winner;
-  if(lastTouch.outcome==="plus"){
-    winner=lastTouch.player<2?"us":"them";
-  }else if(lastTouch.outcome==="minus"){
-    winner=lastTouch.player<2?"them":"us";
-  }else{
-    // zero on a terminal step — default to receiver's team
-    var receiver=pmReceiverOfRally();
-    winner=(receiver>=0&&receiver<2)?"us":"them";
-  }
-  rally.winner=winner;
-  pmEndRally(winner);
-}
-
-// Project the rich rally to a legacy G.actions entry so the existing stats overlay,
-// scoring, and live-push paths keep working without duplicating logic.
-function pmLegacyAction(rally,winner){
-  var firstTouch=rally.touches[0];
-  var server=-1,receiver=-1;
-  if(firstTouch&&firstTouch.type==="serve"){
-    server=firstTouch.player;
-    if(firstTouch.toSquare)receiver=playerForPoint(firstTouch.toSquare[0],firstTouch.toSquare[1]);
-  }
-  var lastTouch=rally.touches[rally.touches.length-1];
-  var outcome,winnerIdx=null,detail=null;
-  if(lastTouch.type==="serve"){
-    outcome=lastTouch.outcome==="plus"?"ace":(lastTouch.outcome==="minus"?"svc_error":"zero_won");
-    if(lastTouch.outcome==="minus"&&lastTouch.detail)detail=lastTouch.detail; // "sideline" / "long" / "net"
-  }else if(lastTouch.type==="reception"){
-    if(lastTouch.outcome==="minus"){outcome="minus";detail="error"}
-    else if(lastTouch.outcome==="plus"){outcome="plus";winnerIdx=receiver}
-    else outcome="zero_lost";
-  }else{ // attack
-    if(lastTouch.outcome==="plus"){
-      outcome="plus";
-      winnerIdx=(lastTouch.player!==undefined&&lastTouch.player!==null)?lastTouch.player:receiver;
-    }else if(lastTouch.outcome==="minus"){
-      outcome="minus";
-      if(lastTouch.detail)detail=lastTouch.detail; // "sideline" / "long" / "net" from spatial attack-error classification
-      else if(lastTouch.attackType==="hard")detail="blocked";
-    }else{
-      // zero on attack — winner already decided by default rule
-      var recvTeamWon=(receiver>=0)?((receiver<2&&winner==="us")||(receiver>=2&&winner==="them")):false;
-      outcome=recvTeamWon?"zero_won":"zero_lost";
-      if(outcome==="zero_won")winnerIdx=receiver;
-    }
-  }
-  return {
-    receiver:receiver,
-    winner:winnerIdx,
-    server:server,
-    outcome:outcome,
-    detail:detail,
-    recvSide:G.recvSide,
-    servers:[rally.servers[0],rally.servers[1]],
-    t:rally.t,
-    e:rally.t-G.t0
-  };
-}
-
-function pmEndRally(winner){
-  var rally=G.currentRally;
-  if(!rally)return;
-  G.richActions.push(rally);
-  G.actions.push(pmLegacyAction(rally,winner));
-  G.currentRally=null;
-  G.postMatchStep="idle";
-  pmSave();
-  awardPoint(winner);
-  // After awardPoint: if a set/match screen is now active, leave post-match alone.
-  // Otherwise re-enter the post-match capture flow for the next rally.
-  var setActive=$("set-screen").classList.contains("active");
-  var matchActive=$("match-screen").classList.contains("active");
-  if(!G.matchOver&&!setActive&&!matchActive){
-    pmCheckAutoSwitch(); // honors autoSwitchSides; flips G.courtSwapped at every 7-pt (or 5-pt in set 3) boundary
-    show("post-match-screen");
-    pmBegin();
-  }
-}
-
-function pmRender(){
-  var step=G.postMatchStep;
-  var rally=G.currentRally;
-  var weRecv=G.recvSide===0;
-  $("pm-phase").textContent=weRecv?"Sideout":"Transition";
-  $("pm-phase").style.color=weRecv?"#809671":"#B58860";
-  $("pm-score-us").textContent=G.sU;
-  $("pm-score-them").textContent=G.sT;
-  $("pm-set-info").textContent="S"+G.setNum+" to "+G.target+" · sets "+G.setsU+"-"+G.setsT;
-  $("pm-server").textContent=serverName()+" serves";
-  $("pm-server").style.color=PL[serverGI()].color;
-  var prompts={
-    "idle":"Tap to start",
-    "serve_from":"1. Tap serve ORIGIN (service zone)",
-    "serve_to":"2. Tap serve DESTINATION — green = valid, red = service error",
-    "serve_outcome":"★ ACE — or tap where reception LANDS (anywhere on receiver's side)",
-    "reception_to":"3. Tap reception LANDING (or Skip)",
-    "reception_outcome":"Reception outcome?",
-    "attack_from":"Sideout attack — tap ORIGIN",
-    "attack_to":"Tap attack DESTINATION — green = valid, red = attack error",
-    "attack_outcome":"+1 kill / 0 ball in play / red zone = attack error",
-    "defense_to":"Tap SET ORIGIN — where the dig lands",
-    "block_to":"Tap SET ORIGIN — where the block deflection lands (either side)"
-  };
-  // 2nd-ball shortcut is available whenever the previous touch is a first defensive contact with a
-  // known landing — reception (sideout), defense (transition set origin), block (block-touch set origin).
-  var lastTouchAF=rally&&rally.touches[rally.touches.length-1];
-  var isSideout=step==="attack_from"&&lastTouchAF&&lastTouchAF.type==="reception"&&lastTouchAF.toSquare;
-  var isTransition=step==="attack_from"&&lastTouchAF&&(lastTouchAF.type==="defense"||lastTouchAF.type==="block")&&lastTouchAF.toSquare;
-  if(isSideout){
-    prompts.attack_from="Sideout attack — tap ORIGIN, or across the net for 2nd-ball direct attack";
-  }else if(isTransition){
-    prompts.attack_from="Transition attack — tap ORIGIN, or across the net for 2nd-ball direct attack";
-  }
-  // attack_outcome has two variants: after a valid (in-court) attack the user picks +1 / 0;
-  // after a red-zone attack they pick +1 (block out) vs -1 (blocked / in net) instead.
-  var lastTouch=rally&&rally.touches[rally.touches.length-1];
-  var isAttackError=step==="attack_outcome"&&lastTouch&&lastTouch.type==="attack"&&lastTouch.detail;
-  if(isAttackError){
-    prompts["attack_outcome"]="+1 BLOCK OUT (left) — or −1 BLOCKED / IN NET (right)";
-  }
-  // Transition iteration: any attack beyond the first is a transition attack (rally continued past
-  // the sideout attempt). Prepend "↻ Transition" when applicable. Sideout iteration's attack_from
-  // already carries its own "Sideout attack" label above, so don't double-prefix.
-  var attackCountPR=0;
-  if(rally){for(var pri=0;pri<rally.touches.length;pri++){if(rally.touches[pri].type==="attack")attackCountPR++}}
-  var iterPR=(step==="attack_from"||step==="defense_to"||step==="block_to")?attackCountPR:Math.max(0,attackCountPR-1);
-  if(iterPR>0&&(step==="attack_to"||step==="attack_outcome"||step==="defense_to"||step==="block_to")){
-    prompts[step]="↻ Transition — "+prompts[step];
-  }
-  $("pm-prompt").textContent=prompts[step]||"";
-  // attack_outcome uses the in-court side buttons (+1 / 0), so the bottom outcome row is no longer
-  // needed there. -1 is captured by the spatial error zones during attack_to.
-  $("pm-outcome-row").style.display=(step==="reception_outcome")?"flex":"none";
-  $("pm-ace-row").style.display=(step==="serve_outcome")?"flex":"none";
-  $("pm-attack-row").style.display="none";
-  // Side outcome buttons at net level — +1/0 at attack_outcome (valid), +1/-1 at attack_outcome
-  // (red zone), ★ ACE at serve_outcome. CSS default for .pm-icb is display:none, so we must set
-  // an explicit "block" to show them — never "" (reverts to the CSS default and stays hidden).
-  var icbPlus=$("pm-icb-plus");if(icbPlus)icbPlus.style.display=(step==="attack_outcome")?"block":"none";
-  var icbZero=$("pm-icb-zero");if(icbZero)icbZero.style.display=(step==="attack_outcome"&&!isAttackError)?"block":"none";
-  var icbMinus=$("pm-icb-minus");if(icbMinus)icbMinus.style.display=(step==="attack_outcome"&&isAttackError)?"block":"none";
-  var icbBZero=$("pm-icb-bzero");if(icbBZero)icbBZero.style.display=(step==="attack_outcome"&&isAttackError&&lastTouch&&lastTouch.detail==="net")?"block":"none";
-  var icbAce=$("pm-icb-ace");if(icbAce)icbAce.style.display=(step==="serve_outcome")?"block":"none";
-  if(step==="attack_outcome"){
-    var atk=lastTouch&&lastTouch.attackType;
-    $("pm-atk-soft").classList.toggle("active",atk==="soft");
-    $("pm-atk-hard").classList.toggle("active",atk==="hard");
-  }
-  // Service/attack error zones — visible during serve_to (service error), attack_to (attack error),
-  // and attack_from when a 2nd-ball direct attack is possible (across-net taps land here).
-  var canSecondBall=step==="attack_from"&&lastTouch&&(lastTouch.type==="reception"||lastTouch.type==="defense"||lastTouch.type==="block")&&lastTouch.toSquare;
-  var showErr=(step==="serve_to"||step==="attack_to"||canSecondBall);
-  var errZones=null;
-  var skipNetZone=false;
-  if(step==="serve_to")errZones=getServeErrorZones();
-  else if(step==="attack_to")errZones=getAttackErrorZones();
-  else if(canSecondBall){errZones=getAttackErrorZones();skipNetZone=true}
-  ["pm-err-sideline-left","pm-err-sideline-right","pm-err-long","pm-err-net"].forEach(function(id,idx){
-    var el=document.getElementById(id);
-    if(!el)return;
-    if(showErr&&errZones[idx]&&!(skipNetZone&&errZones[idx].kind==="net")){
-      var z=errZones[idx];
-      el.setAttribute("x",z.x);el.setAttribute("y",z.y);
-      el.setAttribute("width",z.w);el.setAttribute("height",z.h);
-      el.style.display="";
-    }else{
-      el.style.display="none";
-    }
-  });
-  var canSkip=step==="serve_outcome"||step==="reception_to"||step==="attack_from"||step==="attack_to"||step==="defense_to"||step==="block_to";
-  $("pm-skip").disabled=!canSkip;
-  $("pm-undo").disabled=(step==="idle"||step==="serve_from");
-  $("pm-reset-rally").disabled=!(rally&&rally.touches.length);
-  // 2nd-ball shortcut: only when a reception with a known landing exists and we're at attack_from.
-  var canSecondBall=step==="attack_from"&&lastTouch&&lastTouch.type==="reception"&&lastTouch.toSquare;
-  $("pm-second-ball").style.display=canSecondBall?"block":"none";
-  // Manual side-switch button — visible only when auto-switch is off
-  var swBtn=$("pm-switch-sides");
-  if(swBtn)swBtn.style.display=autoSwitchSides?"none":"";
-  // Dim out the dead (non-clickable) parts of the court for the current step — the
-  // active zones stay at full brightness so the eye is drawn to them.
-  pmUpdateDimMask(step);
-  // Per-step valid-zone overlay — shows exactly where the user can tap right now
-  var validZone=document.getElementById("pm-valid-zone");
-  if(validZone){
-    var b=getValidZoneBounds(step);
-    if(b){
-      validZone.setAttribute("x",b.x);
-      validZone.setAttribute("y",b.y);
-      validZone.setAttribute("width",b.w);
-      validZone.setAttribute("height",b.h);
-      validZone.style.display="";
-    }else{
-      validZone.style.display="none";
-    }
-  }
-  // Refresh player label positions + the ● prefix on the active server every render. The server's
-  // position depends on serve_from (which may change between steps), so this runs each pmRender.
-  // The receiver (determined once the serve_to tap is recorded) gets a sage-stroked highlight so the
-  // user can confirm at a glance which player was registered as the receiver of the current rally.
-  var servingGI=serverGI();
-  var receiverGI=pmReceiverOfRally();
-  var svg=$("pm-court");
-  if(svg){
-    var lbls=svg.querySelectorAll(".pm-court-label");
-    for(var li=0;li<lbls.length;li++){
-      var p=parseInt(lbls[li].getAttribute("data-player"));
-      var pos=(p===servingGI)?pmServerPos():pmPlayerPos(p);
-      lbls[li].setAttribute("x",pos[0]);
-      lbls[li].setAttribute("y",pos[1]);
-      if(p===servingGI){
-        lbls[li].textContent="● "+PL[p].name;
-        lbls[li].setAttribute("font-weight","900");
-        lbls[li].setAttribute("stroke","#1B1810");
-        lbls[li].setAttribute("stroke-width","3");
-      }else if(p===receiverGI){
-        lbls[li].textContent=PL[p].name;
-        lbls[li].setAttribute("font-weight","900");
-        lbls[li].setAttribute("stroke","#9BB56E");
-        lbls[li].setAttribute("stroke-width","5");
-      }else{
-        lbls[li].textContent=PL[p].name;
-        lbls[li].setAttribute("font-weight","700");
-        lbls[li].setAttribute("stroke","#1B1810");
-        lbls[li].setAttribute("stroke-width","3");
-      }
-    }
-  }
-  pmHighlightCourt();
-}
-
-function pmHighlightCourt(){
-  var svg=$("pm-court");
-  if(!svg)return;
-  // Tear down the previous markers group (if any) and rebuild from current rally's touches.
-  var old=svg.querySelector("#pm-markers");
-  if(old&&old.parentNode)old.parentNode.removeChild(old);
-  var rally=G.currentRally;
-  if(!rally||!rally.touches.length)return;
-  var ns="http://www.w3.org/2000/svg";
-  var grp=document.createElementNS(ns,"g");
-  grp.setAttribute("id","pm-markers");
-  grp.setAttribute("pointer-events","none");
-  var colors={serve:"#9BB56E",reception:"#B3B792",attack:"#B58860",defense:"#D2AB80",block:"#A04938"};
-  rally.touches.forEach(function(t){
-    var col=colors[t.type]||"#E5E0D8";
-    if(t.fromSquare&&t.toSquare){
-      var line=document.createElementNS(ns,"line");
-      line.setAttribute("x1",t.fromSquare[0]);line.setAttribute("y1",t.fromSquare[1]);
-      line.setAttribute("x2",t.toSquare[0]);line.setAttribute("y2",t.toSquare[1]);
-      line.setAttribute("stroke",col);
-      line.setAttribute("stroke-width","3");
-      line.setAttribute("stroke-dasharray","10,5");
-      line.setAttribute("opacity","0.7");
-      grp.appendChild(line);
-    }
-    if(t.fromSquare){
-      var isServe=(t.type==="serve");
-      var fc=document.createElementNS(ns,"circle");
-      fc.setAttribute("cx",t.fromSquare[0]);fc.setAttribute("cy",t.fromSquare[1]);
-      fc.setAttribute("r",isServe?"30":"22");
-      fc.setAttribute("fill",isServe?"rgba(155,181,110,0.22)":"none");
-      fc.setAttribute("stroke",col);
-      fc.setAttribute("stroke-width","4");
-      if(isServe){
-        fc.setAttribute("pointer-events","auto");
-        fc.style.cursor="pointer";
-        (function(touch){
-          fc.addEventListener("click",function(e){e.stopPropagation();pmToggleServeType(touch)});
-        })(t);
-      }
-      grp.appendChild(fc);
-      if(isServe){
-        var lbl=document.createElementNS(ns,"text");
-        lbl.setAttribute("x",t.fromSquare[0]);
-        lbl.setAttribute("y",t.fromSquare[1]+6);
-        lbl.setAttribute("text-anchor","middle");
-        lbl.setAttribute("font-size","17");
-        lbl.setAttribute("font-weight","800");
-        lbl.setAttribute("fill","#1B1810");
-        lbl.setAttribute("stroke","#E5E0D8");
-        lbl.setAttribute("stroke-width","2");
-        lbl.setAttribute("paint-order","stroke");
-        lbl.setAttribute("pointer-events","none");
-        lbl.textContent=(t.serveType==="spin"?"spin":"float");
-        grp.appendChild(lbl);
-      }
-    }
-    if(t.toSquare){
-      var isAttackTo=(t.type==="attack");
-      var tc=document.createElementNS(ns,"circle");
-      tc.setAttribute("cx",t.toSquare[0]);tc.setAttribute("cy",t.toSquare[1]);
-      if(isAttackTo){
-        // Larger, mostly-opaque destination circle. Clickable to flip soft/hard like the serve origin.
-        tc.setAttribute("r","30");
-        tc.setAttribute("fill","rgba(181,136,96,0.78)");
-        tc.setAttribute("stroke",col);
-        tc.setAttribute("stroke-width","3");
-        tc.setAttribute("pointer-events","auto");
-        tc.style.cursor="pointer";
-        (function(touch){
-          tc.addEventListener("click",function(e){e.stopPropagation();pmToggleAttackType(touch)});
-        })(t);
-      }else{
-        tc.setAttribute("r","20");
-        tc.setAttribute("fill",col);
-        tc.setAttribute("opacity","0.75");
-      }
-      grp.appendChild(tc);
-      if(isAttackTo){
-        var atklbl=document.createElementNS(ns,"text");
-        atklbl.setAttribute("x",t.toSquare[0]);
-        atklbl.setAttribute("y",t.toSquare[1]+6);
-        atklbl.setAttribute("text-anchor","middle");
-        atklbl.setAttribute("font-size","17");
-        atklbl.setAttribute("font-weight","800");
-        atklbl.setAttribute("fill","#1B1810");
-        atklbl.setAttribute("stroke","#E5E0D8");
-        atklbl.setAttribute("stroke-width","2");
-        atklbl.setAttribute("paint-order","stroke");
-        atklbl.setAttribute("pointer-events","none");
-        atklbl.textContent=(t.attackType==="hard"?"hard":"soft");
-        grp.appendChild(atklbl);
-      }
-    }
-  });
-  // Ochre halo on the most recent tap so the user knows which point is "live".
-  var lastTouch=rally.touches[rally.touches.length-1];
-  var sq=lastTouch&&(lastTouch.toSquare||lastTouch.fromSquare);
-  if(sq){
-    var halo=document.createElementNS(ns,"circle");
-    halo.setAttribute("cx",sq[0]);halo.setAttribute("cy",sq[1]);
-    halo.setAttribute("r","32");
-    halo.setAttribute("fill","none");
-    halo.setAttribute("stroke","#C8A050");
-    halo.setAttribute("stroke-width","2.5");
-    halo.setAttribute("stroke-dasharray","6,4");
-    halo.setAttribute("opacity","0.85");
-    grp.appendChild(halo);
-  }
-  svg.appendChild(grp);
-}
-
-function pmSave(){
-  try{
-    var payload={
-      richActions:G.richActions,
-      currentRally:G.currentRally,
-      postMatchStep:G.postMatchStep,
-      sU:G.sU,sT:G.sT,setNum:G.setNum,setsU:G.setsU,setsT:G.setsT,
-      recvSide:G.recvSide,servers:G.servers,target:G.target,
-      actions:G.actions,sets:G.sets,t0:G.t0,
-      matchOver:G.matchOver,videoSync:G.videoSync,
-      rallyCounter:pmRallyCounter
-    };
-    localStorage.setItem("bv_postmatch_v2",JSON.stringify(payload));
-  }catch(e){}
-}
-
-function pmLoad(){
-  try{
-    // Clear any legacy keys (previous [r,c] grid format, or older [x,y] viewBox).
-    try{localStorage.removeItem("bv_postmatch")}catch(e){}
-    var raw=localStorage.getItem("bv_postmatch_v2");
-    if(!raw)return false;
-    var d=JSON.parse(raw);
-    if(!d||d.matchOver)return false;
-    G.richActions=d.richActions||[];
-    G.currentRally=d.currentRally||null;
-    G.postMatchStep=d.postMatchStep||"idle";
-    G.sU=d.sU||0;G.sT=d.sT||0;
-    G.setNum=d.setNum||1;G.setsU=d.setsU||0;G.setsT=d.setsT||0;
-    G.recvSide=(typeof d.recvSide==="number")?d.recvSide:0;
-    G.servers=d.servers||[0,0];
-    G.target=d.target||21;
-    G.actions=d.actions||[];
-    G.sets=d.sets||[];
-    G.t0=d.t0||Date.now();
-    G.matchOver=!!d.matchOver;
-    G.videoSync=d.videoSync||null;
-    pmRallyCounter=d.rallyCounter||0;
-    if(!pmCourtBuilt){pmBuildCourt($("pm-court"),"capture");pmCourtBuilt=true}
-    if(G.postMatchStep==="idle"||!G.currentRally)pmBegin();
-    show("post-match-screen");
-    pmRender();
-    return true;
-  }catch(e){return false}
-}
-
-// Heatmap overlay
-function showHeatmap(){
-  hideOverlayById("stats-view");
-  hideOverlayById("settings-view");
-  if(!pmHmCourtBuilt){
-    pmBuildCourt($("hm-court"),"heatmap");
-    pmHmCourtBuilt=true;
-  }
-  pmRenderHeatmap();
-  showOverlay("heatmap-view");
-}
-function hideHeatmap(){hideOverlayById("heatmap-view")}
-
-function pmHmFilter(key,value){
-  pmHmFilters[key]=value;
-  var grp=document.querySelectorAll('.hm-filter-btn[data-filter="'+key+'"]');
-  for(var i=0;i<grp.length;i++){
-    grp[i].classList.toggle("active",grp[i].getAttribute("data-value")===value);
-  }
-  pmRenderHeatmap();
-}
-
-function pmRenderHeatmap(){
-  var svg=$("hm-court");
-  if(!svg)return;
-  var cells=svg.querySelectorAll(".pm-cell");
-  for(var i=0;i<cells.length;i++){
-    cells[i].style.fill="";
-    cells[i].style.opacity="";
-  }
-  // Bin (x,y) viewBox coords into the 6×12 cells. Service-zone taps clamp into the outer rows.
-  function pointToCell(pt){
-    if(!pt||pt.length<2)return null;
-    var y=Math.max(PM_OY,Math.min(PM_OY+PM_H-0.01,pt[1]));
-    var c=Math.min(5,Math.max(0,Math.floor((pt[0]-PM_OX)/PM_CELLW)));
-    var r=Math.min(11,Math.max(0,Math.floor((y-PM_OY)/PM_CELLH)));
-    return [r,c];
-  }
-  var matches=[];
-  G.richActions.forEach(function(rally){
-    rally.touches.forEach(function(touch){
-      if(pmHmFilters.type!=="all"&&touch.type!==pmHmFilters.type)return;
-      if(pmHmFilters.outcome!=="all"&&touch.outcome!==pmHmFilters.outcome)return;
-      if(pmHmFilters.player!=="all"&&String(touch.player)!==pmHmFilters.player)return;
-      var pt=pmHmFilters.dir==="from"?touch.fromSquare:touch.toSquare;
-      var cellRC=pointToCell(pt);
-      if(!cellRC)return;
-      matches.push({sq:cellRC,outcome:touch.outcome});
+function soStr(s){return s.recv?Math.round(s.so)+"%":"-"}
+function renderStats(){
+  var c=$("stp-content");
+  var pg=$("stp-page");
+  if(pg)pg.textContent=(statsPage+1)+"/"+STATS_PAGES;
+  if(!c)return;
+  var acts=actsForStats();
+  var h="";
+  if(statsPage===0){
+    // Page 1: match overview + set filter
+    var setNums=[];
+    G.sets.forEach(function(s){setNums.push(s.setNum)});
+    if(setNums.indexOf(G.setNum)<0&&!G.matchOver)setNums.push(G.setNum);
+    h+='<div class="hdr">Match</div>';
+    h+='<div style="text-align:center;font-size:clamp(34px,13vw,54px);font-weight:900">'
+      +'<span style="color:#809671">'+G.sU+'</span>'
+      +'<span style="color:rgba(255,255,255,0.2);font-weight:400"> : </span>'
+      +'<span style="color:#B58860">'+G.sT+'</span></div>';
+    h+='<div style="text-align:center;color:#5A5247;font-size:clamp(13px,4.6vw,17px);font-weight:700">Sets '+G.setsU+' - '+G.setsT+' · Set '+G.setNum+' to '+G.target+'</div>';
+    h+='<div class="pill-row"><button class="pill'+(statsSetFilter===null?" on":"")+'" onclick="setStatsFilter(null)">All</button>';
+    setNums.forEach(function(n){
+      h+='<button class="pill'+(statsSetFilter===n?" on":"")+'" onclick="setStatsFilter('+n+')">S'+n+'</button>';
     });
-  });
-  var counts={},maxCount=0;
-  matches.forEach(function(m){
-    var key=m.sq[0]+","+m.sq[1];
-    counts[key]=counts[key]||{n:0,plus:0,zero:0,minus:0};
-    counts[key].n++;
-    if(counts[key][m.outcome]!==undefined)counts[key][m.outcome]++;
-    if(counts[key].n>maxCount)maxCount=counts[key].n;
-  });
-  var hmColor={plus:"#9BB56E",zero:"#C8A050",minus:"#A04938",all:"#E5E0D8"};
-  Object.keys(counts).forEach(function(key){
-    var parts=key.split(",");
-    var cell=svg.querySelector('.pm-cell[data-r="'+parts[0]+'"][data-c="'+parts[1]+'"]');
-    if(!cell)return;
-    var entry=counts[key];
-    var color;
-    if(pmHmFilters.outcome!=="all"){
-      color=hmColor[pmHmFilters.outcome];
-    }else{
-      if(entry.plus>=entry.zero&&entry.plus>=entry.minus)color=hmColor.plus;
-      else if(entry.minus>=entry.zero)color=hmColor.minus;
-      else color=hmColor.zero;
-    }
-    var opacity=maxCount>0?Math.min(0.85,0.2+(entry.n/maxCount)*0.65):0;
-    cell.style.fill=color;
-    cell.style.opacity=opacity;
-  });
-  $("hm-counter").textContent=matches.length+" contact"+(matches.length===1?"":"s");
+    h+='</div>';
+    var u0=Core.statsForPlayer(acts,0),u1=Core.statsForPlayer(acts,1);
+    var t0=Core.statsForPlayer(acts,2),t1=Core.statsForPlayer(acts,3);
+    var uRecv=u0.recv+u1.recv,uWins=u0.wins+u1.wins;
+    var tRecv=t0.recv+t1.recv,tWins=t0.wins+t1.wins;
+    h+='<div class="row"><span class="l" style="color:#809671">Our SO%</span><span class="v" style="color:#809671">'+(uRecv?Math.round(uWins/uRecv*100)+"%":"-")+' <span style="color:#5A5247;font-weight:600">'+uWins+'/'+uRecv+'</span></span></div>';
+    h+='<div class="row"><span class="l" style="color:#B58860">Their SO%</span><span class="v" style="color:#B58860">'+(tRecv?Math.round(tWins/tRecv*100)+"%":"-")+' <span style="color:#5A5247;font-weight:600">'+tWins+'/'+tRecv+'</span></span></div>';
+    h+='<div class="row"><span class="l">Points</span><span class="v">'+acts.length+'</span></div>';
+  }else if(statsPage===1||statsPage===2){
+    var gis=statsPage===1?[0,1]:[2,3];
+    h+='<div class="hdr">'+(statsPage===1?"Our players":"Opponents")+'</div>';
+    gis.forEach(function(gi){
+      var s=Core.statsForPlayer(acts,gi),sv=Core.serveStats(acts,gi);
+      h+='<div class="pcard">';
+      h+='<div class="pname" style="color:'+PL[gi].color+'">'+PL[gi].name+'</div>';
+      h+='<div class="pso" style="color:'+PL[gi].color+'">'+soStr(s)+'</div>';
+      h+='<div class="row"><span class="l">Recv W-Z-L</span><span class="v">'+s.recv+' · '+s.wins+'-'+s.zeros+'-'+s.losses+'</span></div>';
+      h+='<div class="row"><span class="l">-1: blk / ace / err</span><span class="v" style="color:#A04938">'+s.blocked+' / '+s.aced+' / '+s.errors+'</span></div>';
+      h+='<div class="row"><span class="l">Serve ace / err</span><span class="v"><span style="color:#9BB56E">'+sv.aces+'</span> / <span style="color:#A04938">'+sv.errs+'</span></span></div>';
+      h+='</div>';
+    });
+  }else{
+    var runs=Core.scoringRuns(acts),pace=Core.pointPace(acts);
+    var sv0=Core.serveStats(acts,0),sv1=Core.serveStats(acts,1);
+    var sv2=Core.serveStats(acts,2),sv3=Core.serveStats(acts,3);
+    h+='<div class="hdr">Serve &amp; momentum</div>';
+    h+='<div class="row"><span class="l" style="color:#809671">Our aces / errs</span><span class="v">'+(sv0.aces+sv1.aces)+' / '+(sv0.errs+sv1.errs)+'</span></div>';
+    h+='<div class="row"><span class="l" style="color:#B58860">Their aces / errs</span><span class="v">'+(sv2.aces+sv3.aces)+' / '+(sv2.errs+sv3.errs)+'</span></div>';
+    h+='<div class="row"><span class="l">Best run us</span><span class="v" style="color:#9BB56E">'+runs.us+'</span></div>';
+    h+='<div class="row"><span class="l">Best run them</span><span class="v" style="color:#A04938">'+runs.them+'</span></div>';
+    h+='<div class="row"><span class="l">Pace</span><span class="v">'+(pace.avg?pace.avg+" s/pt":"-")+'</span></div>';
+  }
+  c.innerHTML=h;
 }
 
-// Sync the start-screen label and shortcut button to the loaded mode.
-updStartLabel();
+/* ═══════════════════════════════════
+   SETTINGS / CONFIRM
+   ═══════════════════════════════════ */
+function openSettings(from){
+  settingsReturn=from||currentScreen;
+  initSettingsInputs();
+  show("scr-settings");
+}
+function closeSettings(){
+  show(settingsReturn||"scr-start");
+  if(settingsReturn==="scr-recv")upd();
+  if(settingsReturn==="scr-stats")renderStats();
+  if(settingsReturn==="scr-score")updScore();
+}
+function openConfirm(){
+  var el=$("ovl-confirm");
+  if(el)el.classList.add("active");
+}
+function closeConfirm(){
+  var el=$("ovl-confirm");
+  if(el)el.classList.remove("active");
+}
 
-// On page load, if the user's saved mode is post-match and we have a saved session, resume it.
-(function pmAutoResume(){
-  if(gameMode==="post_match"){
-    if(pmLoad()){
-      $("start-screen").classList.remove("active");
-    }
-  }
-})();
+/* ═══════════════════════════════════
+   EXPORTS
+   ═══════════════════════════════════ */
+function downloadCSV(){
+  var c=Core.buildCSV(pState());
+  var b=new Blob([c],{type:"text/csv"});
+  var u=URL.createObjectURL(b);
+  var l=document.createElement("a");
+  l.href=u;l.download="bv_"+new Date().toISOString().slice(0,10)+".csv";
+  l.click();URL.revokeObjectURL(u);
+}
+function downloadVLCChapters(){
+  var ch=Core.buildVLCChapters(pState());
+  if(!ch)return;
+  var b=new Blob([ch],{type:"text/plain"});
+  var u=URL.createObjectURL(b);
+  var l=document.createElement("a");
+  l.href=u;l.download="bv_"+new Date().toISOString().slice(0,10)+".chapters.txt";
+  l.click();URL.revokeObjectURL(u);
+}
 
+/* ═══════════════════════════════════
+   BOOT
+   ═══════════════════════════════════ */
+initSettingsInputs();
+if(gameMode==="score")enterScoreMode();
+// else: scr-start is already active in markup
 </script>
 </body>
 </html>
